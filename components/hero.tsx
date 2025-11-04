@@ -47,13 +47,16 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right Column - Mascot */}
+          {/* Right Column - Intro Video */}
           <div className="relative order-first lg:order-last">
             <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-primary/5 to-secondary/5 p-6 md:p-8 flex items-center justify-center min-h-[280px] md:min-h-[320px] lg:min-h-[380px]">
-              <img
-                src="/mascot.png"
-                alt="Mascot Chef Cat - TasteMuse"
-                className="relative z-10 w-full max-w-[220px] md:max-w-[280px] lg:max-w-[320px] h-auto object-contain"
+              <iframe
+                className="relative z-10 w-full max-w-[560px] md:max-w-[640px] lg:max-w-[720px] aspect-video rounded-lg"
+                src="https://www.youtube.com/embed/yKNxeF4KMsY?autoplay=1&mute=1&loop=1&playlist=yKNxeF4KMsY&playsinline=1&modestbranding=1&rel=0"
+                title="Coldplay - Yellow (Official Video)"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
               />
             </div>
           </div>

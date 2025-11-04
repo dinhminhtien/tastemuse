@@ -108,15 +108,15 @@ export function Chatbot() {
             setIsOpen(true)
             setIsMinimized(false)
           }}
-          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group animate-bounce hover:animate-none"
+          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group animate-bounce hover:animate-none"
           aria-label="Mở chatbot"
         >
-          <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+          <div className="relative w-15 h-15 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
             <Image
               src="/mascot.png"
               alt="TasteMuse Mascot"
-              width={48}
-              height={48}
+              width={75}
+              height={75}
               className="object-contain"
             />
           </div>
@@ -137,8 +137,8 @@ export function Chatbot() {
                 <Image
                   src="/mascot.png"
                   alt="TasteMuse Mascot"
-                  width={40}
-                  height={40}
+                  width={50}
+                  height={50}
                   className="object-contain"
                 />
               </div>

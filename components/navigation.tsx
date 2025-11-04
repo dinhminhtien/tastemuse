@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Search, Menu, User, MapPin, Phone, Clock } from "lucide-react"
+import { Search, Menu, User, MapPin, Phone, Clock, MailIcon } from "lucide-react"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -32,8 +32,8 @@ export function Navigation() {
                 <span>0123.456.789</span>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>8:00 AM - 10:00 PM</span>
+                <MailIcon className="w-4 h-4" />
+                <span>tastemuse@gmail.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 bg-green-500 rounded-full" />
@@ -55,7 +55,7 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+            <div className="w-15 h-15 rounded-lg flex items-center justify-center">
               <img className="text-2xl" src="/mascot.png" alt="TasteMuse Logo" />
             </div>
             <span className="text-xl md:text-2xl font-bold text-primary">TasteMuse</span>

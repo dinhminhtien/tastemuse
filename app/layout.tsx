@@ -10,10 +10,13 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Food Suggestion - Smart Food Discovery in Can Tho",
+  title: "TasteMuse",
   description:
     "Discover delicious dishes and trusted restaurants in Can Tho with AI-powered recommendations, Google Maps, ratings, and TikTok reviews.",
   generator: "v0.app",
+    icons: {
+    icon: "/mascot.png",
+  }
 }
 
 export default function RootLayout({
