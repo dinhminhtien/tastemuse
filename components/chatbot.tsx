@@ -113,7 +113,7 @@ export function Chatbot() {
         >
           <div className="relative w-15 h-15 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
             <Image
-              src="/mascot.png"
+              src="/logo.png"
               alt="TasteMuse Mascot"
               width={75}
               height={75}
@@ -135,7 +135,7 @@ export function Chatbot() {
             <div className="flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
                 <Image
-                  src="/mascot.png"
+                  src="/logo.png"
                   alt="TasteMuse Mascot"
                   width={50}
                   height={50}

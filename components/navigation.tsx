@@ -56,7 +56,7 @@ export function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-15 h-15 rounded-lg flex items-center justify-center">
-              <img className="text-2xl" src="/mascot.png" alt="TasteMuse Logo" />
+              <img className="text-2xl" src="/logo.png" alt="TasteMuse Logo" />
             </div>
             <span className="text-xl md:text-2xl font-bold text-primary">TasteMuse</span>
           </Link>
