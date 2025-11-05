@@ -1,64 +1,81 @@
+"use client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { MapPin } from "lucide-react"
+import { Reveal } from "@/components/reveal"
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-background">
       {/* Subtle background decoration */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-10 right-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+        <div className="absolute top-10 right-10 w-48 h-48 bg-primary/10 rounded-full glow-blob" />
+        <div className="absolute bottom-10 left-10 w-64 h-64 bg-secondary/10 rounded-full glow-blob" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] opacity-[0.06] gradient-orbit rounded-full" />
       </div>
 
       <div className="container mx-auto px-4 py-8 md:py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-10 items-center">
           {/* Left Column - Text Content */}
           <div className="space-y-5 md:space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-primary/10 rounded-full text-xs md:text-sm font-medium text-primary">
-              <MapPin className="w-3 h-3 md:w-4 md:h-4" />
-              <span>Phục vụ tại Cần Thơ</span>
-            </div>
+            <Reveal>
+              <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-primary/10 rounded-full text-xs md:text-sm font-medium text-primary">
+                <MapPin className="w-3 h-3 md:w-4 md:h-4" />
+                <span>Phục vụ tại Cần Thơ</span>
+              </div>
+            </Reveal>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-balance leading-tight">
-              Không biết ăn gì? <span className="text-primary">Để TasteMuse gợi ý</span> món ngon gần bạn!
-            </h1>
+            <Reveal delay={120}>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-balance leading-tight">
+                Không biết ăn gì? <span className="text-primary">Để TasteMuse gợi ý</span> món ngon gần bạn!
+              </h1>
+            </Reveal>
 
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg">
-              TasteMuse là nền tảng thông minh giúp bạn trả lời câu hỏi "Hôm nay ăn gì?" chỉ trong vài giây. Khám phá
-              món ngon và nhà hàng uy tín với gợi ý từ AI.
-            </p>
+            <Reveal delay={220}>
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg">
+                TasteMuse là nền tảng thông minh giúp bạn trả lời câu hỏi "Hôm nay ăn gì?" chỉ trong vài giây. Khám phá
+                món ngon và nhà hàng uy tín với gợi ý từ AI.
+              </p>
+            </Reveal>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <Link href="/dishes">
-                <Button size="lg" className="text-base px-6 md:px-8 py-5 md:py-6 w-full sm:w-auto">
-                  Trò chuyện với AI
-                </Button>
-              </Link>
-              <Link href="/restaurants">
+            <Reveal delay={320}>
+              <div className="flex flex-col sm:flex-row gap-3 pt-2 group">
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="text-base px-6 md:px-8 py-5 md:py-6 w-full sm:w-auto border-2"
+                  onClick={() => {
+                    window.dispatchEvent(new Event("open-chatbot"))
+                  }}
+                  className="text-base px-6 md:px-8 py-5 md:py-6 w-full sm:w-auto transition-transform will-change-transform group-hover:translate-y-[-1px]"
                 >
-                  Khám phá nhà hàng
+                  Trò chuyện với AI
                 </Button>
-              </Link>
-            </div>
+                <Link href="/restaurants">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-base px-6 md:px-8 py-5 md:py-6 w-full sm:w-auto border-2"
+                  >
+                    Khám phá nhà hàng
+                  </Button>
+                </Link>
+              </div>
+            </Reveal>
           </div>
 
           {/* Right Column - Intro Video */}
           <div className="relative order-first lg:order-last">
-            <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-primary/5 to-secondary/5 p-6 md:p-8 flex items-center justify-center min-h-[280px] md:min-h-[320px] lg:min-h-[380px]">
-              <iframe
-                className="relative z-10 w-full max-w-[560px] md:max-w-[640px] lg:max-w-[720px] aspect-video rounded-lg"
-                src="https://www.youtube.com/embed/yKNxeF4KMsY?autoplay=1&mute=1&loop=1&playlist=yKNxeF4KMsY&playsinline=1&modestbranding=1&rel=0"
-                title="Coldplay - Yellow (Official Video)"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
+            <Reveal>
+              <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-primary/5 to-secondary/5 p-6 md:p-8 flex items-center justify-center min-h-[280px] md:min-h-[320px] lg:min-h-[380px]">
+                <iframe
+                  className="relative z-10 w-full max-w-[560px] md:max-w-[640px] lg:max-w-[720px] aspect-video rounded-lg"
+                  src="https://www.youtube.com/embed/yKNxeF4KMsY?autoplay=1&mute=1&loop=1&playlist=yKNxeF4KMsY&playsinline=1&modestbranding=1&rel=0"
+                  title="Coldplay - Yellow (Official Video)"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            </Reveal>
           </div>
         </div>
       </div>

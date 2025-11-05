@@ -148,7 +148,7 @@ export default function AboutPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-lg px-8 py-6 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
+                  className="text-lg px-8 py-6 border-primary-foreground text-primary hover:bg-primary-foreground/10"
                 >
                   Liên hệ chúng tôi
                 </Button>
@@ -160,6 +160,7 @@ export default function AboutPage() {
     </main>
   )
 }
+
 
 
 

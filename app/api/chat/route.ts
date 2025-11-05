@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     // System prompt ngắn gọn hơn để giảm thời gian xử lý
     const systemPrompt = `Bạn là TasteMuse, trợ lý AI tư vấn món ăn và nhà hàng tại Cần Thơ, Việt Nam. 
-Trả lời ngắn gọn, thân thiện bằng tiếng Việt.`;
+Trả lời ngắn gọn, thân thiện bằng tiếng Việt`;
 
     // Giới hạn history chỉ gửi 6 message gần nhất để giảm payload
     const limitedHistory = history.length > 1 

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Navigation } from "@/components/navigation"
 import { Chatbot } from "@/components/chatbot"
+import { PageTransition } from "@/components/page-transition"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
     "Discover delicious dishes and trusted restaurants in Can Tho with AI-powered recommendations, Google Maps, ratings, and TikTok reviews.",
   generator: "v0.app",
     icons: {
-    icon: "/mascot.png",
+    icon: "/logo.png",
   }
 }
 
@@ -28,7 +29,9 @@ export default function RootLayout({
     <html lang="vi">
       <body className={`font-sans antialiased`}>
         <Navigation />
-        {children}
+        <PageTransition>
+          {children}
+        </PageTransition>
         <Chatbot />
         <Analytics />
       </body>

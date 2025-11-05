@@ -26,6 +26,13 @@ export function Chatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
+  const suggestions = [
+    "Gợi ý món ăn trưa nhẹ",
+    "Món chay ngon ở Ninh Kiều",
+    "Quán lẩu cho nhóm 4 người",
+    "Ăn tối dưới 100k/người",
+    "Món đặc sản Cần Thơ",
+  ]
 
   const scrollToBottom = () => {
     // Tìm viewport của ScrollArea và scroll đến cuối
@@ -52,14 +59,24 @@ export function Chatbot() {
     }
   }, [isOpen, isMinimized])
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return
+  useEffect(() => {
+    const openHandler = () => {
+      setIsOpen(true)
+      setIsMinimized(false)
+      setTimeout(() => inputRef.current?.focus(), 100)
+    }
+    window.addEventListener("open-chatbot", openHandler as EventListener)
+    return () => {
+      window.removeEventListener("open-chatbot", openHandler as EventListener)
+    }
+  }, [])
 
-    const userMessage = input.trim()
+  const sendMessage = async (text: string) => {
+    if (!text.trim() || isLoading) return
+    const userMessage = text.trim()
     setInput("")
     setMessages((prev) => [...prev, { role: "user", content: userMessage }])
     setIsLoading(true)
-
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -71,11 +88,9 @@ export function Chatbot() {
           history: messages,
         }),
       })
-
       if (!response.ok) {
         throw new Error("Failed to get response")
       }
-
       const data = await response.json()
       setMessages((prev) => [...prev, { role: "assistant", content: data.message }])
     } catch (error) {
@@ -90,6 +105,15 @@ export function Chatbot() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSend = async () => {
+    await sendMessage(input)
+  }
+
+  const handleSuggestionClick = async (text: string) => {
+    setInput(text)
+    await sendMessage(text)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -200,6 +224,23 @@ export function Chatbot() {
                         </div>
                       </div>
                     ))}
+                    {!messages.some((m) => m.role === "user") && (
+                      <div className="pt-2">
+                        <div className="text-xs text-muted-foreground mb-2">Gợi ý nhanh:</div>
+                        <div className="flex flex-wrap gap-2">
+                          {suggestions.map((s) => (
+                            <button
+                              key={s}
+                              onClick={() => handleSuggestionClick(s)}
+                              disabled={isLoading}
+                              className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-muted transition"
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     {isLoading && (
                       <div className="flex justify-start">
                         <div className="bg-muted rounded-lg px-4 py-2">
