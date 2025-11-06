@@ -10,6 +10,7 @@ import Image from "next/image"
 interface Message {
   role: "user" | "assistant"
   content: string
+  timestamp?: number
 }
 
 export function Chatbot() {
@@ -18,11 +19,16 @@ export function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Xin chào! Tôi là TasteMuse 🤖. Tôi có thể giúp bạn tìm món ăn ngon và nhà hàng uy tín tại Cần Thơ. Hãy hỏi tôi bất cứ điều gì!"
+      content: "Xin chào! Tôi là TasteMuse 🤖. Tôi có thể giúp bạn tìm món ăn ngon và nhà hàng uy tín tại Cần Thơ. Hãy hỏi tôi bất cứ điều gì!",
     }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true
+    const stored = window.localStorage.getItem("chatbot_show_suggestions")
+    return stored ? stored === "true" : true
+  })
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
@@ -60,6 +66,10 @@ export function Chatbot() {
   }, [isOpen, isMinimized])
 
   useEffect(() => {
+    window.localStorage.setItem("chatbot_show_suggestions", String(showSuggestions))
+  }, [showSuggestions])
+
+  useEffect(() => {
     const openHandler = () => {
       setIsOpen(true)
       setIsMinimized(false)
@@ -75,7 +85,7 @@ export function Chatbot() {
     if (!text.trim() || isLoading) return
     const userMessage = text.trim()
     setInput("")
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }])
+    setMessages((prev) => [...prev, { role: "user", content: userMessage, timestamp: Date.now() }])
     setIsLoading(true)
     try {
       const response = await fetch("/api/chat", {
@@ -92,7 +102,10 @@ export function Chatbot() {
         throw new Error("Failed to get response")
       }
       const data = await response.json()
-      setMessages((prev) => [...prev, { role: "assistant", content: data.message }])
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.message, timestamp: Date.now() },
+      ])
     } catch (error) {
       console.error("Error:", error)
       setMessages((prev) => [
@@ -100,6 +113,7 @@ export function Chatbot() {
         {
           role: "assistant",
           content: "Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.",
+          timestamp: Date.now(),
         },
       ])
     } finally {
@@ -116,12 +130,15 @@ export function Chatbot() {
     await sendMessage(text)
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSend()
     }
   }
+
+  const formatTime = (t: number) =>
+    new Intl.DateTimeFormat("vi-VN", { hour: "2-digit", minute: "2-digit" }).format(new Date(t))
 
   return (
     <>
@@ -168,7 +185,8 @@ export function Chatbot() {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">TasteMuse AI</h3>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden />
                   {isMinimized ? "Đang chờ bạn..." : "Đang trực tuyến"}
                 </p>
               </div>
@@ -221,12 +239,26 @@ export function Chatbot() {
                           <p className="text-sm whitespace-pre-wrap break-words">
                             {msg.content}
                           </p>
+                          {msg.timestamp && (
+                            <div className={`mt-1 text-[10px] ${msg.role === "user" ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                              {formatTime(msg.timestamp)}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
-                    {!messages.some((m) => m.role === "user") && (
+                    {showSuggestions && !messages.some((m) => m.role === "user") && (
                       <div className="pt-2">
-                        <div className="text-xs text-muted-foreground mb-2">Gợi ý nhanh:</div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-xs text-muted-foreground">Gợi ý nhanh</div>
+                          <button
+                            onClick={() => setShowSuggestions(false)}
+                            className="text-[11px] text-muted-foreground hover:text-foreground"
+                            aria-label="Ẩn gợi ý"
+                          >
+                            Ẩn gợi ý
+                          </button>
+                        </div>
                         <div className="flex flex-wrap gap-2">
                           {suggestions.map((s) => (
                             <button
@@ -239,6 +271,17 @@ export function Chatbot() {
                             </button>
                           ))}
                         </div>
+                      </div>
+                    )}
+                    {!showSuggestions && !messages.some((m) => m.role === "user") && (
+                      <div className="pt-2">
+                        <button
+                          onClick={() => setShowSuggestions(true)}
+                          className="text-[11px] text-muted-foreground hover:text-foreground"
+                          aria-label="Hiện gợi ý"
+                        >
+                          Hiện gợi ý
+                        </button>
                       </div>
                     )}
                     {isLoading && (
@@ -264,7 +307,7 @@ export function Chatbot() {
                     ref={inputRef}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyDown={handleKeyDown}
                     placeholder="Nhập câu hỏi của bạn..."
                     disabled={isLoading}
                     className="flex-1"

@@ -54,11 +54,15 @@ export function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity mr-4 md:mr-6 lg:mr-8">
             <div className="w-15 h-15 rounded-lg flex items-center justify-center">
               <img className="text-2xl" src="/logo.png" alt="TasteMuse Logo" />
             </div>
-            <span className="text-xl md:text-2xl font-bold text-primary">TasteMuse</span>
+            <img
+              src="/tastemuse.png"
+              alt="TasteMuse"
+              className="h-6 md:h-8 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation Links */}
