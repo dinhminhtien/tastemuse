@@ -1,0 +1,140 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Initialize Vertex AI clients
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+// Vertex AI configuration
+const PROJECT_ID = process.env.VERTEX_AI_PROJECT_ID || '';
+const LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
+
+/**
+ * Generate embeddings for text using Vertex AI text-multilingual-embedding-002
+ * Note: Using Gemini's embedding model as a fallback since direct Vertex AI requires service account
+ */
+export async function generateEmbedding(text: string): Promise<number[]> {
+    try {
+        // For now, we'll use a simple approach with Gemini
+        // In production, you should use the official Vertex AI embedding endpoint
+
+        // Using text-embedding-004 model from Gemini
+        const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+
+        const result = await model.embedContent(text);
+        const embedding = result.embedding;
+
+        return embedding.values;
+    } catch (error) {
+        console.error('Error generating embedding:', error);
+        throw new Error('Failed to generate embedding');
+    }
+}
+
+/**
+ * Generate embeddings for multiple texts in batch
+ */
+export async function generateEmbeddingsBatch(texts: string[]): Promise<number[][]> {
+    const embeddings: number[][] = [];
+
+    // Process in batches to avoid rate limits
+    const batchSize = 5;
+    for (let i = 0; i < texts.length; i += batchSize) {
+        const batch = texts.slice(i, i + batchSize);
+        const batchPromises = batch.map(text => generateEmbedding(text));
+        const batchResults = await Promise.all(batchPromises);
+        embeddings.push(...batchResults);
+
+        // Add a small delay to avoid rate limiting
+        if (i + batchSize < texts.length) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+
+    return embeddings;
+}
+
+/**
+ * Generate a response using Vertex AI Gemini with context
+ */
+export async function generateRAGResponse(
+    query: string,
+    context: string,
+    history: Array<{ role: string; content: string }> = []
+): Promise<string> {
+    try {
+        const model = genAI.getGenerativeModel({
+            model: 'gemini-2.0-flash-exp',
+            generationConfig: {
+                maxOutputTokens: 2000,
+                temperature: 0.7,
+            },
+        });
+
+        // Enhanced system prompt with context
+        const systemPrompt = `Bạn là TasteMuse, trợ lý AI tư vấn món ăn và nhà hàng tại Cần Thơ, Việt Nam.
+
+NGUYÊN TẮC TRẢ LỜI:
+- Trả lời bằng tiếng Việt, thân thiện và tự nhiên
+- Dựa vào THÔNG TIN THAM KHẢO được cung cấp để đưa ra câu trả lời chính xác
+- Nếu thông tin tham khảo không đủ, hãy nói rõ và đưa ra gợi ý chung
+- Không bịa đặt thông tin không có trong dữ liệu
+- Trả lời ngắn gọn, súc tích, tập trung vào yêu cầu của người dùng
+- Không sử dụng định dạng in đậm hoặc markdown phức tạp
+
+THÔNG TIN THAM KHẢO:
+${context}
+
+Hãy sử dụng thông tin trên để trả lời câu hỏi của người dùng một cách chính xác và hữu ích.`;
+
+        // Limit history to last 6 messages
+        const limitedHistory = history.length > 1
+            ? history.slice(-6).slice(1)
+            : [];
+
+        const chatHistory = limitedHistory.map((msg) => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }],
+        }));
+
+        const chat = model.startChat({
+            history: [
+                {
+                    role: 'user',
+                    parts: [{ text: systemPrompt }],
+                },
+                {
+                    role: 'model',
+                    parts: [{ text: 'Xin chào! Tôi là TasteMuse. Tôi sẽ giúp bạn tìm món ăn và nhà hàng ngon tại Cần Thơ dựa trên dữ liệu thực tế. Bạn muốn tìm món gì?' }],
+                },
+                ...chatHistory,
+            ],
+        });
+
+        const result = await chat.sendMessage(query);
+        const response = await result.response;
+        return response.text();
+    } catch (error) {
+        console.error('Error generating RAG response:', error);
+        throw new Error('Failed to generate response');
+    }
+}
+
+/**
+ * Calculate cosine similarity between two vectors
+ */
+export function cosineSimilarity(a: number[], b: number[]): number {
+    if (a.length !== b.length) {
+        throw new Error('Vectors must have the same length');
+    }
+
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+
+    for (let i = 0; i < a.length; i++) {
+        dotProduct += a[i] * b[i];
+        normA += a[i] * a[i];
+        normB += b[i] * b[i];
+    }
+
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+}

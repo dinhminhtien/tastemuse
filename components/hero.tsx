@@ -68,7 +68,7 @@ export function Hero() {
               <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-primary/5 to-secondary/5 p-6 md:p-8 flex items-center justify-center min-h-[280px] md:min-h-[320px] lg:min-h-[380px]">
                 <video
                   className="relative z-10 w-full max-w-[560px] md:max-w-[640px] lg:max-w-[720px] aspect-video rounded-lg"
-                  src="/intro.mp4"
+                  src="https://res.cloudinary.com/dkqaygsqc/video/upload/v1768995815/intro_smeudq.mp4"
                   controls
                   autoPlay
                   loop
