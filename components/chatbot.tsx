@@ -149,15 +149,15 @@ export function Chatbot() {
             setIsOpen(true)
             setIsMinimized(false)
           }}
-          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group animate-bounce hover:animate-none"
+          className="fixed bottom-6 right-6 z-50 w-20 h-20 rounded-full hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group animate-bounce hover:animate-none"
           aria-label="Mở chatbot"
         >
-          <div className="relative w-15 h-15 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+          <div className="relative w-20 h-20 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
             <Image
               src="/logo.png"
               alt="TasteMuse Mascot"
-              width={75}
-              height={75}
+              width={100}
+              height={100}
               className="object-contain"
             />
           </div>
@@ -167,9 +167,8 @@ export function Chatbot() {
       {/* Chatbot Window */}
       {isOpen && (
         <div
-          className={`fixed bottom-6 right-6 z-50 w-[380px] md:w-[420px] bg-card border border-border rounded-lg shadow-2xl flex flex-col transition-all duration-300 ${
-            isMinimized ? "h-16" : "h-[600px]"
-          }`}
+          className={`fixed bottom-6 right-6 z-50 w-[380px] md:w-[420px] bg-card border border-border rounded-lg shadow-2xl flex flex-col transition-all duration-300 ${isMinimized ? "h-16" : "h-[600px]"
+            }`}
         >
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-border bg-primary/5">
@@ -230,11 +229,10 @@ export function Chatbot() {
                         className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                            msg.role === "user"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-foreground"
-                          }`}
+                          className={`max-w-[80%] rounded-lg px-4 py-2 ${msg.role === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-foreground"
+                            }`}
                         >
                           <p className="text-sm whitespace-pre-wrap break-words">
                             {msg.content}

@@ -29,11 +29,11 @@ export function Navigation() {
             <div className="flex items-center gap-6 text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                <span>0123.456.789</span>
+                <span>0896723226</span>
               </div>
               <div className="flex items-center gap-2">
                 <MailIcon className="w-4 h-4" />
-                <span>tastemuse@gmail.com</span>
+                <span>tastemusehihi@gmail.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 bg-green-500 rounded-full" />
@@ -71,11 +71,10 @@ export function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  pathname === link.href
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === link.href
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>
@@ -121,11 +120,10 @@ export function Navigation() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsOpen(false)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        pathname === link.href
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === link.href
                           ? "bg-primary text-primary-foreground"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      }`}
+                        }`}
                     >
                       {link.label}
                     </Link>
