@@ -84,7 +84,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">Email</h3>
-                      <p className="text-muted-foreground">tastemuse@gmail.com</p>
+                      <p className="text-muted-foreground">tastemusehihi@gmail.com</p>
                     </div>
                   </div>
                 </Card>
@@ -96,7 +96,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">Điện thoại</h3>
-                      <p className="text-muted-foreground">+84 123 456 789</p>
+                      <p className="text-muted-foreground">0896.723.226</p>
                     </div>
                   </div>
                 </Card>

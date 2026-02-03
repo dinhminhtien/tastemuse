@@ -62,7 +62,7 @@ export async function generateRAGResponse(
 ): Promise<string> {
     try {
         const model = genAI.getGenerativeModel({
-            model: 'gemini-2.0-flash-exp',
+            model: 'gemini-2.5-flash',
             generationConfig: {
                 maxOutputTokens: 2000,
                 temperature: 0.7,

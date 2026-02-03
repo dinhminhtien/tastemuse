@@ -18,6 +18,8 @@ export function Navigation() {
     { href: "/dishes", label: "Món ăn" },
     { href: "/about", label: "Về chúng tôi" },
     { href: "/contact", label: "Liên hệ" },
+    { href: "/signin", label: "Đăng nhập" },
+    { href: "/signup", label: "Đăng ký" }
   ]
 
   return (
@@ -72,8 +74,8 @@ export function Navigation() {
                 key={link.href}
                 href={link.href}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === link.href
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
               >
                 {link.label}
@@ -121,8 +123,8 @@ export function Navigation() {
                       href={link.href}
                       onClick={() => setIsOpen(false)}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === link.href
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                         }`}
                     >
                       {link.label}
@@ -145,7 +147,7 @@ export function Navigation() {
                 <div className="border-t border-border pt-4 mt-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2 mb-2">
                     <Phone className="w-4 h-4" />
-                    <span>0123.456.789</span>
+                    <span>0896723226</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
