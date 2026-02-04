@@ -37,7 +37,6 @@ export function Chatbot() {
     "Món chay ngon ở Ninh Kiều",
     "Quán lẩu cho nhóm 4 người",
     "Ăn tối dưới 100k/người",
-    "Món đặc sản Cần Thơ",
   ]
 
   const scrollToBottom = () => {
