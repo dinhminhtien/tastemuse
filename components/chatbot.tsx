@@ -19,7 +19,7 @@ export function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Xin chào! Tôi là TasteMuse 🤖. Tôi có thể giúp bạn tìm món ăn ngon và nhà hàng uy tín tại Cần Thơ. Hãy hỏi tôi bất cứ điều gì!",
+      content: "Chào bạn! Mình là TasteMuse 🍜. Mình có thể giúp bạn tìm món ăn ngon và nhà hàng uy tín tại Cần Thơ. Hỏi mình bất cứ điều gì nhé!",
     }
   ])
   const [input, setInput] = useState("")
