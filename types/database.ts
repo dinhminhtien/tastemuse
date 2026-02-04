@@ -32,6 +32,18 @@ export interface Restaurant {
     restaurant_media?: RestaurantMedia[]; // For joined queries
 }
 
+// DishMedia - for dish images/videos
+export interface DishMedia {
+    id: string;
+    dish_id: string;
+    media_url: string;
+    media_type: 'image' | 'video';
+    is_primary: boolean;
+    sort_order: number;
+    alt_text?: string;
+    created_at: string;
+}
+
 export interface Dish {
     id: string;
     restaurant_id: string;
@@ -40,6 +52,7 @@ export interface Dish {
     is_signature: boolean;
     created_at: string;
     restaurants?: Restaurant; // For joined queries
+    dish_media?: DishMedia[]; // For joined queries
 }
 
 // API Response types

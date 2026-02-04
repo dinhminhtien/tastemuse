@@ -26,6 +26,14 @@ async function getDish(id: string): Promise<Dish | null> {
           max_price,
           open_time,
           close_time
+        ),
+        dish_media (
+          id,
+          media_url,
+          media_type,
+          is_primary,
+          sort_order,
+          alt_text
         )
       `)
             .eq('id', id)
@@ -65,12 +73,25 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
 
             {/* Hero Image */}
             <section className="relative h-[400px] md:h-[500px] overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
-                    <span className="text-9xl font-bold text-primary/40">
-                        {dish.name.charAt(0)}
-                    </span>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                {dish.dish_media && dish.dish_media.length > 0 ? (
+                    <>
+                        <img
+                            src={dish.dish_media.sort((a, b) => a.sort_order - b.sort_order)[0].media_url}
+                            alt={dish.dish_media[0].alt_text || dish.name}
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                    </>
+                ) : (
+                    <>
+                        <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
+                            <span className="text-9xl font-bold text-primary/40">
+                                {dish.name.charAt(0)}
+                            </span>
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                    </>
+                )}
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                     <div className="container mx-auto px-4">
                         <div className="flex items-center gap-4 mb-4">
@@ -125,6 +146,26 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
                                                 {tag}
                                             </span>
                                         ))}
+                                    </div>
+                                </Card>
+                            )}
+
+                            {/* Image Gallery */}
+                            {dish.dish_media && dish.dish_media.length > 1 && (
+                                <Card className="p-6">
+                                    <h2 className="text-2xl font-bold mb-4">Hình ảnh món ăn</h2>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        {dish.dish_media
+                                            .sort((a, b) => a.sort_order - b.sort_order)
+                                            .map((media) => (
+                                                <div key={media.id} className="relative aspect-square overflow-hidden rounded-lg group">
+                                                    <img
+                                                        src={media.media_url}
+                                                        alt={media.alt_text || dish.name}
+                                                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                                                    />
+                                                </div>
+                                            ))}
                                     </div>
                                 </Card>
                             )}

@@ -22,6 +22,14 @@ async function getFeaturedDishes(): Promise<Dish[]> {
           tags,
           min_price,
           max_price
+        ),
+        dish_media (
+          id,
+          media_url,
+          media_type,
+          is_primary,
+          sort_order,
+          alt_text
         )
       `)
       .eq('is_signature', true)
@@ -76,11 +84,19 @@ export async function FeaturedDishes() {
             <Link key={dish.id} href={`/dish/${dish.id}`}>
               <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group border-2 hover:border-primary/50">
                 <div className="aspect-[4/3] bg-muted relative overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center transition-transform duration-500 group-hover:scale-115">
-                    <span className="text-6xl font-bold text-primary/30">
-                      {dish.name.charAt(0)}
-                    </span>
-                  </div>
+                  {dish.dish_media && dish.dish_media.length > 0 ? (
+                    <img
+                      src={dish.dish_media.sort((a, b) => a.sort_order - b.sort_order)[0].media_url}
+                      alt={dish.dish_media[0].alt_text || dish.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center transition-transform duration-500 group-hover:scale-115">
+                      <span className="text-6xl font-bold text-primary/30">
+                        {dish.name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                   {/* Badge */}
                   {dish.is_signature && (
                     <div className="absolute top-3 left-3 px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full shadow-lg">
