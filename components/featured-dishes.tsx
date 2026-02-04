@@ -1,55 +1,53 @@
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
-import { Star, MapPin, Clock, TrendingUp } from "lucide-react"
+import { Star, MapPin, Clock, TrendingUp, ChefHat } from "lucide-react"
+import { supabase } from "@/lib/supabase"
+import type { Dish } from "@/types/database"
 
-const dishes = [
-  {
-    name: "Cơm Tấm Bà 5",
-    restaurant: "Quán Bà 5",
-    rating: 4.8,
-    reviews: 234,
-    image: "/vietnamese-broken-rice-com-tam-with-grilled-pork.jpg",
-    location: "Quận Ninh Kiều",
-    price: "65,000đ",
-    badge: "Nổi bật",
-    time: "15-20 phút",
-  },
-  {
-    name: "Mì Trộn Lý",
-    restaurant: "Quán Lý",
-    rating: 4.7,
-    reviews: 189,
-    image: "/vietnamese-mixed-noodles-mi-tron.jpg",
-    location: "Quận Cái Răng",
-    price: "55,000đ",
-    badge: "Yêu thích",
-    time: "10-15 phút",
-  },
-  {
-    name: "Bún Bò Huế Út Chín",
-    restaurant: "Quán Út Chín",
-    rating: 4.9,
-    reviews: 312,
-    image: "/vietnamese-hue-beef-noodle-soup-bun-bo-hue.jpg",
-    location: "Quận Ninh Kiều",
-    price: "70,000đ",
-    badge: "Bán chạy",
-    time: "20-25 phút",
-  },
-  {
-    name: "Bánh Xèo Miền Tây",
-    restaurant: "Quán Miền Tây",
-    rating: 4.6,
-    reviews: 156,
-    image: "/vietnamese-crispy-pancake-banh-xeo.jpg",
-    location: "Quận Ô Môn",
-    price: "50,000đ",
-    badge: null,
-    time: "12-15 phút",
-  },
-]
+async function getFeaturedDishes(): Promise<Dish[]> {
+  try {
+    // Fetch signature dishes (featured dishes)
+    const { data, error } = await supabase
+      .from('dishes')
+      .select(`
+        *,
+        restaurants (
+          id,
+          name,
+          slug,
+          address,
+          city,
+          ward,
+          phone,
+          tags,
+          min_price,
+          max_price
+        )
+      `)
+      .eq('is_signature', true)
+      .order('created_at', { ascending: false })
+      .limit(4)
 
-export function FeaturedDishes() {
+    if (error) {
+      console.error('Error fetching featured dishes:', error)
+      return []
+    }
+
+    return data || []
+  } catch (error) {
+    console.error('Error fetching featured dishes:', error)
+    return []
+  }
+}
+
+export async function FeaturedDishes() {
+  const dishes = await getFeaturedDishes()
+
+  // If no featured dishes, return empty section
+  if (dishes.length === 0) {
+    return null
+  }
+
   return (
     <section className="py-20 md:py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -74,25 +72,27 @@ export function FeaturedDishes() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
-          {dishes.map((dish, index) => (
-            <Link key={index} href={`/dish/${index + 1}`}>
+          {dishes.map((dish) => (
+            <Link key={dish.id} href={`/dish/${dish.id}`}>
               <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group border-2 hover:border-primary/50">
                 <div className="aspect-[4/3] bg-muted relative overflow-hidden">
-                  <img
-                    src={dish.image || "/placeholder.svg"}
-                    alt={dish.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-115"
-                  />
+                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center transition-transform duration-500 group-hover:scale-115">
+                    <span className="text-6xl font-bold text-primary/30">
+                      {dish.name.charAt(0)}
+                    </span>
+                  </div>
                   {/* Badge */}
-                  {dish.badge && (
+                  {dish.is_signature && (
                     <div className="absolute top-3 left-3 px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full shadow-lg">
-                      {dish.badge}
+                      Nổi bật
                     </div>
                   )}
                   {/* Price Badge */}
-                  <div className="absolute top-3 right-3 px-3 py-1 bg-background/95 backdrop-blur-sm text-foreground text-sm font-bold rounded-lg shadow-lg">
-                    {dish.price}
-                  </div>
+                  {dish.restaurants?.min_price && dish.restaurants?.max_price && (
+                    <div className="absolute top-3 right-3 px-3 py-1 bg-background/95 backdrop-blur-sm text-foreground text-sm font-bold rounded-lg shadow-lg">
+                      {dish.restaurants.min_price.toLocaleString('vi-VN')}đ
+                    </div>
+                  )}
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
@@ -101,26 +101,37 @@ export function FeaturedDishes() {
                     <h3 className="text-lg md:text-xl font-bold text-card-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
                       {dish.name}
                     </h3>
-                    <p className="text-sm text-muted-foreground line-clamp-1">{dish.restaurant}</p>
+                    {dish.restaurants && (
+                      <p className="text-sm text-muted-foreground line-clamp-1 flex items-center gap-1">
+                        <ChefHat className="w-3 h-3" />
+                        {dish.restaurants.name}
+                      </p>
+                    )}
                   </div>
-                  
+
                   <div className="flex items-center gap-4 pt-2 border-t border-border">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-primary text-primary" />
-                      <span className="font-bold text-sm">{dish.rating}</span>
-                      <span className="text-xs text-muted-foreground">({dish.reviews})</span>
-                    </div>
+                    {dish.restaurants?.tags && dish.restaurants.tags.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground">{dish.restaurants.tags[0]}</span>
+                      </div>
+                    )}
                   </div>
-                  
+
                   <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      <span className="line-clamp-1">{dish.location}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      <span>{dish.time}</span>
-                    </div>
+                    {dish.restaurants && (
+                      <>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          <span className="line-clamp-1">{dish.restaurants.ward}</span>
+                        </div>
+                        {dish.restaurants.open_time && dish.restaurants.close_time && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            <span>{dish.restaurants.open_time.slice(0, 5)}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               </Card>
