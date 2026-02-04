@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Search, Menu, User, MapPin, Phone, Clock, MailIcon } from "lucide-react"
+import { UserProfile } from "@/components/user-profile"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,9 +18,7 @@ export function Navigation() {
     { href: "/restaurants", label: "Nhà hàng" },
     { href: "/dishes", label: "Món ăn" },
     { href: "/about", label: "Về chúng tôi" },
-    { href: "/contact", label: "Liên hệ" },
-    { href: "/signin", label: "Đăng nhập" },
-    { href: "/signup", label: "Đăng ký" }
+    { href: "/contact", label: "Liên hệ" }
   ]
 
   return (
@@ -96,11 +95,7 @@ export function Navigation() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost">
-              <User className="w-5 h-5 mr-2" />
-              Đăng nhập
-            </Button>
-            <Button>Đăng ký</Button>
+            <UserProfile />
           </div>
 
           {/* Mobile Menu */}
@@ -133,11 +128,9 @@ export function Navigation() {
                 </div>
                 <div className="border-t border-border pt-4 mt-4">
                   <div className="flex flex-col gap-2">
-                    <Button variant="ghost" className="justify-start">
-                      <User className="w-5 h-5 mr-2" />
-                      Đăng nhập
-                    </Button>
-                    <Button className="justify-start">Đăng ký</Button>
+                    <div className="px-4 py-2">
+                      <UserProfile />
+                    </div>
                     <Button variant="ghost" className="justify-start">
                       <MapPin className="w-5 h-5 mr-2" />
                       Cần Thơ
