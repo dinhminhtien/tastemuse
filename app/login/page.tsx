@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { signInWithOAuth, signInWithEmail, signUpWithEmail } from '@/lib/auth';
 import type { AuthProvider } from '@/lib/auth';
-import { Chrome, Facebook, Mail, Lock, User, ArrowRight, Sparkles } from 'lucide-react';
+import { Chrome, Mail, Lock, User, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -129,15 +129,6 @@ function LoginContent() {
                         >
                             <Chrome className="w-5 h-5 mr-2" />
                             Tiếp tục với Google
-                        </Button>
-
-                        <Button
-                            onClick={() => handleOAuthSignIn('facebook')}
-                            disabled={isLoading}
-                            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-600 shadow-sm hover:shadow-md transition-all duration-200"
-                        >
-                            <Facebook className="w-5 h-5 mr-2" />
-                            Tiếp tục với Facebook
                         </Button>
                     </div>
 

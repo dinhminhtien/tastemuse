@@ -14,8 +14,8 @@ export const RAG_CONFIG = {
     MAX_RESULTS: 4,
 
     // Embeddings
-    EMBEDDING_MODEL: 'text-multilingual-embedding-002',
-    EMBEDDING_DIMENSION: 768,
+    EMBEDDING_MODEL: 'gemini-embedding-001',
+    EMBEDDING_DIMENSION: 3072,
 
     // LLM
     LLM_MODEL: 'gemini-2.5-flash',

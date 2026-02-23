@@ -6,6 +6,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  instrumentationHook: true,
 }
 
 export default nextConfig

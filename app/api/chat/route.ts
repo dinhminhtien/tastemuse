@@ -119,7 +119,7 @@ export async function GET() {
 
     // Check if match_documents function exists
     const { data: functionExists, error: funcError } = await supabase.rpc('match_documents', {
-      query_embedding: new Array(768).fill(0),
+      query_embedding: new Array(3072).fill(0),
       match_threshold: 0.1,
       match_count: 1,
     });
