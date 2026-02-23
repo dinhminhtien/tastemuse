@@ -43,7 +43,7 @@ BEGIN
 
     IF NEW.open_time IS NOT NULL OR NEW.close_time IS NOT NULL THEN
         raw := raw || E'\n' || 'Giờ mở cửa: '
-            || COALESCE(NEW.open_time, '?') || ' - ' || COALESCE(NEW.close_time, '?');
+            || COALESCE(NEW.open_time::TEXT, '?') || ' - ' || COALESCE(NEW.close_time::TEXT, '?');
     END IF;
 
     -- ---- INSERT or UPDATE ----
@@ -206,7 +206,15 @@ CREATE TRIGGER trg_dish_sync
 -- 4. ENABLE REALTIME on document_chunks (for the Listener)
 -- ************************************************************
 -- Supabase Realtime needs the table to be in the publication
-ALTER PUBLICATION supabase_realtime ADD TABLE document_chunks;
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_publication_tables
+        WHERE pubname = 'supabase_realtime' AND tablename = 'document_chunks'
+    ) THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE document_chunks;
+    END IF;
+END $$;
 
 
 -- ************************************************************

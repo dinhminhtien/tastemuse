@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Star, MapPin, Clock, TrendingUp, ChefHat } from "lucide-react"
 import { supabase } from "@/lib/supabase"
@@ -57,7 +58,7 @@ export async function FeaturedDishes() {
   }
 
   return (
-    <section className="py-20 md:py-24 bg-background">
+    <section className="py-20 md:py-24 section-alt">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
           <div>
@@ -85,10 +86,14 @@ export async function FeaturedDishes() {
               <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group border-2 hover:border-primary/50">
                 <div className="aspect-[4/3] bg-muted relative overflow-hidden">
                   {dish.dish_media && dish.dish_media.length > 0 ? (
-                    <img
+                    <Image
                       src={dish.dish_media.sort((a, b) => a.sort_order - b.sort_order)[0].media_url}
                       alt={dish.dish_media[0].alt_text || dish.name}
+                      width={400}
+                      height={300}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center transition-transform duration-500 group-hover:scale-115">

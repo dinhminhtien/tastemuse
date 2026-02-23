@@ -2,9 +2,13 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Star, MapPin, Phone, Clock, ArrowLeft, Share2, Heart, Utensils, Map } from "lucide-react"
+import { Star, MapPin, Phone, Clock, ArrowLeft, Share2, Utensils, Map } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import type { Restaurant, Dish } from "@/types/database"
+import { RatingStars } from "@/components/rating-stars"
+import { FavoriteButton } from "@/components/favorite-button"
+import { ReviewForm } from "@/components/review-form"
+import { ReviewList } from "@/components/review-list"
 
 interface RestaurantWithDishes extends Restaurant {
     dishes?: Dish[]
@@ -71,7 +75,6 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
             <section className="relative h-[400px] md:h-[500px] overflow-hidden">
                 {restaurant.restaurant_media && restaurant.restaurant_media.length > 0 ? (
                     <>
-                        {/* Real Image */}
                         <img
                             src={
                                 restaurant.restaurant_media.find(m => m.is_cover)?.media_url ||
@@ -82,7 +85,6 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
                         />
                     </>
                 ) : (
-                    /* Placeholder */
                     <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
                         <span className="text-9xl font-bold text-primary/40">
                             {restaurant.name.charAt(0)}
@@ -97,19 +99,17 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Chia sẻ
                             </Button>
-                            <Button variant="secondary" size="sm">
-                                <Heart className="w-4 h-4 mr-2" />
-                                Yêu thích
-                            </Button>
+                            <FavoriteButton targetType="restaurant" targetId={restaurant.id} />
                         </div>
                         <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">{restaurant.name}</h1>
-                        <div className="flex items-center gap-4 text-foreground">
+                        <div className="flex items-center gap-4 text-foreground flex-wrap">
                             {restaurant.tags && restaurant.tags.length > 0 && (
                                 <div className="flex items-center gap-2">
                                     <Utensils className="w-5 h-5" />
                                     <span className="text-lg">{restaurant.tags.join(', ')}</span>
                                 </div>
                             )}
+                            <RatingStars targetType="restaurant" targetId={restaurant.id} size="lg" />
                         </div>
                     </div>
                 </div>
@@ -174,6 +174,10 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
                                     </div>
                                 </Card>
                             )}
+
+                            {/* Reviews Section */}
+                            <ReviewForm targetType="restaurant" targetId={restaurant.id} />
+                            <ReviewList targetType="restaurant" targetId={restaurant.id} />
                         </div>
 
                         {/* Sidebar */}
@@ -235,10 +239,29 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
                             )}
 
                             {/* Map Button */}
-                            <Button className="w-full" variant="outline">
-                                <Map className="w-4 h-4 mr-2" />
-                                Xem bản đồ
-                            </Button>
+                            {restaurant.lat && restaurant.lng ? (
+                                <a
+                                    href={`https://www.google.com/maps?q=${restaurant.lat},${restaurant.lng}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Button className="w-full" variant="outline">
+                                        <Map className="w-4 h-4 mr-2" />
+                                        Xem bản đồ
+                                    </Button>
+                                </a>
+                            ) : (
+                                <a
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.name + ' ' + restaurant.address + ' ' + restaurant.city)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Button className="w-full" variant="outline">
+                                        <Map className="w-4 h-4 mr-2" />
+                                        Xem bản đồ
+                                    </Button>
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>

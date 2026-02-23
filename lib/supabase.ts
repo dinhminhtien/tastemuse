@@ -3,13 +3,20 @@ import { createClient } from '@supabase/supabase-js';
 // Supabase configuration
 const supabaseUrl = process.env.NEXT_PUBLIC_TASTEMUSESUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_TASTEMUSESUPABASE_ANON_KEY!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Create a single supabase client for interacting with your database
+// Client-side / anon key client (for auth operations)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Server-side admin client (bypasses RLS, use in API routes only)
+// Uses service_role key — NEVER expose this to the client
+export const supabaseAdmin = supabaseServiceKey
+  ? createClient(supabaseUrl, supabaseServiceKey)
+  : supabase; // Fallback to anon if service key not set
 
 // Types for our database tables
 

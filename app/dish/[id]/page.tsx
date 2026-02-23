@@ -2,9 +2,13 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Star, MapPin, ChefHat, Clock, DollarSign, ArrowLeft, Share2, Heart } from "lucide-react"
+import { Star, MapPin, ChefHat, Clock, DollarSign, ArrowLeft, Share2 } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import type { Dish } from "@/types/database"
+import { RatingStars } from "@/components/rating-stars"
+import { FavoriteButton } from "@/components/favorite-button"
+import { ReviewForm } from "@/components/review-form"
+import { ReviewList } from "@/components/review-list"
 
 async function getDish(id: string): Promise<Dish | null> {
     try {
@@ -99,13 +103,10 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Chia sẻ
                             </Button>
-                            <Button variant="secondary" size="sm">
-                                <Heart className="w-4 h-4 mr-2" />
-                                Yêu thích
-                            </Button>
+                            <FavoriteButton targetType="dish" targetId={dish.id} />
                         </div>
                         <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">{dish.name}</h1>
-                        <div className="flex items-center gap-4 text-foreground">
+                        <div className="flex items-center gap-4 text-foreground flex-wrap">
                             {dish.is_signature && (
                                 <div className="flex items-center gap-1">
                                     <Star className="w-5 h-5 fill-primary text-primary" />
@@ -117,6 +118,7 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
                                     {dish.restaurants.min_price.toLocaleString('vi-VN')}đ - {dish.restaurants.max_price.toLocaleString('vi-VN')}đ
                                 </span>
                             )}
+                            <RatingStars targetType="dish" targetId={dish.id} size="lg" />
                         </div>
                     </div>
                 </div>
@@ -169,6 +171,10 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
                                     </div>
                                 </Card>
                             )}
+
+                            {/* Reviews Section */}
+                            <ReviewForm targetType="dish" targetId={dish.id} />
+                            <ReviewList targetType="dish" targetId={dish.id} />
                         </div>
 
                         {/* Sidebar */}

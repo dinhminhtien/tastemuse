@@ -130,6 +130,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -137,34 +138,99 @@
 
 @layer utilities {
   @keyframes fade-slide-up {
-    0% { opacity: 0; transform: translateY(16px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
+
   @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
   }
+
   @keyframes rotate-gradient {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
-  .animate-fade-slide-up { animation: fade-slide-up 600ms cubic-bezier(.22,.61,.36,1) both; }
-  .animate-delay-1 { animation-delay: 120ms; }
-  .animate-delay-2 { animation-delay: 240ms; }
-  .animate-delay-3 { animation-delay: 360ms; }
+  .animate-fade-slide-up {
+    animation: fade-slide-up 600ms cubic-bezier(.22, .61, .36, 1) both;
+  }
 
-  .glow-blob { filter: blur(40px); opacity: 0.6; }
-  .glass-panel { backdrop-filter: saturate(180%) blur(12px); background-color: color-mix(in oklch, var(--color-card) 70%, transparent); }
+  .animate-delay-1 {
+    animation-delay: 120ms;
+  }
+
+  .animate-delay-2 {
+    animation-delay: 240ms;
+  }
+
+  .animate-delay-3 {
+    animation-delay: 360ms;
+  }
+
+  .glow-blob {
+    filter: blur(40px);
+    opacity: 0.6;
+  }
+
+  .glass-panel {
+    backdrop-filter: saturate(180%) blur(12px);
+    background-color: color-mix(in oklch, var(--color-card) 70%, transparent);
+  }
+
   .marquee {
     mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
     -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
   }
-  .marquee-track { animation: marquee 18s linear infinite; }
+
+  .marquee-track {
+    animation: marquee 18s linear infinite;
+  }
 
   .gradient-orbit {
     background: conic-gradient(from 0deg, oklch(0.87 0.11 87), oklch(0.77 0.13 68), oklch(0.58 0.15 32), oklch(0.87 0.11 87));
     animation: rotate-gradient 12s linear infinite;
+  }
+
+  /* Alternating section background for visual rhythm */
+  .section-alt {
+    background-color: color-mix(in oklch, var(--color-muted) 40%, var(--color-background));
+  }
+
+  /* Reusable hero gradient for all page headers */
+  .hero-gradient {
+    background: linear-gradient(135deg,
+        color-mix(in oklch, var(--color-primary) 8%, var(--color-background)) 0%,
+        var(--color-background) 50%,
+        color-mix(in oklch, var(--color-secondary) 8%, var(--color-background)) 100%);
+  }
+
+  /* Accent left-border highlight for featured content */
+  .accent-border-left {
+    border-left: 3px solid var(--color-primary);
+    padding-left: 1rem;
+  }
+
+  /* Subtle top-border accent for sections */
+  .section-accent-top {
+    border-top: 2px solid color-mix(in oklch, var(--color-primary) 20%, transparent);
   }
 }
 
@@ -191,13 +257,16 @@ body {
     --card-foreground: #2a2a2a;
     --popover: #ffffff;
     --popover-foreground: #2a2a2a;
-    --primary: #D1602F;        /* reddish orange */
+    --primary: #D1602F;
+    /* reddish orange */
     --primary-foreground: #ffffff;
-    --secondary: #EFA638;      /* deep orange */
+    --secondary: #EFA638;
+    /* deep orange */
     --secondary-foreground: #2a2a2a;
     --muted: #f1f1ef;
     --muted-foreground: #6b6b6b;
-    --accent: #F8DC5A;         /* soft yellow */
+    --accent: #F8DC5A;
+    /* soft yellow */
     --accent-foreground: #2a2a2a;
     --destructive: #b42318;
     --destructive-foreground: #ffffff;
@@ -218,6 +287,7 @@ body {
     --sidebar-border: #e6e4e1;
     --sidebar-ring: #D1602F;
   }
+
   .dark {
     --background: #1f1f21;
     --foreground: #f5f5f5;
@@ -273,5 +343,8 @@ body {
 
 /* Tôn trọng prefers-reduced-motion và giảm sai khác thời gian animation */
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }

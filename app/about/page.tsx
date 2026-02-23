@@ -2,6 +2,12 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, Target, Users, Heart, Award } from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Về TasteMuse",
+  description: "Tìm hiểu về TasteMuse — nền tảng AI giúp khám phá ẩm thực Cần Thơ.",
+}
 
 export default function AboutPage() {
   return (
@@ -26,7 +32,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission Section */}
-      <section className="py-20 bg-background">
+      <section className="py-20 section-alt">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
@@ -101,7 +107,7 @@ export default function AboutPage() {
       </section>
 
       {/* Story Section */}
-      <section className="py-20 bg-background">
+      <section className="py-20 section-alt">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
@@ -148,7 +154,7 @@ export default function AboutPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-lg px-8 py-6 border-primary-foreground text-primary hover:bg-primary-foreground/10"
+                  className="text-lg px-8 py-6 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
                 >
                   Liên hệ chúng tôi
                 </Button>

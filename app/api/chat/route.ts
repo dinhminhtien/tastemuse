@@ -2,22 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { generateEmbedding, generateRAGResponse } from '@/lib/vertex-ai';
 import { RAG_CONFIG, ERROR_MESSAGES } from '@/lib/rag-config';
+import { extractFilters, isSearchQuery } from '@/lib/filter-extraction';
+import { hybridSearch, formatHybridContext } from '@/lib/hybrid-ranking';
+import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit';
+import { updateUserTaste } from '@/lib/user-taste';
+import type { ChatFilters } from '@/types/database';
 
 /**
- * RAG-enabled Chat API Route
- * 
+ * Enhanced RAG Chat API Route
+ *
  * Flow:
- * 1. Generate embedding for user query
- * 2. Perform vector similarity search in documents table
- * 3. Retrieve matched documents
- * 4. Build context string from matched documents
- * 5. Send context + query to Vertex AI Gemini
- * 6. Return LLM response
+ * 1. Rate limit check
+ * 2. Extract structured filters from user message (mood, budget, distance, cuisine)
+ * 3. Generate embedding for user query
+ * 4. Perform hybrid search (semantic + rating + distance)
+ * 5. Build enriched context from ranked results
+ * 6. Generate LLM response with filters and context
+ * 7. Update user taste embedding (async)
+ * 8. Return response with metadata
  */
-
 export async function POST(req: NextRequest) {
   try {
-    const { message, history = [] } = await req.json();
+    const { message, history = [], sessionId, userLocation } = await req.json();
 
     if (!message) {
       return NextResponse.json(
@@ -26,76 +32,132 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Step 0: Rate limiting
+    const limitKey = getRateLimitKey(req);
+    const limit = checkRateLimit(limitKey, 'chat');
+    if (!limit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Bạn đang gửi quá nhanh. Vui lòng chờ một chút nhé! 😊',
+          retryAfter: limit.retryAfter,
+        },
+        { status: 429 }
+      );
+    }
+
     console.log('📩 Received message:', message);
 
-    // Step 1: Generate embedding for the user query
-    console.log('🔄 Generating query embedding...');
-    const queryEmbedding = await generateEmbedding(message);
-    console.log(`✅ Query embedding generated (dimension: ${queryEmbedding.length})`);
-
-    // Step 2: Perform vector similarity search on documents (via chunks)
-    console.log('🔍 Searching for similar documents...');
-    const { data: matches, error: searchError } = await supabase.rpc('match_documents', {
-      query_embedding: queryEmbedding,
-      match_threshold: RAG_CONFIG.SIMILARITY_THRESHOLD,
-      match_count: RAG_CONFIG.MAX_RESULTS,
-    });
-
-    if (searchError) {
-      console.error('❌ Search error:', searchError);
-      throw new Error(`${ERROR_MESSAGES.SEARCH_FAILED}: ${searchError.message}`);
+    // Try to get user for personalization
+    let userId: string | null = null;
+    const authHeader = req.headers.get('authorization');
+    if (authHeader) {
+      const { data: { user } } = await supabase.auth.getUser(
+        authHeader.replace('Bearer ', '')
+      );
+      userId = user?.id || null;
     }
 
-    console.log(`✅ Found ${matches?.length || 0} similar documents`);
+    // Step 1: Extract filters from natural language (parallel with embedding)
+    const [filters, queryEmbedding] = await Promise.all([
+      isSearchQuery(message) ? extractFilters(message) : Promise.resolve({} as ChatFilters),
+      generateEmbedding(message),
+    ]);
 
-    // Step 3: Build context from matched documents
-    // match_documents already returns title and content, so we can use them directly
-    let context = '';
-
-    if (matches && matches.length > 0) {
-      console.log('📝 Building context from matched documents...');
-
-      context = matches.map((match: any, index: number) => {
-        const similarity = (match.similarity * 100).toFixed(1);
-        return `${index + 1}. ${match.title} (Độ phù hợp: ${similarity}%)
-${match.content}`;
-      }).join('\n\n');
-
-      console.log(`✅ Context built with ${matches.length} documents`);
-    } else {
-      context = 'Không tìm thấy thông tin phù hợp với yêu cầu của bạn. Vui lòng thử lại với từ khóa khác.';
-      console.log('⚠️  No matches from vector search');
+    console.log(`✅ Query embedding generated (dim: ${queryEmbedding.length})`);
+    if (Object.keys(filters).length > 0) {
+      console.log('🔍 Extracted filters:', JSON.stringify(filters));
     }
 
-    // Step 5: Generate response using RAG
+    // Step 2: Hybrid search (semantic + rating + distance)
+    let results;
+    let context: string;
+
+    try {
+      results = await hybridSearch(queryEmbedding, {
+        userLat: userLocation?.lat,
+        userLng: userLocation?.lng,
+        filters,
+        matchThreshold: RAG_CONFIG.SIMILARITY_THRESHOLD,
+        matchCount: RAG_CONFIG.MAX_RESULTS,
+      });
+
+      context = formatHybridContext(results);
+      console.log(`✅ Hybrid search: ${results.length} results`);
+    } catch (hybridError) {
+      // Fallback to basic match_documents if hybrid_search isn't set up yet
+      console.warn('⚠️ Hybrid search failed, falling back to basic search:', hybridError);
+
+      const { data: matches, error: searchError } = await supabase.rpc('match_documents', {
+        query_embedding: queryEmbedding,
+        match_threshold: RAG_CONFIG.SIMILARITY_THRESHOLD,
+        match_count: RAG_CONFIG.MAX_RESULTS,
+      });
+
+      if (searchError) {
+        throw new Error(`${ERROR_MESSAGES.SEARCH_FAILED}: ${searchError.message}`);
+      }
+
+      results = matches || [];
+      context = results.length > 0
+        ? results.map((m: any, i: number) =>
+          `${i + 1}. ${m.title} (Độ phù hợp: ${(m.similarity * 100).toFixed(1)}%)\n${m.content}`
+        ).join('\n\n')
+        : 'Không tìm thấy thông tin phù hợp với yêu cầu của bạn.';
+    }
+
+    // Step 3: Build enhanced prompt with filter context
+    let enhancedContext = context;
+    if (Object.keys(filters).length > 0) {
+      const filterInfo: string[] = [];
+      if (filters.mood) filterInfo.push(`Tâm trạng: ${filters.mood}`);
+      if (filters.budget?.min || filters.budget?.max) {
+        filterInfo.push(`Ngân sách: ${filters.budget.min ? filters.budget.min.toLocaleString() + 'đ' : '?'} - ${filters.budget.max ? filters.budget.max.toLocaleString() + 'đ' : '?'}`);
+      }
+      if (filters.maxDistance) filterInfo.push(`Khoảng cách tối đa: ${filters.maxDistance}km`);
+      if (filters.cuisineType) filterInfo.push(`Loại ẩm thực: ${filters.cuisineType}`);
+      if (filters.ward) filterInfo.push(`Khu vực: ${filters.ward}`);
+      if (filters.isSignature) filterInfo.push(`Chỉ tìm món đặc sản`);
+
+      enhancedContext = `[Bộ lọc người dùng]\n${filterInfo.join('\n')}\n\n[Kết quả tìm kiếm]\n${context}`;
+    }
+
+    // Step 4: Generate LLM response
     console.log('🤖 Generating RAG response...');
-    const response = await generateRAGResponse(message, context, history);
+    const response = await generateRAGResponse(message, enhancedContext, history);
     console.log('✅ Response generated successfully');
 
-    // Step 6: Return response
+    // Step 5: Update user taste (async, non-blocking)
+    if (userId && isSearchQuery(message)) {
+      updateUserTaste(userId, 'chat_query', {
+        searchQuery: message,
+      }).catch(err => console.error('Taste update error:', err));
+    }
+
+    // Step 6: Return response with rich metadata
     return NextResponse.json({
       message: response,
-      // Optional: include metadata for debugging
+      filters: Object.keys(filters).length > 0 ? filters : undefined,
       metadata: {
-        matchCount: matches?.length || 0,
-        topSimilarity: matches?.[0]?.similarity || 0,
-        sources: matches?.map((m: any) => ({
-          document_id: m.document_id,
-          similarity: m.similarity,
-          source_type: m.source_type,
-          title: m.title,
-        })) || [],
-      }
+        matchCount: results?.length || 0,
+        topScore: results?.[0]?.hybrid_score || results?.[0]?.similarity || 0,
+        sources: (results || []).slice(0, 5).map((r: any) => ({
+          document_id: r.document_id,
+          title: r.title,
+          source_type: r.source_type,
+          hybrid_score: r.hybrid_score,
+          avg_rating: r.avg_rating,
+          distance_km: r.distance_km,
+        })),
+        filtersApplied: Object.keys(filters).length > 0,
+      },
     });
-
   } catch (error: any) {
     console.error('❌ Error in RAG chat API:', error);
 
-    // Return user-friendly error message
     return NextResponse.json(
       {
         error: ERROR_MESSAGES.GENERIC,
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
       },
       { status: 500 }
     );
@@ -107,30 +169,45 @@ ${match.content}`;
  */
 export async function GET() {
   try {
-    // Check database connection
     const { data, error } = await supabase
       .from('documents')
       .select('count')
       .limit(1);
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
-    // Check if match_documents function exists
     const { data: functionExists, error: funcError } = await supabase.rpc('match_documents', {
       query_embedding: new Array(3072).fill(0),
       match_threshold: 0.1,
       match_count: 1,
     });
 
+    // Check hybrid_search function
+    let hybridAvailable = false;
+    try {
+      await supabase.rpc('hybrid_search', {
+        query_embedding: new Array(3072).fill(0),
+        match_threshold: 0.1,
+        match_count: 1,
+      });
+      hybridAvailable = true;
+    } catch { }
+
     return NextResponse.json({
       status: 'ok',
-      message: 'RAG Chat API is running',
-      features: ['vector-search', 'embeddings', 'rag', 'documents'],
+      message: 'TasteMuse RAG Chat API v2 – Hybrid Ranking',
+      features: [
+        'vector-search',
+        'hybrid-ranking',
+        'filter-extraction',
+        'rate-limiting',
+        'user-taste-tracking',
+        hybridAvailable ? 'hybrid-search-sql' : 'fallback-semantic',
+      ],
       database: {
         connected: !error,
         matchFunctionExists: !funcError,
+        hybridSearchAvailable: hybridAvailable,
       },
       config: {
         embeddingModel: RAG_CONFIG.EMBEDDING_MODEL,
@@ -138,7 +215,7 @@ export async function GET() {
         llmModel: RAG_CONFIG.LLM_MODEL,
         similarityThreshold: RAG_CONFIG.SIMILARITY_THRESHOLD,
         maxResults: RAG_CONFIG.MAX_RESULTS,
-      }
+      },
     });
   } catch (error: any) {
     return NextResponse.json({
