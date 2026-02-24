@@ -1,8 +1,6 @@
 /**
  * Filter Extraction – Extract structured filters from natural language
  * Uses Gemini to parse user messages into actionable filters
- *
- * TasteMuse – Chat Filter Pipeline
  */
 
 import { GoogleGenerativeAI } from '@google/generative-ai';

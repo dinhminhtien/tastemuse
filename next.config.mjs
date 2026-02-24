@@ -41,6 +41,13 @@ const nextConfig = {
       },
     ];
   },
+  experimental: {
+    turbopack: {
+      // Explicitly set the workspace root to the current directory
+      // to avoid inference errors during deployment
+      root: '.',
+    },
+  },
 }
 
 export default nextConfig
