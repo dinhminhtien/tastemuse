@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function PrivacyPage() {
     return (
-        <main className="min-h-screen">
+        <main className="min-h-screen pt-28 md:pt-32">
             {/* Hero Section */}
             <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-20 md:py-32">
                 <div className="absolute inset-0 -z-10">

@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { SYSTEM_PROMPTS } from '@/lib/rag-config';
 
 // Initialize Vertex AI clients
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
@@ -69,27 +70,12 @@ export async function generateRAGResponse(
             },
         });
 
-        // Enhanced system prompt with context
-        const systemPrompt = `Bạn là TasteMuse 🍜, trợ lý AI thân thiện giúp tìm món ăn ngon tại Cần Thơ.
+        const systemPrompt = `${SYSTEM_PROMPTS.DEFAULT}
 
-PHONG CÁCH TRẢ LỜI:
-- Trả lời ngắn gọn, tự nhiên như đang chat với bạn bè
-- Tập trung CHÍNH XÁC vào điều người dùng hỏi (ví dụ: nếu hỏi "đặc sản Cần Thơ" thì CHỈ giới thiệu món ĐẶC SẢN của Cần Thơ, KHÔNG nói về món Thái, món Bắc hay món khác vùng)
-- Chỉ đề xuất 2-3 món phù hợp nhất, đừng liệt kê quá nhiều
-- Dùng emoji phù hợp để sinh động hơn
-- Nói chuyện thân mật, dùng "mình", "bạn" thay vì "tôi"
-
-CÁC QUY TẮC QUAN TRỌNG:
-✅ CHỈ dựa vào THÔNG TIN THAM KHẢO bên dưới
-✅ Nếu không tìm thấy thông tin phù hợp, hãy thừa nhận và gợi ý cách hỏi khác
-✅ KHÔNG bịa đặt thông tin
-✅ Trả lời TỐI ĐA 3-4 câu, trừ khi người dùng yêu cầu chi tiết
-✅ Tránh format markdown phức tạp (**, ##, etc.)
-
-THÔNG TIN THAM KHẢO:
+[Thông tin tham khảo]
 ${context}
 
-Hãy trả lời câu hỏi dựa trên thông tin trên một cách tự nhiên và hữu ích nhất!`;
+Hãy trả lời câu hỏi dựa trên thông tin trên một cách tự nhiên nhất!`;
 
         // Limit history to last 6 messages
         const limitedHistory = history.length > 1

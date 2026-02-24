@@ -117,6 +117,7 @@ export async function POST(req: NextRequest) {
       if (filters.cuisineType) filterInfo.push(`Loại ẩm thực: ${filters.cuisineType}`);
       if (filters.ward) filterInfo.push(`Khu vực: ${filters.ward}`);
       if (filters.isSignature) filterInfo.push(`Chỉ tìm món đặc sản`);
+      if (filters.time) filterInfo.push(`Thời gian yêu cầu: ${filters.time}`);
 
       enhancedContext = `[Bộ lọc người dùng]\n${filterInfo.join('\n')}\n\n[Kết quả tìm kiếm]\n${context}`;
     }

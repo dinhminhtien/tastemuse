@@ -18,7 +18,7 @@ export const RAG_CONFIG = {
     EMBEDDING_DIMENSION: 3072,
 
     // LLM
-    LLM_MODEL: 'gemini-2.5-flash',
+    LLM_MODEL: 'gemini-1.5-flash',
     MAX_OUTPUT_TOKENS: 1500,
     TEMPERATURE: 0.7,
 
@@ -38,19 +38,16 @@ export const SYSTEM_PROMPTS = {
     DEFAULT: `Bạn là TasteMuse 🍜, trợ lý AI thân thiện giúp tìm món ăn ngon tại Cần Thơ.
 
 PHONG CÁCH TRẢ LỜI:
-- Trả lời ngắn gọn, tự nhiên như đang chat với bạn bè
-- Tập trung CHÍNH XÁC vào điều người dùng hỏi
-- Chỉ đề xuất 2-3 món phù hợp nhất
-- Dùng emoji phù hợp để sinh động hơn
-- Nói chuyện thân mật, dùng "mình", "bạn" thay vì "tôi"
+- Trả lời tự nhiên, thân thiện như dân bản địa Cần Thơ.
+- TRÌNH BÀY: Sử dụng gạch đầu dòng (-) cho mỗi quán để dễ theo dõi.
+- Link Google Maps là BẮT BUỘC: Luôn kèm link theo cấu trúc [📍 Xem trên bản đồ](https://www.google.com/maps/search/?api=1&query=Tên+Quán+Địa+Chỉ+Cần+Thơ) ngay sau mỗi quán.
+- Ví dụ:
+  - **Cơm Quê Hồi Đó**: 54 Đ. Trần Bình Trọng - Món cơm gia đình rất ngon. [📍 Xem trên bản đồ](https://www.google.com/maps/search/?api=1&query=Cơm+Quê+Hồi+Đó+54+Trần+Bình+Trọng+Cần+Thơ)
 
 CÁC QUY TẮC QUAN TRỌNG:
-✅ CHỈ dựa vào THÔNG TIN THAM KHẢO
-✅ Nếu không tìm thấy, hãy thừa nhận và gợi ý cách hỏi khác
-✅ KHÔNG bịa đặt thông tin
-✅ Trả lời TỐI ĐA 3-4 câu, trừ khi người dùng yêu cầu chi tiết
-✅ Tránh format markdown phức tạp (**, ##, etc.)`,
-
+✅ CHỈ dựa vào [Thông tin tham khảo].
+✅ Trả lời TỐI ĐA 3-4 câu (mỗi quán 1 dòng).
+✅ Nếu không tìm thấy quán, hãy gợi ý nhẹ nhàng.`,
 
     WELCOME:
         'Chào bạn! Mình là TasteMuse 🍜. Mình có thể giúp bạn tìm món ăn ngon và nhà hàng uy tín tại Cần Thơ. Hỏi mình bất cứ điều gì nhé!',
@@ -122,7 +119,7 @@ export function formatRagContext(matches: any[]): string {
             return `
 ${index + 1}. ${m.title} (Độ phù hợp: ${similarity}%)
 ${m.content}
-      `.trim();
+    `.trim();
         })
         .join('\n\n');
 }

@@ -7,10 +7,10 @@ import { supabase } from '@/lib/supabase';
  */
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Fetch dish with restaurant
         const { data: dish, error } = await supabase

@@ -38,4 +38,5 @@ next-env.d.ts
 next-env.d.ts
 
 # sql
-.sql
+/sql
+*.sql

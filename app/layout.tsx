@@ -1,23 +1,25 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Be_Vietnam_Pro, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { ChatbotLazy } from "@/components/chatbot-lazy"
 import { PageTransition } from "@/components/page-transition"
+import { BackToTop } from "@/components/back-to-top"
 import "./globals.css"
 
-const geistSans = Geist({
-  subsets: ["latin"],
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ["vietnamese", "latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-geist-sans",
+  variable: "--font-sans",
 })
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["vietnamese", "latin"],
   display: "swap",
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
 })
 
 export const metadata: Metadata = {
@@ -46,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="vi" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="vi" className={`${beVietnamPro.variable} ${jetbrainsMono.variable}`}>
       <head>
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
@@ -57,6 +59,7 @@ export default function RootLayout({
           {children}
         </PageTransition>
         <Footer />
+        <BackToTop />
         <ChatbotLazy />
         <Analytics />
         <SpeedInsights />

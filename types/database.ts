@@ -172,6 +172,7 @@ export interface ChatFilters {
     tags?: string[];
     isSignature?: boolean;
     ward?: string;
+    time?: string; // HH:mm format
 }
 
 export interface HybridSearchResult {

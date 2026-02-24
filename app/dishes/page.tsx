@@ -2,7 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Star, MapPin, ChefHat } from "lucide-react"
+import { Star, MapPin, ChefHat, Flame } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import type { Dish } from "@/types/database"
 import type { Metadata } from "next"
@@ -97,15 +97,28 @@ export default async function DishesPage({
   const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-28 md:pt-32">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-16 md:py-24">
+      <section className="relative overflow-hidden py-16 md:py-24">
+        {/* Background decoration */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-10 left-20 w-48 h-48 bg-secondary/6 rounded-full glow-blob float-particle" />
+          <div className="absolute bottom-10 right-10 w-64 h-64 bg-primary/6 rounded-full glow-blob float-particle-slow" />
+          <div className="absolute inset-0 opacity-[0.02]" style={{
+            backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
+            backgroundSize: '24px 24px'
+          }} />
+        </div>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-6xl font-bold text-balance leading-tight">
-              Khám phá <span className="text-primary">món ăn</span> đặc sắc
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full text-xs font-semibold text-primary border border-primary/20">
+              <Flame className="w-3.5 h-3.5" />
+              MÓN ĂN ĐẶC SẮC
+            </div>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-balance leading-tight">
+              Khám phá <span className="gradient-text">món ăn</span> đặc sắc
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Tìm kiếm món ăn yêu thích và khám phá hương vị mới tại Cần Thơ
             </p>
           </div>
@@ -113,7 +126,7 @@ export default async function DishesPage({
       </section>
 
       {/* Search and Filter Section */}
-      <section className="py-8 bg-background border-b border-border">
+      <section className="py-6 bg-background/80 backdrop-blur-sm border-y border-border/40 sticky top-[4.5rem] z-30">
         <div className="container mx-auto px-4">
           <DishSearch />
         </div>
@@ -123,13 +136,13 @@ export default async function DishesPage({
       <section className="py-12 section-alt">
         <div className="container mx-auto px-4">
           {/* Results count */}
-          <div className="mb-6">
+          <div className="mb-8">
             <p className="text-muted-foreground">
               {(params.search || params.signature) ? (
                 <>
-                  Tìm thấy <span className="font-semibold text-foreground">{totalCount}</span> món ăn
+                  Tìm thấy <span className="font-bold text-foreground">{totalCount}</span> món ăn
                   {params.search && (
-                    <span> cho từ khóa "<span className="font-semibold text-foreground">{params.search}</span>"</span>
+                    <span> cho từ khóa &ldquo;<span className="font-bold text-foreground">{params.search}</span>&rdquo;</span>
                   )}
                   {params.signature === 'true' && (
                     <span> (chỉ món đặc sản)</span>
@@ -137,11 +150,11 @@ export default async function DishesPage({
                 </>
               ) : (
                 <>
-                  Hiển thị <span className="font-semibold text-foreground">{dishes.length}</span> / <span className="font-semibold text-foreground">{totalCount}</span> món ăn
+                  Hiển thị <span className="font-bold text-foreground">{dishes.length}</span> / <span className="font-bold text-foreground">{totalCount}</span> món ăn
                 </>
               )}
               {totalPages > 1 && (
-                <span className="ml-2 text-sm">
+                <span className="ml-2 text-sm opacity-70">
                   — Trang {currentPage}/{totalPages}
                 </span>
               )}
@@ -149,7 +162,10 @@ export default async function DishesPage({
           </div>
 
           {dishes.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-20">
+              <div className="w-20 h-20 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Flame className="w-8 h-8 text-muted-foreground" />
+              </div>
               <p className="text-xl text-muted-foreground">
                 {params.search || params.signature
                   ? 'Không tìm thấy món ăn phù hợp với tìm kiếm của bạn'
@@ -158,10 +174,10 @@ export default async function DishesPage({
             </div>
           ) : (
             <>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
                 {dishes.map((dish) => (
                   <Link key={dish.id} href={`/dish/${dish.id}`}>
-                    <Card className="overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer group h-full flex flex-col">
+                    <Card className="overflow-hidden card-interactive card-glow cursor-pointer group h-full flex flex-col border-0 shadow-md">
                       <div className="aspect-[4/3] bg-muted relative overflow-hidden">
                         {dish.dish_media && dish.dish_media.length > 0 ? (
                           <Image
@@ -169,7 +185,7 @@ export default async function DishesPage({
                             alt={dish.dish_media[0].alt_text || dish.name}
                             width={400}
                             height={300}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                             loading="lazy"
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           />
@@ -181,29 +197,32 @@ export default async function DishesPage({
                           </div>
                         )}
                         {dish.is_signature && (
-                          <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold">
+                          <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                            <Flame className="w-3 h-3" />
                             Đặc sản
                           </div>
                         )}
                         {dish.restaurants?.min_price && dish.restaurants?.max_price && (
-                          <div className="absolute top-3 right-3 bg-background/95 backdrop-blur-sm text-foreground px-3 py-1 rounded-lg text-sm font-semibold shadow-lg">
+                          <div className="absolute top-3 right-3 bg-background/95 backdrop-blur-sm text-foreground px-3 py-1 rounded-xl text-xs font-bold shadow-lg">
                             {dish.restaurants.min_price.toLocaleString('vi-VN')}đ - {dish.restaurants.max_price.toLocaleString('vi-VN')}đ
                           </div>
                         )}
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
                       <div className="p-5 space-y-3 flex-1 flex flex-col">
                         <div>
-                          <h3 className="text-xl font-bold text-card-foreground mb-1 group-hover:text-primary transition-colors">
+                          <h3 className="text-lg font-bold text-card-foreground mb-1 group-hover:text-primary transition-colors">
                             {dish.name}
                           </h3>
                           {dish.restaurants && (
                             <>
-                              <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
-                                <ChefHat className="w-4 h-4" />
+                              <p className="text-sm text-muted-foreground flex items-center gap-1.5 mb-1">
+                                <ChefHat className="w-3.5 h-3.5 text-primary/60" />
                                 {dish.restaurants.name}
                               </p>
-                              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                <MapPin className="w-4 h-4" />
+                              <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-primary/60" />
                                 {dish.restaurants.ward}, {dish.restaurants.city}
                               </p>
                             </>
@@ -211,11 +230,11 @@ export default async function DishesPage({
                         </div>
 
                         {dish.restaurants?.tags && dish.restaurants.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 pt-2">
+                          <div className="flex flex-wrap gap-1.5 pt-2">
                             {dish.restaurants.tags.slice(0, 3).map((tag, idx) => (
                               <span
                                 key={idx}
-                                className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full"
+                                className="px-2.5 py-1 bg-primary/8 text-primary text-xs font-medium rounded-full"
                               >
                                 {tag}
                               </span>
@@ -223,7 +242,7 @@ export default async function DishesPage({
                           </div>
                         )}
 
-                        <Button className="w-full mt-auto">
+                        <Button className="w-full mt-auto rounded-xl shadow-sm">
                           Xem chi tiết
                         </Button>
                       </div>

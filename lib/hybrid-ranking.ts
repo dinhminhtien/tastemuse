@@ -51,7 +51,10 @@ export async function hybridSearch(
             p_max_distance_km: filters.maxDistance ?? null,
             p_min_price: filters.budget?.min ?? null,
             p_max_price: filters.budget?.max ?? null,
+            p_cuisine_type: filters.cuisineType ?? null,
             p_tags: filters.tags ?? null,
+            p_mood: filters.mood ?? null,
+            p_target_time: filters.time ?? null,
             match_threshold: matchThreshold,
             match_count: matchCount,
         });

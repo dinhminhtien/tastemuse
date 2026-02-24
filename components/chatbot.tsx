@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { X, Send, Minimize2 } from "lucide-react"
 import Image from "next/image"
+import ReactMarkdown from "react-markdown"
 
 interface Message {
   role: "user" | "assistant"
@@ -33,10 +34,10 @@ export function Chatbot() {
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const suggestions = [
-    "Gợi ý món ăn trưa nhẹ",
-    "Món chay ngon ở Ninh Kiều",
-    "Quán lẩu cho nhóm 4 người",
-    "Ăn tối dưới 100k/người",
+    "📍Tìm quán ngon gần Ninh Kiều",
+    "🍜Gợi ý món ăn trưa",
+    "🍲Quán lẩu cho nhóm 4 người",
+    "💸Ăn tối dưới 100k/người",
   ]
 
   const scrollToBottom = () => {
@@ -233,9 +234,29 @@ export function Chatbot() {
                             : "bg-muted text-foreground"
                             }`}
                         >
-                          <p className="text-sm whitespace-pre-wrap break-words">
-                            {msg.content}
-                          </p>
+                          <div className="text-sm prose prose-sm dark:prose-invert max-w-none break-words">
+                            <ReactMarkdown
+                              components={{
+                                p: ({ children }: { children?: React.ReactNode }) => <p className="mb-2 last:mb-0 leading-relaxed text-sm">{children}</p>,
+                                a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
+                                  <a
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 font-bold bg-primary/10 hover:bg-primary/20 px-3 py-1 rounded-full transition-all text-xs border border-primary/20 my-1"
+                                  >
+                                    {children}
+                                  </a>
+                                ),
+                                strong: ({ children }: { children?: React.ReactNode }) => <strong className="font-bold text-foreground">{children}</strong>,
+                                ul: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc ml-4 mb-3 space-y-2">{children}</ul>,
+                                ol: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal ml-4 mb-3 space-y-2">{children}</ol>,
+                                li: ({ children }: { children?: React.ReactNode }) => <li className="text-sm leading-relaxed">{children}</li>,
+                              }}
+                            >
+                              {msg.content}
+                            </ReactMarkdown>
+                          </div>
                           {msg.timestamp && (
                             <div className={`mt-1 text-[10px] ${msg.role === "user" ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
                               {formatTime(msg.timestamp)}

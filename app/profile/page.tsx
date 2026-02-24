@@ -48,7 +48,7 @@ function ProfileContent() {
     });
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-orange-950 py-12 px-4">
+        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-orange-950 pt-28 md:pt-32 pb-12 px-4">
             <div className="container max-w-4xl mx-auto space-y-8">
                 {/* Header */}
                 <div className="text-center space-y-2">

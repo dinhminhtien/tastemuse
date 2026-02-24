@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { getCurrentUser } from '@/lib/auth';
 import { User } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { Heart, Loader2, UtensilsCrossed, Store, MapPin, ChefHat, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import { Heart, Loader2, UtensilsCrossed, Store, MapPin, ChefHat, Trash2, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
@@ -73,12 +74,12 @@ export default function FavoritesPage() {
                         return {
                             ...fav,
                             name: data?.name || 'Món ăn',
-                            restaurant_name: data?.restaurants?.name,
-                            slug: data?.restaurants?.slug,
-                            ward: data?.restaurants?.ward,
-                            city: data?.restaurants?.city,
-                            min_price: data?.restaurants?.min_price,
-                            max_price: data?.restaurants?.max_price,
+                            restaurant_name: (data?.restaurants as any)?.name,
+                            slug: (data?.restaurants as any)?.slug,
+                            ward: (data?.restaurants as any)?.ward,
+                            city: (data?.restaurants as any)?.city,
+                            min_price: (data?.restaurants as any)?.min_price,
+                            max_price: (data?.restaurants as any)?.max_price,
                             image_url: media?.find((m: any) => m.is_primary)?.media_url
                                 || media?.[0]?.media_url || null,
                         };
@@ -156,21 +157,25 @@ export default function FavoritesPage() {
     // Not logged in
     if (!user && !loading) {
         return (
-            <main className="min-h-screen bg-background">
-                <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-16 md:py-24">
+            <main className="min-h-screen bg-background pt-28 md:pt-32">
+                <section className="relative overflow-hidden py-16 md:py-24">
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute top-10 right-20 w-48 h-48 bg-primary/6 rounded-full glow-blob float-particle" />
+                        <div className="absolute bottom-10 left-10 w-64 h-64 bg-secondary/6 rounded-full glow-blob float-particle-slow" />
+                    </div>
                     <div className="container mx-auto px-4">
                         <div className="max-w-md mx-auto text-center space-y-6">
-                            <div className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                            <div className="w-20 h-20 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
                                 <Heart className="w-10 h-10 text-primary" />
                             </div>
-                            <h1 className="text-3xl md:text-4xl font-bold">
-                                Danh sách <span className="text-primary">yêu thích</span>
+                            <h1 className="text-3xl md:text-4xl font-extrabold">
+                                Danh sách <span className="gradient-text">yêu thích</span>
                             </h1>
                             <p className="text-muted-foreground text-lg">
                                 Đăng nhập để lưu và quản lý các món ăn, nhà hàng yêu thích của bạn
                             </p>
                             <Link href="/login">
-                                <Button size="lg" className="mt-4">
+                                <Button size="lg" className="mt-4 rounded-xl shadow-lg shadow-primary/25">
                                     Đăng nhập ngay
                                 </Button>
                             </Link>
@@ -182,13 +187,25 @@ export default function FavoritesPage() {
     }
 
     return (
-        <main className="min-h-screen bg-background">
+        <main className="min-h-screen bg-background pt-28 md:pt-32">
             {/* Hero */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-12 md:py-16">
+            <section className="relative overflow-hidden py-12 md:py-16">
+                <div className="absolute inset-0 -z-10">
+                    <div className="absolute top-10 right-20 w-48 h-48 bg-primary/6 rounded-full glow-blob float-particle" />
+                    <div className="absolute bottom-10 left-10 w-64 h-64 bg-secondary/6 rounded-full glow-blob float-particle-slow" />
+                    <div className="absolute inset-0 opacity-[0.02]" style={{
+                        backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
+                        backgroundSize: '24px 24px'
+                    }} />
+                </div>
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center space-y-4">
-                        <h1 className="text-3xl md:text-5xl font-bold leading-tight">
-                            Danh sách <span className="text-primary">yêu thích</span>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full text-xs font-semibold text-primary border border-primary/20">
+                            <Heart className="w-3.5 h-3.5" />
+                            YÊU THÍCH CỦA BẠN
+                        </div>
+                        <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
+                            Danh sách <span className="gradient-text">yêu thích</span>
                         </h1>
                         <p className="text-lg text-muted-foreground">
                             {loading
@@ -201,7 +218,7 @@ export default function FavoritesPage() {
             </section>
 
             {/* Tabs */}
-            <section className="py-6 bg-background border-b border-border">
+            <section className="py-4 md:py-6 bg-background/80 backdrop-blur-sm border-y border-border/40 sticky top-[4.5rem] z-30">
                 <div className="container mx-auto px-4">
                     <div className="flex gap-2 justify-center flex-wrap">
                         {[
@@ -213,13 +230,13 @@ export default function FavoritesPage() {
                                 key={tab.key}
                                 variant={activeTab === tab.key ? 'default' : 'outline'}
                                 onClick={() => setActiveTab(tab.key)}
-                                className="gap-2"
+                                className={`gap-2 rounded-xl transition-all ${activeTab === tab.key ? 'shadow-md shadow-primary/20' : ''}`}
                             >
                                 <tab.icon className="w-4 h-4" />
                                 {tab.label}
                                 <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${activeTab === tab.key
-                                        ? 'bg-primary-foreground/20 text-primary-foreground'
-                                        : 'bg-muted text-muted-foreground'
+                                    ? 'bg-primary-foreground/20 text-primary-foreground'
+                                    : 'bg-muted text-muted-foreground'
                                     }`}>
                                     {tab.count}
                                 </span>
@@ -230,7 +247,7 @@ export default function FavoritesPage() {
             </section>
 
             {/* Content */}
-            <section className="py-12 bg-background">
+            <section className="py-12 section-alt">
                 <div className="container mx-auto px-4">
                     {/* Loading */}
                     {loading && (
@@ -243,10 +260,10 @@ export default function FavoritesPage() {
                     {/* Empty */}
                     {!loading && filtered.length === 0 && (
                         <div className="text-center py-20 max-w-md mx-auto">
-                            <div className="w-20 h-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-4">
+                            <div className="w-20 h-20 mx-auto rounded-2xl bg-muted flex items-center justify-center mb-4">
                                 <Heart className="w-10 h-10 text-muted-foreground" />
                             </div>
-                            <p className="text-xl font-semibold text-foreground mb-2">
+                            <p className="text-xl font-bold text-foreground mb-2">
                                 {activeTab === 'all'
                                     ? 'Chưa có mục yêu thích'
                                     : activeTab === 'dish'
@@ -258,13 +275,13 @@ export default function FavoritesPage() {
                             </p>
                             <div className="flex gap-3 justify-center">
                                 <Link href="/dishes">
-                                    <Button variant="outline" className="gap-2">
+                                    <Button variant="outline" className="gap-2 rounded-xl">
                                         <UtensilsCrossed className="w-4 h-4" />
                                         Khám phá món ăn
                                     </Button>
                                 </Link>
                                 <Link href="/restaurants">
-                                    <Button variant="outline" className="gap-2">
+                                    <Button variant="outline" className="gap-2 rounded-xl">
                                         <Store className="w-4 h-4" />
                                         Khám phá nhà hàng
                                     </Button>
@@ -275,11 +292,11 @@ export default function FavoritesPage() {
 
                     {/* Grid */}
                     {!loading && filtered.length > 0 && (
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
                             {filtered.map((fav) => (
                                 <Card
                                     key={fav.id}
-                                    className="overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 group h-full flex flex-col"
+                                    className="overflow-hidden card-interactive card-glow group h-full flex flex-col border-0 shadow-md"
                                 >
                                     {/* Image */}
                                     <Link
@@ -287,10 +304,14 @@ export default function FavoritesPage() {
                                     >
                                         <div className="aspect-[4/3] bg-muted relative overflow-hidden">
                                             {fav.image_url ? (
-                                                <img
+                                                <Image
                                                     src={fav.image_url}
                                                     alt={fav.name || ''}
-                                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                                    width={400}
+                                                    height={300}
+                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                    loading="lazy"
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
@@ -302,20 +323,27 @@ export default function FavoritesPage() {
 
                                             {/* Type badge */}
                                             <div className="absolute top-3 left-3">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-lg backdrop-blur-sm ${fav.target_type === 'dish'
-                                                        ? 'bg-primary text-primary-foreground'
-                                                        : 'bg-blue-600 text-white'
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1 ${fav.target_type === 'dish'
+                                                    ? 'bg-primary text-primary-foreground'
+                                                    : 'bg-blue-600 text-white'
                                                     }`}>
-                                                    {fav.target_type === 'dish' ? '🍜 Món ăn' : '🏪 Nhà hàng'}
+                                                    {fav.target_type === 'dish' ? (
+                                                        <><Flame className="w-3 h-3" /> Món ăn</>
+                                                    ) : (
+                                                        <><Store className="w-3 h-3" /> Nhà hàng</>
+                                                    )}
                                                 </span>
                                             </div>
 
                                             {/* Price badge */}
                                             {fav.min_price && fav.max_price && (
-                                                <div className="absolute top-3 right-3 bg-background/95 backdrop-blur-sm text-foreground px-3 py-1 rounded-lg text-sm font-semibold shadow-lg">
+                                                <div className="absolute top-3 right-3 bg-background/95 backdrop-blur-sm text-foreground px-3 py-1 rounded-xl text-xs font-bold shadow-lg">
                                                     {fav.min_price.toLocaleString('vi-VN')}đ - {fav.max_price.toLocaleString('vi-VN')}đ
                                                 </div>
                                             )}
+
+                                            {/* Gradient overlay */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         </div>
                                     </Link>
 
@@ -325,23 +353,23 @@ export default function FavoritesPage() {
                                             <Link
                                                 href={fav.target_type === 'dish' ? `/dish/${fav.target_id}` : `/restaurant/${fav.slug || fav.target_id}`}
                                             >
-                                                <h3 className="text-xl font-bold text-card-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">
+                                                <h3 className="text-lg font-bold text-card-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">
                                                     {fav.name}
                                                 </h3>
                                             </Link>
 
                                             {/* Dish → show restaurant name */}
                                             {fav.target_type === 'dish' && fav.restaurant_name && (
-                                                <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
-                                                    <ChefHat className="w-4 h-4 shrink-0" />
+                                                <p className="text-sm text-muted-foreground flex items-center gap-1.5 mb-1">
+                                                    <ChefHat className="w-3.5 h-3.5 text-primary/60 shrink-0" />
                                                     <span className="line-clamp-1">{fav.restaurant_name}</span>
                                                 </p>
                                             )}
 
                                             {/* Location */}
                                             {(fav.address || fav.ward) && (
-                                                <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                                    <MapPin className="w-4 h-4 shrink-0" />
+                                                <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                                                    <MapPin className="w-3.5 h-3.5 text-primary/60 shrink-0" />
                                                     <span className="line-clamp-1">
                                                         {fav.address
                                                             ? `${fav.address}, ${fav.ward}, ${fav.city}`
@@ -354,11 +382,11 @@ export default function FavoritesPage() {
 
                                         {/* Tags */}
                                         {fav.tags && fav.tags.length > 0 && (
-                                            <div className="flex flex-wrap gap-2 pt-1">
+                                            <div className="flex flex-wrap gap-1.5 pt-1">
                                                 {fav.tags.slice(0, 3).map((tag, idx) => (
                                                     <span
                                                         key={idx}
-                                                        className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full"
+                                                        className="px-2.5 py-1 bg-primary/8 text-primary text-xs font-medium rounded-full"
                                                     >
                                                         {tag}
                                                     </span>
@@ -367,14 +395,14 @@ export default function FavoritesPage() {
                                         )}
 
                                         {/* Actions */}
-                                        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
+                                        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/50">
                                             <span className="text-xs text-muted-foreground">
                                                 Đã lưu {new Date(fav.created_at).toLocaleDateString('vi-VN')}
                                             </span>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1.5 h-8"
+                                                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1.5 h-8 rounded-lg"
                                                 onClick={() => removeFavorite(fav)}
                                                 disabled={removingId === fav.id}
                                             >
