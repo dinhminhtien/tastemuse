@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
         // Build query
         let query = supabase
             .from('restaurants')
-            .select('*')
+            .select('*, restaurant_media(id)')
             .eq('is_active', true);
 
         // Apply filters

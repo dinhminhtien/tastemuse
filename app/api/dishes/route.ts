@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
             .from('dishes')
             .select(`
         *,
+        dish_media (id),
         restaurants (
           id,
           name,

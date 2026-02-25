@@ -1,0 +1,30 @@
+[dotenv@17.2.3] injecting env (20) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+Testing Restaurant Insert...
+Using restaurant ID: 25a873a3-76b1-4df2-8eaf-8a95bdbbad64
+Restaurant Insert Success: [
+  {
+    id: '21753b81-90bb-43b4-8a9e-15245fc16a00',
+    restaurant_id: '25a873a3-76b1-4df2-8eaf-8a95bdbbad64',
+    media_type: 'image',
+    media_url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
+    thumbnail_url: null,
+    is_cover: true,
+    display_order: 1,
+    created_at: '2026-02-25T07:01:40.95442+00:00'
+  }
+]
+
+Testing Dish Insert...
+Using dish ID: 3588d945-07c9-446e-a1cb-36c7edc2e5e8
+Dish Insert Success: [
+  {
+    id: 'd3f12c94-115d-4066-82c4-3341f89415db',
+    dish_id: '3588d945-07c9-446e-a1cb-36c7edc2e5e8',
+    media_url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
+    media_type: 'image',
+    is_primary: true,
+    sort_order: 1,
+    alt_text: null,
+    created_at: '2026-02-25T07:01:41.146912+00:00'
+  }
+]
