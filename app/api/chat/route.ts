@@ -7,6 +7,7 @@ import { hybridSearch, formatHybridContext } from '@/lib/hybrid-ranking';
 import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit';
 import { updateUserTaste } from '@/lib/user-taste';
 import type { ChatFilters } from '@/types/database';
+import { getCachedResponse, setCachedResponse } from '@/lib/redis';
 
 /**
  * Enhanced RAG Chat API Route
@@ -30,6 +31,19 @@ export async function POST(req: NextRequest) {
         { error: ERROR_MESSAGES.MISSING_MESSAGE },
         { status: 400 }
       );
+    }
+
+    // Cache Check: Return instantly if we have a hot response for this exact query
+    // Only cache initial queries (no history <= 1, as the first element is the ai greeting) and without specific user location
+    const canCache = message && (!history || history.length <= 1) && !userLocation;
+    const cacheKey = canCache ? `rag_cache:${message.trim().toLowerCase()}` : null;
+
+    if (cacheKey) {
+      const cachedData = await getCachedResponse(cacheKey);
+      if (cachedData) {
+        console.log(`⚡ REDIS CACHE HIT: ${message} (~50ms)`);
+        return NextResponse.json(cachedData);
+      }
     }
 
     // Step 0: Rate limiting
@@ -135,7 +149,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 6: Return response with rich metadata
-    return NextResponse.json({
+    const responsePayload = {
       message: response,
       filters: Object.keys(filters).length > 0 ? filters : undefined,
       metadata: {
@@ -151,7 +165,16 @@ export async function POST(req: NextRequest) {
         })),
         filtersApplied: Object.keys(filters).length > 0,
       },
-    });
+    };
+
+    if (cacheKey) {
+      // Lưu kết quả vào Redis cache (thời hạn 24 tiếng = 86400 giây)
+      // Các lần hỏi sau cho cùng câu hỏi này sẽ trả về cực nhanh, tiết kiệm tiền Gemini API
+      console.log(`💾 Caching RAG response to Redis for key: ${cacheKey}`);
+      await setCachedResponse(cacheKey, responsePayload, 86400).catch(e => console.error('Cache set Error:', e));
+    }
+
+    return NextResponse.json(responsePayload);
   } catch (error: any) {
     console.error('❌ Error in RAG chat API:', error);
 

@@ -247,6 +247,24 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
                     </div>
                 </div>
             </section>
+            {/* SEO JSON-LD */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "MenuItem",
+                        "name": dish.name,
+                        "image": dish.dish_media?.[0]?.media_url || "",
+                        "description": dish.restaurants?.description || `Món ăn ${dish.name} tại nhà hàng ${dish.restaurants?.name}`,
+                        "offers": {
+                            "@type": "Offer",
+                            "price": dish.restaurants?.min_price || 0,
+                            "priceCurrency": "VND"
+                        }
+                    })
+                }}
+            />
         </main>
     )
 }

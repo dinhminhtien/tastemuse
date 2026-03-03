@@ -266,6 +266,37 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
                     </div>
                 </div>
             </section>
+            {/* SEO JSON-LD */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Restaurant",
+                        "name": restaurant.name,
+                        "image": restaurant.restaurant_media?.[0]?.media_url || "",
+                        "description": restaurant.description,
+                        "address": {
+                            "@type": "PostalAddress",
+                            "streetAddress": restaurant.address,
+                            "addressLocality": restaurant.ward,
+                            "addressRegion": restaurant.city,
+                            "addressCountry": "VN"
+                        },
+                        "telephone": restaurant.phone || "",
+                        "priceRange": restaurant.min_price && restaurant.max_price ? `${restaurant.min_price}VND - ${restaurant.max_price}VND` : "$$",
+                        "servesCuisine": restaurant.tags?.join(", ") || "Vietnamese",
+                        "openingHoursSpecification": restaurant.open_time && restaurant.close_time ? {
+                            "@type": "OpeningHoursSpecification",
+                            "opens": restaurant.open_time,
+                            "closes": restaurant.close_time,
+                            "dayOfWeek": [
+                                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+                            ]
+                        } : undefined
+                    })
+                }}
+            />
         </main>
     )
 }
