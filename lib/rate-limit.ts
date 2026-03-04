@@ -28,6 +28,11 @@ const DEFAULT_CONFIGS: Record<string, RateLimitConfig> = {
         refillRate: 0.5,        // 1 token per 2 seconds
         tokensPerRequest: 1,
     },
+    guest: {
+        maxTokens: 1,
+        refillRate: 0.0000116,  // ~1 token per 24 hours (1/86400)
+        tokensPerRequest: 1,
+    },
     api: {
         maxTokens: 30,
         refillRate: 2,          // 2 tokens per second

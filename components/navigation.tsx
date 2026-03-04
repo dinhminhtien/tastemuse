@@ -12,7 +12,12 @@ import { UserProfile } from "@/components/user-profile"
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -25,6 +30,7 @@ export function Navigation() {
     { href: "/", label: "Trang chủ" },
     { href: "/restaurants", label: "Nhà hàng" },
     { href: "/dishes", label: "Món ăn" },
+    { href: "/pricing", label: "Bảng giá" },
     { href: "/about", label: "Về chúng tôi" },
     { href: "/contact", label: "Liên hệ" }
   ]
@@ -110,59 +116,65 @@ export function Navigation() {
               <UserProfile />
             </div>
 
-            {/* Mobile Menu */}
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild className="md:hidden">
-                <Button variant="ghost" size="icon" className="rounded-xl">
-                  <Menu className="w-5 h-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[380px]">
-                <SheetTitle className="sr-only">Menu điều hướng</SheetTitle>
-                <nav className="flex flex-col gap-4 mt-8">
-                  {/* <div className="relative">
+            {/* Mobile Menu — only render Sheet after hydration to avoid Radix ID mismatch */}
+            {mounted ? (
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild className="md:hidden">
+                  <Button variant="ghost" size="icon" className="rounded-xl">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px] sm:w-[380px]">
+                  <SheetTitle className="sr-only">Menu điều hướng</SheetTitle>
+                  <nav className="flex flex-col gap-4 mt-8">
+                    {/* <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <Input placeholder="Tìm kiếm món ăn..." className="pl-10 rounded-xl" />
                   </div> */}
-                  <div className="flex flex-col gap-1 pt-4">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setIsOpen(false)}
-                        className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${pathname === link.href
-                          ? "bg-primary text-primary-foreground shadow-md"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                          }`}
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="border-t border-border pt-4 mt-4">
-                    <div className="flex flex-col gap-2">
-                      <div className="px-4 py-2">
-                        <UserProfile />
+                    <div className="flex flex-col gap-1 pt-4">
+                      {navLinks.map((link) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setIsOpen(false)}
+                          className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${pathname === link.href
+                            ? "bg-primary text-primary-foreground shadow-md"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            }`}
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="border-t border-border pt-4 mt-4">
+                      <div className="flex flex-col gap-2">
+                        <div className="px-4 py-2">
+                          <UserProfile />
+                        </div>
+                        <Button variant="ghost" className="justify-start rounded-xl">
+                          <MapPin className="w-5 h-5 mr-2" />
+                          Cần Thơ
+                        </Button>
                       </div>
-                      <Button variant="ghost" className="justify-start rounded-xl">
-                        <MapPin className="w-5 h-5 mr-2" />
-                        Cần Thơ
-                      </Button>
                     </div>
-                  </div>
-                  <div className="border-t border-border pt-4 mt-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Phone className="w-4 h-4" />
-                      <span>0896723226</span>
+                    <div className="border-t border-border pt-4 mt-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Phone className="w-4 h-4" />
+                        <span>0896723226</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span>8:00 AM - 10:00 PM</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      <span>8:00 AM - 10:00 PM</span>
-                    </div>
-                  </div>
-                </nav>
-              </SheetContent>
-            </Sheet>
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <Button variant="ghost" size="icon" className="md:hidden rounded-xl">
+                <Menu className="w-5 h-5" />
+              </Button>
+            )}
           </div>
         </div>
       </div>

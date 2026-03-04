@@ -212,3 +212,60 @@ export interface TrendingItem {
     name?: string;
     image_url?: string;
 }
+
+// ---- FREEMIUM / SUBSCRIPTION ----
+
+export interface Plan {
+    id: string;
+    name: string;                // 'free' | 'premium'
+    display_name: string;
+    price: number;               // VND
+    duration_days: number;
+    ai_limit_per_day: number;    // -1 = unlimited
+    features_json: Record<string, boolean | number>;
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface Subscription {
+    id: string;
+    user_id: string;
+    plan_id: string;
+    status: 'active' | 'expired' | 'cancelled' | 'trial';
+    start_date: string;
+    end_date?: string;
+    payment_id?: string;
+    is_trial: boolean;
+    created_at: string;
+}
+
+export interface Payment {
+    id: string;
+    user_id: string;
+    plan_id: string;
+    provider: 'payos' | 'sepay' | 'manual';
+    amount: number;
+    transaction_id?: string;
+    order_code?: number;
+    status: 'pending' | 'completed' | 'failed' | 'cancelled';
+    metadata?: Record<string, unknown>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface UsageLog {
+    id: string;
+    user_id: string;
+    action_type: string;         // 'ai_chat', 'ai_summary', etc.
+    metadata?: Record<string, unknown>;
+    created_at: string;
+}
+
+export interface UserPlanInfo {
+    plan: Plan;
+    subscription: Subscription | null;
+    isFreePlan: boolean;
+    isPremium: boolean;
+    isTrial: boolean;
+    daysRemaining: number | null;
+}
