@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Heart } from "lucide-react"
+import { Heart, Crown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { supabase } from "@/lib/supabase"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 interface FavoriteButtonProps {
     targetType: "dish" | "restaurant"
@@ -24,6 +26,8 @@ export function FavoriteButton({
     const [loading, setLoading] = useState(false)
     const [userId, setUserId] = useState<string | null>(null)
     const [animate, setAnimate] = useState(false)
+    const { toast } = useToast()
+    const router = useRouter()
 
     useEffect(() => {
         checkAuth()
@@ -54,7 +58,16 @@ export function FavoriteButton({
     }
 
     async function toggleFavorite() {
-        if (!userId || loading) return
+        if (loading) return
+
+        if (!userId) {
+            toast({
+                title: "Đăng nhập để yêu thích",
+                description: "Bạn cần đăng nhập để sử dụng tính năng này.",
+            })
+            router.push("/login")
+            return
+        }
 
         setLoading(true)
         try {
@@ -69,8 +82,27 @@ export function FavoriteButton({
                 body: JSON.stringify({ target_type: targetType, target_id: targetId }),
             })
 
+            const data = await res.json()
+
+            if (res.status === 403 && data.code === "PREMIUM_REQUIRED") {
+                toast({
+                    title: "✨ Tính năng Premium",
+                    description: "Nâng cấp Premium để lưu yêu thích. Chỉ từ 2.000đ/tháng!",
+                    action: (
+                        <Button
+                            size="sm"
+                            className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs"
+                            onClick={() => router.push("/pricing")}
+                        >
+                            <Crown className="w-3 h-3 mr-1" />
+                            Nâng cấp
+                        </Button>
+                    ),
+                })
+                return
+            }
+
             if (res.ok) {
-                const data = await res.json()
                 setIsFavorited(data.is_favorited)
 
                 // Trigger animation
@@ -96,14 +128,14 @@ export function FavoriteButton({
         return (
             <button
                 onClick={toggleFavorite}
-                disabled={!userId || loading}
+                disabled={loading}
                 className={`
                     relative transition-all duration-200
-                    ${userId ? "cursor-pointer hover:scale-110" : "cursor-default opacity-50"}
+                    cursor-pointer hover:scale-110
                     ${animate ? "scale-125" : ""}
                     ${className}
                 `}
-                title={userId ? (isFavorited ? "Bỏ yêu thích" : "Thêm yêu thích") : "Đăng nhập để yêu thích"}
+                title={isFavorited ? "Bỏ yêu thích" : "Thêm yêu thích"}
             >
                 <Heart
                     className={`
@@ -135,7 +167,7 @@ export function FavoriteButton({
             variant="secondary"
             size="sm"
             onClick={toggleFavorite}
-            disabled={!userId || loading}
+            disabled={loading}
             className={`
                 transition-all duration-200
                 ${isFavorited ? "bg-red-50 text-red-600 hover:bg-red-100 border-red-200" : ""}
@@ -153,3 +185,4 @@ export function FavoriteButton({
         </Button>
     )
 }
+

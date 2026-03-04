@@ -1,6 +1,7 @@
 import { Hero } from "@/components/hero"
 import { FoodPreferences } from "@/components/food-preferences"
 import { FeaturedDishes } from "@/components/featured-dishes"
+import { PersonalizedRecommendations } from "@/components/personalized-recommendations"
 import { Features } from "@/components/features"
 import { HowItWorks } from "@/components/how-it-works"
 import { CTA } from "@/components/cta"
@@ -28,6 +29,7 @@ export default function Home() {
       <MarqueeSection items={marqueeItems} variant="primary" speed={25} />
       <FoodPreferences />
       <FeaturedDishes />
+      <PersonalizedRecommendations />
       <MarqueeSection
         items={["TasteMuse", "Ẩm Thực Cần Thơ", "AI Chatbot", "Khám Phá", "Gợi Ý Thông Minh", "Đánh Giá Cộng Đồng"]}
         variant="dark"

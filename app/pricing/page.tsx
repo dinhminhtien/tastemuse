@@ -32,7 +32,7 @@ const PLANS = [
     {
         name: "premium",
         displayName: "Premium",
-        price: 2000,
+        price: 29000,
         period: "/ tháng",
         description: "Tận hưởng toàn bộ sức mạnh AI của TasteMuse",
         cta: "Nâng cấp ngay",

@@ -48,7 +48,7 @@ export function UserProfile() {
                 title: 'Đã đăng xuất',
                 description: 'Bạn đã đăng xuất thành công.',
             });
-            router.push('/');
+            window.location.href = '/';
         } catch (error: any) {
             toast({
                 title: 'Lỗi',

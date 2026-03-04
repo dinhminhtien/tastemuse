@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { updateUserTaste } from '@/lib/user-taste';
+import { canUseFeature } from '@/lib/subscription';
 
 /**
  * POST /api/favorites – Toggle favorite (add/remove)
+ * Requires Premium subscription to add favorites.
  */
 export async function POST(req: NextRequest) {
     try {
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
             .maybeSingle();
 
         if (existing) {
-            // Remove favorite
+            // Remove favorite — always allowed (even for free users)
             const { error } = await supabaseAdmin
                 .from('favorites')
                 .delete()
@@ -50,35 +52,47 @@ export async function POST(req: NextRequest) {
                 action: 'removed',
                 is_favorited: false,
             });
-        } else {
-            // Add favorite
-            const { data, error } = await supabaseAdmin
-                .from('favorites')
-                .insert({
-                    user_id: user.id,
-                    target_type,
-                    target_id,
-                })
-                .select()
-                .single();
-
-            if (error) {
-                return NextResponse.json({ error: error.message }, { status: 500 });
-            }
-
-            // Update user taste embedding (non-blocking)
-            updateUserTaste(user.id, 'favorite', {
-                targetId: target_id,
-                targetType: target_type,
-            }).catch(err => console.error('Taste update error:', err));
-
-            return NextResponse.json({
-                success: true,
-                action: 'added',
-                is_favorited: true,
-                data,
-            });
         }
+
+        // Adding new favorite — requires Premium
+        const hasFeature = await canUseFeature(user.id, 'save_favorites');
+        if (!hasFeature) {
+            return NextResponse.json(
+                {
+                    error: 'Tính năng Lưu yêu thích chỉ dành cho gói Premium. Nâng cấp để sử dụng!',
+                    code: 'PREMIUM_REQUIRED',
+                    upgrade: true,
+                },
+                { status: 403 }
+            );
+        }
+        // Add favorite
+        const { data, error } = await supabaseAdmin
+            .from('favorites')
+            .insert({
+                user_id: user.id,
+                target_type,
+                target_id,
+            })
+            .select()
+            .single();
+
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        // Update user taste embedding (non-blocking)
+        updateUserTaste(user.id, 'favorite', {
+            targetId: target_id,
+            targetType: target_type,
+        }).catch(err => console.error('Taste update error:', err));
+
+        return NextResponse.json({
+            success: true,
+            action: 'added',
+            is_favorited: true,
+            data,
+        });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

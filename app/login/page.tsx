@@ -213,7 +213,7 @@ function LoginContent() {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full h-12 bg-lab(49.9297 45.4562 35.4968) hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 group"
+                            className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 group"
                         >
                             {isLoading ? (
                                 'Đang xử lý...'
