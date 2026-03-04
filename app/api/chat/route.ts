@@ -6,6 +6,7 @@ import { extractFilters, isSearchQuery } from '@/lib/filter-extraction';
 import { hybridSearch, formatHybridContext } from '@/lib/hybrid-ranking';
 import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit';
 import { updateUserTaste } from '@/lib/user-taste';
+import { checkUsageLimit, logUsage } from '@/lib/subscription';
 import type { ChatFilters } from '@/types/database';
 import { getCachedResponse, setCachedResponse } from '@/lib/redis';
 
@@ -33,20 +34,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cache Check: Return instantly if we have a hot response for this exact query
-    // Only cache initial queries (no history <= 1, as the first element is the ai greeting) and without specific user location
-    const canCache = message && (!history || history.length <= 1) && !userLocation;
-    const cacheKey = canCache ? `rag_cache:${message.trim().toLowerCase()}` : null;
-
-    if (cacheKey) {
-      const cachedData = await getCachedResponse(cacheKey);
-      if (cachedData) {
-        console.log(`⚡ REDIS CACHE HIT: ${message} (~50ms)`);
-        return NextResponse.json(cachedData);
-      }
-    }
-
-    // Step 0: Rate limiting
+    // Step 0: Rate limiting (anti-spam)
     const limitKey = getRateLimitKey(req);
     const limit = checkRateLimit(limitKey, 'chat');
     if (!limit.allowed) {
@@ -61,7 +49,8 @@ export async function POST(req: NextRequest) {
 
     console.log('📩 Received message:', message);
 
-    // Try to get user for personalization
+    // Step 0.5: Authenticate user & check subscription limits
+    // Usage checks MUST happen BEFORE cache to prevent free users bypassing limits
     let userId: string | null = null;
     const authHeader = req.headers.get('authorization');
     if (authHeader) {
@@ -69,6 +58,60 @@ export async function POST(req: NextRequest) {
         authHeader.replace('Bearer ', '')
       );
       userId = user?.id || null;
+    }
+
+    // Server-side guest limit: 1 query per IP per day
+    if (!userId) {
+      const guestKey = getRateLimitKey(req);
+      const guestLimit = checkRateLimit(guestKey, 'guest');
+      if (!guestLimit.allowed) {
+        return NextResponse.json(
+          {
+            error: '🔒 Bạn cần đăng nhập để tiếp tục sử dụng TasteMuse AI. Đăng nhập miễn phí để có 10 lượt hỏi AI mỗi ngày!',
+            code: 'GUEST_LIMIT_EXCEEDED',
+            requireLogin: true,
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Subscription-based usage limiting (logged-in users)
+    if (userId) {
+      const usageCheck = await checkUsageLimit(userId, 'ai_chat');
+      if (!usageCheck.allowed) {
+        return NextResponse.json(
+          {
+            error: 'Bạn đã hết lượt hỏi AI hôm nay. Nâng cấp Premium để không giới hạn! ✨',
+            code: 'USAGE_LIMIT_EXCEEDED',
+            usage: {
+              used: usageCheck.used,
+              limit: usageCheck.limit,
+              remaining: 0,
+            },
+            upgrade: true,
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Cache Check: AFTER usage check so limits are still enforced
+    const canCache = message && (!history || history.length <= 1) && !userLocation;
+    const cacheKey = canCache ? `rag_cache:${message.trim().toLowerCase()}` : null;
+
+    if (cacheKey) {
+      const cachedData = await getCachedResponse(cacheKey);
+      if (cachedData) {
+        console.log(`⚡ REDIS CACHE HIT: ${message} (~50ms)`);
+        // Still log usage for cached responses
+        if (userId) {
+          logUsage(userId, 'ai_chat', { message, cached: true }).catch(err =>
+            console.error('Usage log error:', err)
+          );
+        }
+        return NextResponse.json(cachedData);
+      }
     }
 
     // Step 1: Extract filters from natural language (parallel with embedding)
@@ -141,11 +184,16 @@ export async function POST(req: NextRequest) {
     const response = await generateRAGResponse(message, enhancedContext, history);
     console.log('✅ Response generated successfully');
 
-    // Step 5: Update user taste (async, non-blocking)
-    if (userId && isSearchQuery(message)) {
-      updateUserTaste(userId, 'chat_query', {
-        searchQuery: message,
-      }).catch(err => console.error('Taste update error:', err));
+    // Step 5: Log usage & update user taste (async, non-blocking)
+    if (userId) {
+      logUsage(userId, 'ai_chat', { message }).catch(err =>
+        console.error('Usage log error:', err)
+      );
+      if (isSearchQuery(message)) {
+        updateUserTaste(userId, 'chat_query', {
+          searchQuery: message,
+        }).catch(err => console.error('Taste update error:', err));
+      }
     }
 
     // Step 6: Return response with rich metadata

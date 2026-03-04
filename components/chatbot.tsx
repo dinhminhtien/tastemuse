@@ -4,14 +4,24 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { X, Send, Minimize2 } from "lucide-react"
+import { X, Send, Minimize2, LogIn } from "lucide-react"
 import Image from "next/image"
 import ReactMarkdown from "react-markdown"
+import { UsageIndicator } from "@/components/usage-indicator"
+import { UpgradeModal } from "@/components/upgrade-modal"
+import { supabase } from "@/lib/supabase"
 
 interface Message {
   role: "user" | "assistant"
   content: string
   timestamp?: number
+}
+
+interface UsageInfo {
+  used: number
+  limit: number
+  remaining: number
+  isPremium: boolean
 }
 
 export function Chatbot() {
@@ -30,6 +40,17 @@ export function Chatbot() {
     const stored = window.localStorage.getItem("chatbot_show_suggestions")
     return stored ? stored === "true" : true
   })
+
+  // Freemium state
+  const [usage, setUsage] = useState<UsageInfo>({ used: 0, limit: 10, remaining: 10, isPremium: false })
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const [guestQueryCount, setGuestQueryCount] = useState<number>(() => {
+    if (typeof window === "undefined") return 0
+    return parseInt(window.localStorage.getItem("guest_query_count") || "0", 10)
+  })
+  const [upgradeLoading, setUpgradeLoading] = useState(false)
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
@@ -41,7 +62,6 @@ export function Chatbot() {
   ]
 
   const scrollToBottom = () => {
-    // Tìm viewport của ScrollArea và scroll đến cuối
     setTimeout(() => {
       if (scrollAreaRef.current) {
         const viewport = scrollAreaRef.current.querySelector('[data-slot="scroll-area-viewport"]') as HTMLElement
@@ -81,31 +101,139 @@ export function Chatbot() {
     }
   }, [])
 
+  // Fetch usage on open
+  useEffect(() => {
+    if (isOpen) {
+      fetchUsage()
+    }
+  }, [isOpen])
+
+  async function fetchUsage() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+
+      const res = await fetch("/api/usage", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setUsage({
+          used: data.ai_chat?.used || 0,
+          limit: data.ai_chat?.limit || 10,
+          remaining: data.ai_chat?.remaining || 10,
+          isPremium: data.isPremium || false,
+        })
+      }
+    } catch (e) {
+      // Silently fail — usage indicator just won't update
+    }
+  }
+
+  async function getAuthToken(): Promise<string | null> {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.access_token || null
+  }
+
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return
     const userMessage = text.trim()
     setInput("")
     setMessages((prev) => [...prev, { role: "user", content: userMessage, timestamp: Date.now() }])
     setIsLoading(true)
+
     try {
+      const token = await getAuthToken()
+
+      // Guest user limit: 1 query then prompt login
+      if (!token) {
+        if (guestQueryCount >= 1) {
+          setShowLoginPrompt(true)
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: "🔒 Bạn cần đăng nhập để tiếp tục sử dụng TasteMuse AI. Đăng nhập miễn phí để có 10 lượt hỏi AI mỗi ngày!",
+              timestamp: Date.now(),
+            },
+          ])
+          setIsLoading(false)
+          return
+        }
+        const newCount = guestQueryCount + 1
+        setGuestQueryCount(newCount)
+        window.localStorage.setItem("guest_query_count", String(newCount))
+      }
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      }
+      if (token) {
+        headers.Authorization = `Bearer ${token}`
+      }
+
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
           message: userMessage,
           history: messages,
         }),
       })
+
+      if (response.status === 403) {
+        const data = await response.json()
+        if (data.code === "GUEST_LIMIT_EXCEEDED" || data.requireLogin) {
+          setShowLoginPrompt(true)
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: data.error || "🔒 Bạn cần đăng nhập để tiếp tục sử dụng.",
+              timestamp: Date.now(),
+            },
+          ])
+          setIsLoading(false)
+          return
+        }
+        if (data.code === "USAGE_LIMIT_EXCEEDED" || data.upgrade) {
+          setUsage((prev) => ({
+            ...prev,
+            used: data.usage?.used || prev.limit,
+            remaining: 0,
+          }))
+          setShowUpgradeModal(true)
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: "✨ " + data.error,
+              timestamp: Date.now(),
+            },
+          ])
+          setIsLoading(false)
+          return
+        }
+      }
+
       if (!response.ok) {
         throw new Error("Failed to get response")
       }
+
       const data = await response.json()
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: data.message, timestamp: Date.now() },
       ])
+
+      // Update local usage count
+      if (token) {
+        setUsage((prev) => ({
+          ...prev,
+          used: prev.used + 1,
+          remaining: prev.limit === -1 ? -1 : Math.max(0, prev.remaining - 1),
+        }))
+      }
     } catch (error) {
       console.error("Error:", error)
       setMessages((prev) => [
@@ -137,12 +265,84 @@ export function Chatbot() {
     }
   }
 
+  const handleUpgrade = async () => {
+    setUpgradeLoading(true)
+    try {
+      const token = await getAuthToken()
+      if (!token) {
+        window.location.href = "/login"
+        return
+      }
+      const res = await fetch("/api/payment/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl
+      }
+    } catch (e) {
+      console.error("Upgrade error:", e)
+    } finally {
+      setUpgradeLoading(false)
+    }
+  }
+
+  const handleStartTrial = async () => {
+    setUpgradeLoading(true)
+    try {
+      const token = await getAuthToken()
+      if (!token) {
+        window.location.href = "/login"
+        return
+      }
+      const res = await fetch("/api/payment/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ trial: true }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setUsage({ used: 0, limit: -1, remaining: -1, isPremium: true })
+        setShowUpgradeModal(false)
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "🎉 Chúc mừng! Bạn đã kích hoạt dùng thử Premium 3 ngày. Hãy tận hưởng AI không giới hạn nhé! ✨",
+            timestamp: Date.now(),
+          },
+        ])
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: data.error || "Không thể kích hoạt dùng thử.",
+            timestamp: Date.now(),
+          },
+        ])
+      }
+    } catch (e) {
+      console.error("Trial error:", e)
+    } finally {
+      setUpgradeLoading(false)
+    }
+  }
+
   const formatTime = (t: number) =>
     new Intl.DateTimeFormat("vi-VN", { hour: "2-digit", minute: "2-digit" }).format(new Date(t))
 
   return (
     <>
-      {/* Chatbot Button - Fixed ở góc dưới bên phải */}
+      {/* Chatbot Button */}
       {!isOpen && (
         <button
           onClick={() => {
@@ -191,6 +391,14 @@ export function Chatbot() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Usage Indicator */}
+              {!isMinimized && (
+                <UsageIndicator
+                  used={usage.used}
+                  limit={usage.limit}
+                  isPremium={usage.isPremium}
+                />
+              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -265,6 +473,25 @@ export function Chatbot() {
                         </div>
                       </div>
                     ))}
+
+                    {/* Login prompt for guests */}
+                    {showLoginPrompt && (
+                      <div className="flex justify-center">
+                        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg p-4 text-center space-y-3">
+                          <p className="text-sm font-medium">🔐 Đăng nhập để tiếp tục</p>
+                          <p className="text-xs text-muted-foreground">Đăng nhập miễn phí để nhận 10 lượt hỏi AI mỗi ngày</p>
+                          <Button
+                            onClick={() => window.location.href = "/login"}
+                            size="sm"
+                            className="bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+                          >
+                            <LogIn className="h-4 w-4 mr-2" />
+                            Đăng nhập với Google
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
                     {showSuggestions && !messages.some((m) => m.role === "user") && (
                       <div className="pt-2">
                         <div className="flex items-center justify-between mb-2">
@@ -344,6 +571,16 @@ export function Chatbot() {
           )}
         </div>
       )}
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        open={showUpgradeModal}
+        onOpenChange={setShowUpgradeModal}
+        usageInfo={{ used: usage.used, limit: usage.limit }}
+        onUpgrade={handleUpgrade}
+        onStartTrial={handleStartTrial}
+        isLoading={upgradeLoading}
+      />
     </>
   )
 }

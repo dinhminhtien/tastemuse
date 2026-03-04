@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth';
 import { User } from '@supabase/supabase-js';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, Loader2, UtensilsCrossed, Store, MapPin, ChefHat, Trash2, Flame } from 'lucide-react';
+import { Heart, Loader2, UtensilsCrossed, Store, MapPin, ChefHat, Trash2, Flame, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
@@ -33,6 +33,7 @@ export default function FavoritesPage() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'all' | 'dish' | 'restaurant'>('all');
     const [removingId, setRemovingId] = useState<string | null>(null);
+    const [isPremium, setIsPremium] = useState(true); // Default true to avoid flash
 
     useEffect(() => {
         loadFavorites();
@@ -44,8 +45,27 @@ export default function FavoritesPage() {
 
         if (!currentUser) {
             setLoading(false);
+            setIsPremium(false);
             return;
         }
+
+        // Check if user has Premium (save_favorites requires Premium)
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                const res = await fetch('/api/subscription', {
+                    headers: { Authorization: `Bearer ${session.access_token}` },
+                });
+                if (res.ok) {
+                    const planData = await res.json();
+                    setIsPremium(planData.isPremium || false);
+                    if (!planData.isPremium) {
+                        setLoading(false);
+                        return; // Don't load favorites for free users
+                    }
+                }
+            }
+        } catch { }
 
         try {
             const res = await fetch(`/api/favorites?user_id=${currentUser.id}`);
@@ -177,6 +197,39 @@ export default function FavoritesPage() {
                             <Link href="/login">
                                 <Button size="lg" className="mt-4 rounded-xl shadow-lg shadow-primary/25">
                                     Đăng nhập ngay
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        );
+    }
+
+    // Logged in but not Premium — show upgrade prompt
+    if (user && !isPremium && !loading) {
+        return (
+            <main className="min-h-screen bg-background pt-28 md:pt-32">
+                <section className="relative overflow-hidden py-16 md:py-24">
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute top-10 right-20 w-48 h-48 bg-amber-500/6 rounded-full glow-blob float-particle" />
+                        <div className="absolute bottom-10 left-10 w-64 h-64 bg-orange-500/6 rounded-full glow-blob float-particle-slow" />
+                    </div>
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-md mx-auto text-center space-y-6">
+                            <div className="w-20 h-20 mx-auto rounded-2xl bg-amber-500/10 flex items-center justify-center">
+                                <Crown className="w-10 h-10 text-amber-500" />
+                            </div>
+                            <h1 className="text-3xl md:text-4xl font-extrabold">
+                                Tính năng <span className="gradient-text">Premium</span>
+                            </h1>
+                            <p className="text-muted-foreground text-lg">
+                                Nâng cấp gói Premium để lưu và quản lý danh sách yêu thích của bạn
+                            </p>
+                            <Link href="/pricing">
+                                <Button size="lg" className="mt-4 rounded-xl shadow-lg shadow-amber-500/25 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
+                                    <Crown className="w-4 h-4 mr-2" />
+                                    Xem gói Premium
                                 </Button>
                             </Link>
                         </div>
