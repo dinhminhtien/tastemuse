@@ -33,7 +33,7 @@ interface SyncResult {
 function buildRestaurantContent(restaurant: Restaurant): string {
     const parts: string[] = [
         `Nhà hàng: ${restaurant.name}`,
-        `Địa chỉ: ${restaurant.address}, ${restaurant.ward}, ${restaurant.city}`,
+        `Địa chỉ: ${restaurant.address}, ${restaurant.ward}, ${restaurant.district ? restaurant.district + ', ' : ''}${restaurant.city}`,
     ];
 
     if (restaurant.phone) parts.push(`Số điện thoại: ${restaurant.phone}`);
@@ -73,7 +73,7 @@ async function buildDishContent(dish: Dish): Promise<string> {
     // Fetch the parent restaurant for additional context
     const { data: restaurant } = await supabase
         .from('restaurants')
-        .select('name, address, ward, city, tags, min_price, max_price')
+        .select('name, address, ward, district, city, tags, min_price, max_price')
         .eq('id', dish.restaurant_id)
         .single();
 
@@ -83,7 +83,7 @@ async function buildDishContent(dish: Dish): Promise<string> {
 
     if (restaurant) {
         parts.push(`Nhà hàng: ${restaurant.name}`);
-        parts.push(`Địa chỉ: ${restaurant.address}, ${restaurant.ward}, ${restaurant.city}`);
+        parts.push(`Địa chỉ: ${restaurant.address}, ${restaurant.ward}, ${restaurant.district ? restaurant.district + ', ' : ''}${restaurant.city}`);
         if (restaurant.tags && restaurant.tags.length > 0) {
             parts.push(`Loại hình: ${restaurant.tags.join(', ')}`);
         }
@@ -148,6 +148,7 @@ export async function syncRestaurantToRAG(
                 metadata: {
                     city: restaurant.city,
                     ward: restaurant.ward,
+                    district: restaurant.district,
                     tags: restaurant.tags,
                     min_price: restaurant.min_price,
                     max_price: restaurant.max_price,

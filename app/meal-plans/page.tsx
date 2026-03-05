@@ -260,7 +260,7 @@ export default function MealPlansPage() {
                                 Nâng cấp gói Premium để lập kế hoạch bữa ăn cho cả tuần
                             </p>
                             <Link href="/pricing">
-                                <Button size="lg" className="mt-4 rounded-xl shadow-lg shadow-amber-500/25 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
+                                <Button size="lg" className="mt-4 rounded-xl shadow-lg shadow-amber-500/25 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
                                     <Crown className="w-4 h-4 mr-2" />
                                     Xem gói Premium
                                 </Button>

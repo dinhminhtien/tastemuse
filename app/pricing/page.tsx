@@ -222,7 +222,7 @@ function PricingContent() {
 
             {/* Hero Section */}
             <section className="relative overflow-hidden pt-20 pb-16">
-                <div className="absolute inset-0 bg-gradient-to-b from-amber-500/5 via-orange-500/5 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-b from-amber-500/5 via-orange-500/5 to-transparent pointer-events-none" />
                 <div className="relative container mx-auto px-4 text-center">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
                         <Crown className="h-4 w-4 text-amber-500" />
@@ -260,7 +260,7 @@ function PricingContent() {
                             {/* Popular badge */}
                             {plan.popular && (
                                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                                    <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold shadow-lg">
+                                    <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold shadow-lg">
                                         <Crown className="h-3 w-3" />
                                         Phổ biến nhất
                                     </div>
@@ -301,7 +301,7 @@ function PricingContent() {
                                             <Button
                                                 onClick={handleUpgrade}
                                                 disabled={isLoading}
-                                                className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg shadow-orange-500/25"
+                                                className="w-full h-12 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg shadow-orange-500/25"
                                             >
                                                 <Crown className="h-4 w-4 mr-2" />
                                                 {isLoading ? "Đang xử lý..." : "Nâng cấp ngay"}
@@ -332,7 +332,7 @@ function PricingContent() {
                                 {plan.features.map((feature) => (
                                     <div key={feature.label} className="flex items-center gap-3">
                                         <div
-                                            className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${feature.included
+                                            className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${feature.included
                                                 ? "bg-emerald-100 dark:bg-emerald-900/30"
                                                 : "bg-muted"
                                                 }`}
@@ -379,7 +379,7 @@ function PricingContent() {
                                         {item.q}
                                     </span>
                                     <ChevronDown
-                                        className={`h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform ${openFaq === idx ? "rotate-180" : ""
+                                        className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${openFaq === idx ? "rotate-180" : ""
                                             }`}
                                     />
                                 </button>

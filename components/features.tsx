@@ -44,8 +44,8 @@ export function Features() {
     <section className="py-20 md:py-32 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-border to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-border to-transparent" />
       </div>
 
       <div className="container mx-auto px-4">
@@ -73,7 +73,7 @@ export function Features() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {features.map((feature, index) => (
             <Reveal key={index} delay={index * 100}>
-              <Card className={`p-6 md:p-8 card-interactive card-glow bg-gradient-to-br ${feature.color} border-0 h-full group`}>
+              <Card className={`p-6 md:p-8 card-interactive card-glow bg-linear-to-br ${feature.color} border-0 h-full group`}>
                 <div className={`w-14 h-14 ${feature.iconBg} rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
                   <feature.icon className="w-7 h-7" />
                 </div>

@@ -21,6 +21,7 @@ export interface Restaurant {
     slug: string;
     address: string;
     ward: string;
+    district?: string;
     city: string;
     phone?: string;
     tags: string[];

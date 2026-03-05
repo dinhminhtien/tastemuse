@@ -9,7 +9,7 @@ interface UsageIndicatorProps {
 export function UsageIndicator({ used, limit, isPremium }: UsageIndicatorProps) {
     if (isPremium || limit === -1) {
         return (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-linear-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
                 <span className="text-[10px] font-medium text-amber-600 dark:text-amber-400">
                     ✨ Premium
                 </span>

@@ -95,7 +95,7 @@ export function Hero() {
             <Reveal>
               <div className="relative group">
                 {/* Decorative frame */}
-                <div className="absolute -inset-3 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 rounded-3xl opacity-60 group-hover:opacity-80 transition-opacity blur-sm" />
+                <div className="absolute -inset-3 bg-linear-to-br from-primary/20 via-secondary/10 to-accent/20 rounded-3xl opacity-60 group-hover:opacity-80 transition-opacity blur-sm" />
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-foreground/5">
                   <video
                     className="w-full aspect-video rounded-2xl"

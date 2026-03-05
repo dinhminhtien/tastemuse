@@ -116,7 +116,7 @@ export default async function RestaurantsPage({
       </section>
 
       {/* Search and Filter Section */}
-      <section className="py-6 bg-background/80 backdrop-blur-sm border-y border-border/40 sticky top-[4.5rem] z-30">
+      <section className="py-6 bg-background/80 backdrop-blur-sm border-y border-border/40 sticky top-18 z-30">
         <div className="container mx-auto px-4">
           <RestaurantSearch />
         </div>
@@ -180,7 +180,7 @@ export default async function RestaurantsPage({
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                          <div className="w-full h-full bg-linear-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
                             <span className="text-4xl font-bold text-primary/30">
                               {restaurant.name.charAt(0)}
                             </span>
@@ -192,7 +192,7 @@ export default async function RestaurantsPage({
                           </div>
                         )}
                         {/* Gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
                       <div className="p-5 space-y-3 flex-1 flex flex-col">
                         <div>

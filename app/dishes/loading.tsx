@@ -20,7 +20,7 @@ export default function Loading() {
                                 key={i}
                                 className="rounded-xl border border-border overflow-hidden"
                             >
-                                <div className="aspect-[4/3] bg-muted animate-pulse" />
+                                <div className="aspect-4/3 bg-muted animate-pulse" />
                                 <div className="p-5 space-y-3">
                                     <div className="h-5 w-3/4 bg-muted animate-pulse rounded" />
                                     <div className="h-4 w-1/2 bg-muted animate-pulse rounded" />

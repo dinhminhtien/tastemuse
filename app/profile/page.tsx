@@ -48,11 +48,11 @@ function ProfileContent() {
     });
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-orange-950 pt-28 md:pt-32 pb-12 px-4">
+        <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-orange-950 pt-28 md:pt-32 pb-12 px-4">
             <div className="container max-w-4xl mx-auto space-y-8">
                 {/* Header */}
                 <div className="text-center space-y-2">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-bold bg-linear-to-r from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent">
                         Hồ Sơ Của Tôi
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400">
@@ -69,7 +69,7 @@ function ProfileContent() {
                                     src={user.user_metadata?.avatar_url}
                                     alt={user.user_metadata?.full_name || user.email || 'User'}
                                 />
-                                <AvatarFallback className="bg-gradient-to-br from-orange-500 to-amber-500 text-white text-2xl font-bold">
+                                <AvatarFallback className="bg-linear-to-br from-orange-500 to-amber-500 text-white text-2xl font-bold">
                                     {userInitials}
                                 </AvatarFallback>
                             </Avatar>

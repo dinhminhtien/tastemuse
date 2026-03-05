@@ -102,7 +102,7 @@ export function UserProfile() {
                             src={user.user_metadata?.avatar_url}
                             alt={user.user_metadata?.full_name || user.email || 'User'}
                         />
-                        <AvatarFallback className="bg-gradient-to-br from-orange-500 to-amber-500 text-white font-semibold">
+                        <AvatarFallback className="bg-linear-to-br from-orange-500 to-amber-500 text-white font-semibold">
                             {userInitials}
                         </AvatarFallback>
                     </Avatar>

@@ -71,7 +71,7 @@ export function Navigation() {
           ? "max-w-6xl floating-nav rounded-2xl"
           : "max-w-full bg-background/95 backdrop-blur-md border-b border-border/40"
           }`}>
-          <div className="flex items-center justify-between h-16 md:h-[4.5rem] px-4 md:px-6 flex-nowrap overflow-hidden">
+          <div className="flex items-center justify-between h-16 md:h-18 px-4 md:px-6 flex-nowrap overflow-hidden">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity mr-4 md:mr-6 lg:mr-8 group shrink-0">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">

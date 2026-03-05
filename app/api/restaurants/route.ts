@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
 
         // Validate required fields
-        const { name, address, ward, city } = body;
+        const { name, address, ward, district, city } = body;
         if (!name || !address || !ward || !city) {
             return NextResponse.json(
                 { success: false, error: 'Thiếu thông tin bắt buộc: name, address, ward, city' },
@@ -153,6 +153,7 @@ export async function POST(req: NextRequest) {
                 slug,
                 address,
                 ward,
+                district: district || null,
                 city,
                 phone: body.phone || null,
                 tags: body.tags || [],

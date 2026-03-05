@@ -53,7 +53,7 @@ export function UpgradeModal({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[520px] p-0 overflow-hidden border-0">
                 {/* Premium Gradient Header */}
-                <div className="relative bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 px-6 pt-6 pb-8 text-white">
+                <div className="relative bg-linear-to-br from-amber-500 via-orange-500 to-rose-500 px-6 pt-6 pb-8 text-white">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.15),transparent)] pointer-events-none" />
                     <DialogHeader className="relative z-10">
                         <div className="flex items-center gap-2 mb-2">
@@ -85,7 +85,7 @@ export function UpgradeModal({
                     <div className="space-y-2.5">
                         {PREMIUM_FEATURES.map((feature) => (
                             <div key={feature.label} className="flex items-center gap-3">
-                                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                <div className="shrink-0 w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                                     <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <span className="text-sm text-foreground">{feature.label}</span>
@@ -98,7 +98,7 @@ export function UpgradeModal({
                         <Button
                             onClick={onUpgrade}
                             disabled={isLoading}
-                            className="w-full h-11 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg shadow-orange-500/25 transition-all"
+                            className="w-full h-11 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg shadow-orange-500/25 transition-all"
                         >
                             <Crown className="h-4 w-4 mr-2" />
                             {isLoading ? "Đang xử lý..." : "Nâng cấp ngay — 29.000đ/tháng"}

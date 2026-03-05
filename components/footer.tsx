@@ -5,9 +5,9 @@ export function Footer() {
   return (
     <footer className="relative">
       {/* Top gradient border */}
-      <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      <div className="h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
 
-      <div className="bg-foreground/[0.03]">
+      <div className="bg-foreground/3">
         <div className="container mx-auto px-4 py-16">
           <div className="grid md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
             {/* Brand column */}
@@ -103,7 +103,7 @@ export function Footer() {
               </h4>
               <div className="bg-card rounded-2xl p-5 border border-border/50 space-y-4">
                 <div className="flex items-start gap-3 text-sm">
-                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                     <MapPin className="w-4 h-4 text-primary" />
                   </div>
                   <div>
@@ -112,7 +112,7 @@ export function Footer() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3 text-sm">
-                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                     <Mail className="w-4 h-4 text-primary" />
                   </div>
                   <div>
@@ -121,7 +121,7 @@ export function Footer() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3 text-sm">
-                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                     <Phone className="w-4 h-4 text-primary" />
                   </div>
                   <div>

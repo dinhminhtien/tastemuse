@@ -62,14 +62,14 @@ export function HowItWorks() {
         {/* Steps with connecting line */}
         <div className="relative">
           {/* Connecting line (desktop) */}
-          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 -translate-y-1/2 z-0" />
+          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-primary/20 via-secondary/20 to-accent/20 -translate-y-1/2 z-0" />
 
           <div className="grid lg:grid-cols-3 gap-8 relative z-10">
             {steps.map((step, index) => (
               <Reveal key={index} delay={index * 150}>
                 <Card className="overflow-hidden card-interactive bg-card border-0 shadow-lg h-full group">
                   {/* Top gradient bar */}
-                  <div className={`h-1 bg-gradient-to-r ${step.gradient}`} />
+                  <div className={`h-1 bg-linear-to-r ${step.gradient}`} />
 
                   <div className="p-8">
                     {/* Step number + Icon */}

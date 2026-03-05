@@ -38,7 +38,7 @@ export default function ContactPage() {
   return (
     <main className="min-h-screen pt-28 md:pt-32">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-16 md:py-24">
+      <section className="relative overflow-hidden bg-linear-to-br from-primary/10 via-background to-secondary/10 py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <h1 className="text-4xl md:text-6xl font-bold text-balance leading-tight">
@@ -67,7 +67,7 @@ export default function ContactPage() {
               <div className="space-y-6">
                 <Card className="p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
                       <MapPin className="w-6 h-6 text-primary" />
                     </div>
                     <div>
@@ -79,7 +79,7 @@ export default function ContactPage() {
 
                 <Card className="p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
                       <Mail className="w-6 h-6 text-primary" />
                     </div>
                     <div>
@@ -91,7 +91,7 @@ export default function ContactPage() {
 
                 <Card className="p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
                       <Phone className="w-6 h-6 text-primary" />
                     </div>
                     <div>

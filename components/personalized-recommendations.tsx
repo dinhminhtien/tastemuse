@@ -172,7 +172,7 @@ export function PersonalizedRecommendations() {
                         </div>
                         <h2 className="text-2xl md:text-3xl font-extrabold">
                             Khám phá món ăn{" "}
-                            <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                            <span className="bg-linear-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
                                 dành riêng cho bạn
                             </span>
                         </h2>
@@ -180,7 +180,7 @@ export function PersonalizedRecommendations() {
                             Nâng cấp Premium để nhận gợi ý cá nhân hóa dựa trên sở thích ẩm thực của bạn
                         </p>
                         <Link href="/pricing">
-                            <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/25">
+                            <Button className="bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/25">
                                 <Crown className="w-4 h-4 mr-2" />
                                 Xem gói Premium
                             </Button>
@@ -224,13 +224,13 @@ export function PersonalizedRecommendations() {
                             <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
                                 Dành riêng cho bạn
                             </span>
-                            <span className="px-2 py-0.5 text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full">
+                            <span className="px-2 py-0.5 text-[10px] font-bold bg-linear-to-r from-amber-500 to-orange-500 text-white rounded-full">
                                 PREMIUM
                             </span>
                         </div>
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3">
                             Gợi ý{" "}
-                            <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                            <span className="bg-linear-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
                                 cá nhân hóa
                             </span>
                         </h2>
@@ -257,7 +257,7 @@ export function PersonalizedRecommendations() {
                             }
                         >
                             <Card className="overflow-hidden card-interactive card-glow cursor-pointer group border-0 shadow-md h-full">
-                                <div className="aspect-[4/3] bg-muted relative overflow-hidden">
+                                <div className="aspect-4/3 bg-muted relative overflow-hidden">
                                     {item.image_url ? (
                                         <Image
                                             src={item.image_url}
@@ -269,7 +269,7 @@ export function PersonalizedRecommendations() {
                                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                         />
                                     ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                                        <div className="w-full h-full bg-linear-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                                             <span className="text-6xl font-bold text-amber-500/30">
                                                 {item.title.charAt(0)}
                                             </span>
@@ -277,7 +277,7 @@ export function PersonalizedRecommendations() {
                                     )}
 
                                     {/* AI match badge */}
-                                    <div className="absolute top-3 left-3 px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
+                                    <div className="absolute top-3 left-3 px-3 py-1 bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
                                         <Sparkles className="w-3 h-3" />
                                         {Math.round(item.similarity * 100)}% phù hợp
                                     </div>
@@ -289,7 +289,7 @@ export function PersonalizedRecommendations() {
                                         </div>
                                     )}
 
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 </div>
 
                                 <div className="p-4 md:p-5 space-y-2 bg-card">

@@ -227,7 +227,7 @@ export default function FavoritesPage() {
                                 Nâng cấp gói Premium để lưu và quản lý danh sách yêu thích của bạn
                             </p>
                             <Link href="/pricing">
-                                <Button size="lg" className="mt-4 rounded-xl shadow-lg shadow-amber-500/25 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
+                                <Button size="lg" className="mt-4 rounded-xl shadow-lg shadow-amber-500/25 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
                                     <Crown className="w-4 h-4 mr-2" />
                                     Xem gói Premium
                                 </Button>
@@ -271,7 +271,7 @@ export default function FavoritesPage() {
             </section>
 
             {/* Tabs */}
-            <section className="py-4 md:py-6 bg-background/80 backdrop-blur-sm border-y border-border/40 sticky top-[4.5rem] z-30">
+            <section className="py-4 md:py-6 bg-background/80 backdrop-blur-sm border-y border-border/40 sticky top-18 z-30">
                 <div className="container mx-auto px-4">
                     <div className="flex gap-2 justify-center flex-wrap">
                         {[
@@ -355,7 +355,7 @@ export default function FavoritesPage() {
                                     <Link
                                         href={fav.target_type === 'dish' ? `/dish/${fav.target_id}` : `/restaurant/${fav.slug || fav.target_id}`}
                                     >
-                                        <div className="aspect-[4/3] bg-muted relative overflow-hidden">
+                                        <div className="aspect-4/3 bg-muted relative overflow-hidden">
                                             {fav.image_url ? (
                                                 <Image
                                                     src={fav.image_url}
@@ -367,7 +367,7 @@ export default function FavoritesPage() {
                                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                                 />
                                             ) : (
-                                                <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                                                <div className="w-full h-full bg-linear-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
                                                     <span className="text-5xl font-bold text-primary/30">
                                                         {fav.name?.charAt(0) || '?'}
                                                     </span>
@@ -396,7 +396,7 @@ export default function FavoritesPage() {
                                             )}
 
                                             {/* Gradient overlay */}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                            <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         </div>
                                     </Link>
 

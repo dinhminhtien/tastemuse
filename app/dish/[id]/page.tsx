@@ -84,16 +84,16 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
                             alt={dish.dish_media[0].alt_text || dish.name}
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                        <div className="absolute inset-0 bg-linear-to-t from-background via-background/50 to-transparent" />
                     </>
                 ) : (
                     <>
-                        <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
+                        <div className="w-full h-full bg-linear-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
                             <span className="text-9xl font-bold text-primary/40">
                                 {dish.name.charAt(0)}
                             </span>
                         </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                        <div className="absolute inset-0 bg-linear-to-t from-background via-background/50 to-transparent" />
                     </>
                 )}
                 <div className="absolute bottom-0 left-0 right-0 p-8">

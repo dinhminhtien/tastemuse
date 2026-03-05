@@ -93,7 +93,7 @@ export async function FeaturedDishes() {
           {dishes.map((dish) => (
             <Link key={dish.id} href={`/dish/${dish.id}`}>
               <Card className="overflow-hidden card-interactive card-glow cursor-pointer group border-0 shadow-md h-full">
-                <div className="aspect-[4/3] bg-muted relative overflow-hidden">
+                <div className="aspect-4/3 bg-muted relative overflow-hidden">
                   {dish.dish_media && dish.dish_media.length > 0 ? (
                     <Image
                       src={dish.dish_media.sort((a, b) => a.sort_order - b.sort_order)[0].media_url}
@@ -105,7 +105,7 @@ export async function FeaturedDishes() {
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                    <div className="w-full h-full bg-linear-to-br from-primary/20 to-secondary/20 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                       <span className="text-6xl font-bold text-primary/30">
                         {dish.name.charAt(0)}
                       </span>
@@ -125,7 +125,7 @@ export async function FeaturedDishes() {
                     </div>
                   )}
                   {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="p-4 md:p-5 space-y-2 bg-card">
                   <div>

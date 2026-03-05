@@ -90,7 +90,7 @@ async function syncMissingDocuments() {
 
     const { data: allRestaurants } = await supabase
         .from('restaurants')
-        .select('id, name, address, ward, city, phone, tags, description, open_time, close_time, min_price, max_price')
+        .select('id, name, address, ward, district, city, phone, tags, description, open_time, close_time, min_price, max_price')
         .eq('is_active', true);
 
     if (allRestaurants && allRestaurants.length > 0) {
@@ -109,7 +109,7 @@ async function syncMissingDocuments() {
                 // Build raw content
                 const parts: string[] = [
                     `Nhà hàng: ${r.name}`,
-                    `Địa chỉ: ${r.address}, ${r.ward}, ${r.city}`,
+                    `Địa chỉ: ${r.address}, ${r.ward}, ${r.district ? r.district + ', ' : ''}${r.city}`,
                 ];
                 if (r.phone) parts.push(`Số điện thoại: ${r.phone}`);
                 if (r.tags && r.tags.length > 0) parts.push(`Loại hình: ${r.tags.join(', ')}`);
@@ -135,7 +135,7 @@ async function syncMissingDocuments() {
                         title: r.name,
                         raw_content: rawContent,
                         metadata: {
-                            city: r.city, ward: r.ward, tags: r.tags,
+                            city: r.city, district: r.district, ward: r.ward, tags: r.tags,
                             min_price: r.min_price, max_price: r.max_price,
                             open_time: r.open_time, close_time: r.close_time,
                         },
@@ -189,14 +189,14 @@ async function syncMissingDocuments() {
                 // Fetch parent restaurant
                 const { data: rest } = await supabase
                     .from('restaurants')
-                    .select('name, address, ward, city, tags, min_price, max_price')
+                    .select('name, address, ward, district, city, tags, min_price, max_price')
                     .eq('id', d.restaurant_id)
                     .single();
 
                 const parts: string[] = [`Món ăn: ${d.name}`];
                 if (rest) {
                     parts.push(`Nhà hàng: ${rest.name}`);
-                    parts.push(`Địa chỉ: ${rest.address}, ${rest.ward}, ${rest.city}`);
+                    parts.push(`Địa chỉ: ${rest.address}, ${rest.ward}, ${rest.district ? rest.district + ', ' : ''}${rest.city}`);
                     if (rest.tags && rest.tags.length > 0) parts.push(`Loại hình: ${rest.tags.join(', ')}`);
                     if (rest.min_price || rest.max_price) {
                         const price = [

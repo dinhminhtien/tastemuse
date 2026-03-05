@@ -91,7 +91,7 @@ export function FavoriteButton({
                     action: (
                         <Button
                             size="sm"
-                            className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs"
+                            className="bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs"
                             onClick={() => router.push("/pricing")}
                         >
                             <Crown className="w-3 h-3 mr-1" />

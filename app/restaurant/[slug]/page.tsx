@@ -85,13 +85,13 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
                         />
                     </>
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
+                    <div className="w-full h-full bg-linear-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
                         <span className="text-9xl font-bold text-primary/40">
                             {restaurant.name.charAt(0)}
                         </span>
                     </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-background via-background/50 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                     <div className="container mx-auto px-4">
                         <div className="flex items-center gap-4 mb-4">
@@ -187,7 +187,7 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
                                 <h3 className="text-xl font-bold mb-4">Thông tin liên hệ</h3>
                                 <div className="space-y-4">
                                     <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
                                             <MapPin className="w-5 h-5 text-primary" />
                                         </div>
                                         <div>

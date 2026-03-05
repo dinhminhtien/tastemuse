@@ -126,7 +126,7 @@ export default async function DishesPage({
       </section>
 
       {/* Search and Filter Section */}
-      <section className="py-6 bg-background/80 backdrop-blur-sm border-y border-border/40 sticky top-[4.5rem] z-30">
+      <section className="py-6 bg-background/80 backdrop-blur-sm border-y border-border/40 sticky top-18 z-30">
         <div className="container mx-auto px-4">
           <DishSearch />
         </div>
@@ -178,7 +178,7 @@ export default async function DishesPage({
                 {dishes.map((dish) => (
                   <Link key={dish.id} href={`/dish/${dish.id}`}>
                     <Card className="overflow-hidden card-interactive card-glow cursor-pointer group h-full flex flex-col border-0 shadow-md">
-                      <div className="aspect-[4/3] bg-muted relative overflow-hidden">
+                      <div className="aspect-4/3 bg-muted relative overflow-hidden">
                         {dish.dish_media && dish.dish_media.length > 0 ? (
                           <Image
                             src={dish.dish_media.sort((a, b) => a.sort_order - b.sort_order)[0].media_url}
@@ -190,7 +190,7 @@ export default async function DishesPage({
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                          <div className="w-full h-full bg-linear-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
                             <span className="text-5xl font-bold text-primary/30">
                               {dish.name.charAt(0)}
                             </span>
@@ -208,7 +208,7 @@ export default async function DishesPage({
                           </div>
                         )}
                         {/* Gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
                       <div className="p-5 space-y-3 flex-1 flex flex-col">
                         <div>

@@ -877,7 +877,7 @@ export function Chatbot() {
                               : "bg-muted text-foreground"
                               }`}
                           >
-                            <div className="text-sm prose prose-sm dark:prose-invert max-w-none break-words">
+                            <div className="text-sm prose prose-sm dark:prose-invert max-w-none wrap-break-word">
                               <ReactMarkdown
                                 components={{
                                   p: ({ children }: { children?: React.ReactNode }) => <p className="mb-2 last:mb-0 leading-relaxed text-sm">{children}</p>,
@@ -912,13 +912,13 @@ export function Chatbot() {
                       {/* Login prompt for guests */}
                       {showLoginPrompt && (
                         <div className="flex justify-center">
-                          <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg p-4 text-center space-y-3">
+                          <div className="bg-linear-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg p-4 text-center space-y-3">
                             <p className="text-sm font-medium">🔐 Đăng nhập để tiếp tục</p>
                             <p className="text-xs text-muted-foreground">Đăng nhập miễn phí để nhận 10 lượt hỏi AI mỗi ngày</p>
                             <Button
                               onClick={() => window.location.href = "/login"}
                               size="sm"
-                              className="bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+                              className="bg-linear-to-r from-amber-500 to-orange-500 text-white"
                             >
                               <LogIn className="h-4 w-4 mr-2" />
                               Đăng nhập với Google
