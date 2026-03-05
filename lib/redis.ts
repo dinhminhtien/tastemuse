@@ -54,3 +54,34 @@ export async function setCachedResponse(key: string, value: any, ttlSeconds: num
         return false;
     }
 }
+
+/**
+ * Flush all RAG cache entries (keys starting with `rag_cache:`)
+ * Useful when LLM config changes and stale responses need to be cleared.
+ * @returns Number of keys deleted
+ */
+export async function flushRagCache(): Promise<number> {
+    if (!redis) return 0;
+
+    try {
+        let cursor = '0';
+        let totalDeleted = 0;
+
+        do {
+            const result: [string, string[]] = await redis.scan(cursor, { match: 'rag_cache:*', count: 100 });
+            cursor = result[0];
+            const keys = result[1];
+
+            if (keys.length > 0) {
+                await redis.del(...keys);
+                totalDeleted += keys.length;
+            }
+        } while (cursor !== '0');
+
+        console.log(`🗑️ Flushed ${totalDeleted} RAG cache entries`);
+        return totalDeleted;
+    } catch (error) {
+        console.error('❌ Redis flush error:', error);
+        return 0;
+    }
+}
