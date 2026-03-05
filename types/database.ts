@@ -269,3 +269,43 @@ export interface UserPlanInfo {
     isTrial: boolean;
     daysRemaining: number | null;
 }
+
+// ---- MEAL PLANNING ----
+
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
+export interface MealPlan {
+    id: string;
+    user_id: string;
+    title: string;
+    description?: string;
+    start_date: string;       // DATE format
+    end_date?: string;        // DATE format
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+    // Joined
+    items?: MealPlanItem[];
+}
+
+export interface MealPlanItem {
+    id: string;
+    meal_plan_id: string;
+    dish_id?: string;
+    restaurant_id?: string;
+    meal_type: MealType;
+    day_of_week: number;      // 0=Sunday, 6=Saturday
+    notes?: string;
+    sort_order: number;
+    created_at: string;
+    // Joined
+    dishes?: {
+        name: string;
+        restaurants?: { name: string; slug?: string };
+    };
+    restaurants?: {
+        name: string;
+        slug?: string;
+    };
+}
+

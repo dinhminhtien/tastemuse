@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, Restaurant } from '@/lib/supabase';
 import { syncRestaurantToRAG } from '@/lib/document-sync';
+import { canUseFeature } from '@/lib/subscription';
 
 /**
  * GET /api/restaurants
  * Fetch all restaurants with optional filters
+ * Advanced filters (price range, tags, sorting) require Premium subscription
  */
 export async function GET(req: NextRequest) {
     try {
@@ -16,8 +18,50 @@ export async function GET(req: NextRequest) {
         const tags = searchParams.get('tags')?.split(',');
         const minPrice = searchParams.get('minPrice');
         const maxPrice = searchParams.get('maxPrice');
+        const sortBy = searchParams.get('sortBy'); // 'popularity' | 'rating' | 'price_asc' | 'price_desc'
         const limit = parseInt(searchParams.get('limit') || '50');
         const offset = parseInt(searchParams.get('offset') || '0');
+
+        // Check if advanced filters are being used
+        const usingAdvancedFilters = !!(minPrice || maxPrice || (tags && tags.length > 0) || sortBy);
+
+        if (usingAdvancedFilters) {
+            // Authenticate user and check premium
+            const authHeader = req.headers.get('authorization');
+            if (!authHeader) {
+                return NextResponse.json(
+                    {
+                        error: 'Bộ lọc nâng cao chỉ dành cho gói Premium. Vui lòng đăng nhập và nâng cấp!',
+                        code: 'PREMIUM_REQUIRED',
+                        upgrade: true,
+                    },
+                    { status: 403 }
+                );
+            }
+
+            const { data: { user } } = await supabase.auth.getUser(
+                authHeader.replace('Bearer ', '')
+            );
+
+            if (!user) {
+                return NextResponse.json(
+                    { error: 'Phiên đăng nhập không hợp lệ' },
+                    { status: 401 }
+                );
+            }
+
+            const hasFeature = await canUseFeature(user.id, 'advanced_filters');
+            if (!hasFeature) {
+                return NextResponse.json(
+                    {
+                        error: 'Bộ lọc nâng cao chỉ dành cho gói Premium. Nâng cấp để sử dụng!',
+                        code: 'PREMIUM_REQUIRED',
+                        upgrade: true,
+                    },
+                    { status: 403 }
+                );
+            }
+        }
 
         // Build query
         let query = supabase

@@ -13,7 +13,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogOut, User as UserIcon, Settings, Heart } from 'lucide-react';
+import { LogOut, User as UserIcon, Heart, Calendar, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -133,9 +133,15 @@ export function UserProfile() {
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                    <Link href="/settings" className="cursor-pointer">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Cài Đặt</span>
+                    <Link href="/meal-plans" className="cursor-pointer">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        <span>Kế Hoạch Bữa Ăn</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href="/subscription/history" className="cursor-pointer">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        <span>Lịch Sử Đăng Ký</span>
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
