@@ -100,6 +100,7 @@ export function Hero() {
                   <video
                     className="w-full aspect-video rounded-2xl"
                     src="https://res.cloudinary.com/dkqaygsqc/video/upload/v1768995815/intro_smeudq.mp4"
+                    poster="https://res.cloudinary.com/dkqaygsqc/video/upload/v1768995815/intro_smeudq.jpg"
                     controls
                     autoPlay
                     loop

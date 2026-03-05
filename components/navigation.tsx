@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
@@ -74,14 +75,12 @@ export function Navigation() {
           <div className="flex items-center justify-between h-16 md:h-18 px-4 md:px-6 flex-nowrap overflow-hidden">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity mr-4 md:mr-6 lg:mr-8 group shrink-0">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
-                <img className="w-full h-full object-contain" src="/logo.png" alt="TasteMuse Logo" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105 relative">
+                <Image className="object-contain py-1" src="/logo.png" alt="TasteMuse Logo" fill sizes="40px" priority />
               </div>
-              <img
-                src="/tastemuse.png"
-                alt="TasteMuse"
-                className="h-5 md:h-6 w-auto hidden sm:block"
-              />
+              <div className="relative h-5 md:h-6 w-28 hidden sm:block">
+                <Image src="/tastemuse.png" alt="TasteMuse" className="object-contain" fill sizes="112px" priority />
+              </div>
             </Link>
 
             {/* Desktop Navigation Links */}

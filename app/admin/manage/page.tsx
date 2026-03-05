@@ -199,6 +199,9 @@ export default function ManageDataPage() {
                                         <TableRow className="hover:bg-transparent border-b-2">
                                             <TableHead className="font-bold uppercase tracking-wider pl-6">Tên nhà hàng</TableHead>
                                             <TableHead className="font-bold uppercase tracking-wider">Địa chỉ</TableHead>
+                                            <TableHead className="font-bold uppercase tracking-wider text-center">Quận</TableHead>
+                                            <TableHead className="font-bold uppercase tracking-wider text-center">Mô tả</TableHead>
+                                            <TableHead className="font-bold uppercase tracking-wider text-center">Giá</TableHead>
                                             <TableHead className="font-bold uppercase tracking-wider text-center">Trạng thái</TableHead>
                                             <TableHead className="font-bold uppercase tracking-wider text-right pr-6">Hành động</TableHead>
                                         </TableRow>
@@ -206,7 +209,7 @@ export default function ManageDataPage() {
                                     <TableBody>
                                         {loading ? (
                                             <TableRow>
-                                                <TableCell colSpan={4} className="h-64 text-center">
+                                                <TableCell colSpan={7} className="h-64 text-center">
                                                     <div className="flex flex-col items-center gap-4 text-muted-foreground animate-pulse">
                                                         <Loader2 className="w-12 h-12 animate-spin text-primary" />
                                                         <p className="font-bold text-lg">Đang tải dữ liệu...</p>
@@ -215,7 +218,7 @@ export default function ManageDataPage() {
                                             </TableRow>
                                         ) : filteredRestaurants.length === 0 ? (
                                             <TableRow>
-                                                <TableCell colSpan={4} className="h-64 text-center">
+                                                <TableCell colSpan={7} className="h-64 text-center">
                                                     <div className="flex flex-col items-center gap-3">
                                                         <Search className="w-12 h-12 text-muted-foreground/30" />
                                                         <p className="font-bold text-lg text-muted-foreground italic truncate">Không tìm thấy nhà hàng nào khớp với tìm kiếm.</p>
@@ -233,6 +236,27 @@ export default function ManageDataPage() {
                                                     </TableCell>
                                                     <TableCell className="max-w-xs">
                                                         <p className="text-sm font-medium line-clamp-2">{r.address}, {r.ward}, {r.district ? r.district + ', ' : ''}{r.city}</p>
+                                                    </TableCell>
+                                                    <TableCell className="text-center">
+                                                        {r.district ? (
+                                                            <Badge className="bg-green-500 rounded-md">Có</Badge>
+                                                        ) : (
+                                                            <Badge variant="secondary" className="rounded-md">Thiếu</Badge>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="text-center">
+                                                        {r.description && r.description !== "Quán ăn địa phương" ? (
+                                                            <Badge className="bg-green-500 rounded-md">Xong</Badge>
+                                                        ) : (
+                                                            <Badge variant="secondary" className="rounded-md">Thiếu</Badge>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="text-center whitespace-nowrap">
+                                                        {r.min_price && r.max_price ? (
+                                                            <span className="text-sm font-medium">{r.min_price / 1000}k - {r.max_price / 1000}k</span>
+                                                        ) : (
+                                                            <Badge variant="secondary" className="rounded-md">Thiếu</Badge>
+                                                        )}
                                                     </TableCell>
                                                     <TableCell className="text-center">
                                                         <Badge variant={r.is_active ? "default" : "destructive"} className={`rounded-lg shadow-sm border-2 ${r.is_active ? 'bg-green-500 hover:bg-green-600' : ''}`}>

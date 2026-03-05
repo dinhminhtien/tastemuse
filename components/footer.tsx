@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { MapPin, Mail, Phone, ArrowUpRight, Heart } from "lucide-react"
 
 export function Footer() {
@@ -13,8 +14,8 @@ export function Footer() {
             {/* Brand column */}
             <div className="lg:col-span-4 space-y-5">
               <Link href="/" className="inline-flex items-center gap-2.5 group">
-                <div className="w-10 h-10 rounded-xl overflow-hidden transition-transform group-hover:scale-105">
-                  <img src="/logo.png" alt="TasteMuse Logo" className="w-full h-full object-contain" />
+                <div className="w-10 h-10 rounded-xl overflow-hidden transition-transform group-hover:scale-105 relative">
+                  <Image src="/logo.png" alt="TasteMuse Logo" className="object-contain" fill sizes="40px" />
                 </div>
                 <span className="text-2xl font-extrabold gradient-text">TasteMuse</span>
               </Link>
