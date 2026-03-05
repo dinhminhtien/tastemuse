@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { generateEmbedding, generateRAGResponse } from '@/lib/vertex-ai';
+import { generateEmbedding, generateRAGResponse } from '@/lib/gemini-ai';
 import { RAG_CONFIG, ERROR_MESSAGES } from '@/lib/rag-config';
 import { extractFilters, isSearchQuery } from '@/lib/filter-extraction';
 import { hybridSearch, formatHybridContext } from '@/lib/hybrid-ranking';
@@ -9,6 +9,7 @@ import { updateUserTaste } from '@/lib/user-taste';
 import { checkUsageLimit, logUsage } from '@/lib/subscription';
 import type { ChatFilters } from '@/types/database';
 import { getCachedResponse, setCachedResponse } from '@/lib/redis';
+import { addMessage, createConversation } from '@/lib/chat-history';
 
 /**
  * Enhanced RAG Chat API Route
@@ -25,7 +26,7 @@ import { getCachedResponse, setCachedResponse } from '@/lib/redis';
  */
 export async function POST(req: NextRequest) {
   try {
-    const { message, history = [], sessionId, userLocation } = await req.json();
+    const { message, history = [], sessionId, userLocation, conversationId } = await req.json();
 
     if (!message) {
       return NextResponse.json(
@@ -193,6 +194,14 @@ export async function POST(req: NextRequest) {
         updateUserTaste(userId, 'chat_query', {
           searchQuery: message,
         }).catch(err => console.error('Taste update error:', err));
+      }
+
+      // Save messages to chat history (async, non-blocking)
+      if (conversationId) {
+        Promise.all([
+          addMessage(conversationId, 'user', message),
+          addMessage(conversationId, 'assistant', response),
+        ]).catch(err => console.error('Chat history save error:', err));
       }
     }
 

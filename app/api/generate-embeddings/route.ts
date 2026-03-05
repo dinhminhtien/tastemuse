@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { generateEmbedding } from '@/lib/vertex-ai';
+import { generateEmbedding } from '@/lib/gemini-ai';
 import { RAG_CONFIG } from '@/lib/rag-config';
 
 /**

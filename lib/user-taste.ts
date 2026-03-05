@@ -7,7 +7,7 @@
  */
 
 import { supabaseAdmin as supabase } from '@/lib/supabase';
-import { generateEmbedding } from '@/lib/vertex-ai';
+import { generateEmbedding } from '@/lib/gemini-ai';
 
 /* =====================================================
  * WEIGHTS FOR DIFFERENT INTERACTIONS

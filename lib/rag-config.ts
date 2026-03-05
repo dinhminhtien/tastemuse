@@ -18,8 +18,8 @@ export const RAG_CONFIG = {
     EMBEDDING_DIMENSION: 3072,
 
     // LLM
-    LLM_MODEL: 'gemini-1.5-flash',
-    MAX_OUTPUT_TOKENS: 1500,
+    LLM_MODEL: 'gemini-2.5-flash',
+    MAX_OUTPUT_TOKENS: 3072,
     TEMPERATURE: 0.7,
 
     // Chat history

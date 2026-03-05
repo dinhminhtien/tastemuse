@@ -7,7 +7,7 @@
  */
 
 import { supabase, Restaurant, Dish } from '@/lib/supabase';
-import { generateEmbedding } from '@/lib/vertex-ai';
+import { generateEmbedding } from '@/lib/gemini-ai';
 import { RAG_CONFIG } from '@/lib/rag-config';
 
 /* =====================================================

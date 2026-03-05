@@ -4,10 +4,6 @@ import { SYSTEM_PROMPTS } from '@/lib/rag-config';
 // Initialize Vertex AI clients
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-// Vertex AI configuration
-const PROJECT_ID = process.env.VERTEX_AI_PROJECT_ID || '';
-const LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
-
 /**
  * Generate embeddings for text using Vertex AI text-multilingual-embedding-002
  * Note: Using Gemini's embedding model as a fallback since direct Vertex AI requires service account
@@ -65,8 +61,8 @@ export async function generateRAGResponse(
         const model = genAI.getGenerativeModel({
             model: 'gemini-2.5-flash',
             generationConfig: {
-                maxOutputTokens: 1800,
-                temperature: 0.6,
+                maxOutputTokens: 3072,
+                temperature: 0.7,
             },
         });
 

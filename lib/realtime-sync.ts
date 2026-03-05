@@ -9,7 +9,7 @@
  */
 
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
-import { generateEmbedding } from '@/lib/vertex-ai';
+import { generateEmbedding } from '@/lib/gemini-ai';
 import { RAG_CONFIG } from '@/lib/rag-config';
 
 /* =====================================================
