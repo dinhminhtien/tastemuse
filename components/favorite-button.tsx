@@ -87,7 +87,7 @@ export function FavoriteButton({
             if (res.status === 403 && data.code === "PREMIUM_REQUIRED") {
                 toast({
                     title: "✨ Tính năng Premium",
-                    description: "Nâng cấp Premium để lưu yêu thích. Chỉ từ 2.000đ/tháng!",
+                    description: "Nâng cấp Premium để lưu yêu thích. Chỉ từ 29.000đ/tháng!",
                     action: (
                         <Button
                             size="sm"
