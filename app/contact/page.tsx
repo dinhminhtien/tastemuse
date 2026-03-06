@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import emailjs from "@emailjs/browser"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,14 +19,42 @@ export default function ContactPage() {
   })
   const [submitted, setSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission here
-    setSubmitted(true)
-    setTimeout(() => {
-      setSubmitted(false)
-      setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
-    }, 3000)
+    setIsSubmitting(true)
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID as string
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID as string
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string
+
+    const templateParams = {
+      from_name: formData.name,
+      from_email: formData.email,
+      phone_number: formData.phone,
+      subject: formData.subject,
+      message: formData.message,
+      reply_to: formData.email,
+    }
+
+    try {
+      await emailjs.send(serviceId, templateId, templateParams, {
+        publicKey: publicKey,
+      })
+
+      setSubmitted(true)
+      setTimeout(() => {
+        setSubmitted(false)
+        setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
+      }, 3000)
+    } catch (error) {
+      console.error("Gửi email thất bại - CHI TIẾT LỖI:", error)
+      console.log("Dữ liệu gửi lên:", { serviceId, templateId, publicKey, templateParams })
+      alert("Đã có lỗi xảy ra khi gửi tin nhắn, vui lòng kiểm tra Console (F12) để xem chi tiết lỗi.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -176,8 +205,8 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full">
-                    Gửi tin nhắn
+                  <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Đang gửi..." : "Gửi tin nhắn"}
                     <Send className="w-4 h-4 ml-2" />
                   </Button>
                 </form>

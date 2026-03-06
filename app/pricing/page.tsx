@@ -12,6 +12,8 @@ const PLANS = [
         name: "free",
         displayName: "Miễn phí",
         price: 0,
+        originalPrice: undefined as number | undefined,
+        discountBadge: undefined as string | undefined,
         period: "",
         description: "Khám phá ẩm thực với các tính năng cơ bản",
         cta: "Đang sử dụng",
@@ -32,7 +34,9 @@ const PLANS = [
     {
         name: "premium",
         displayName: "Premium",
-        price: 29000,
+        price: 19000,
+        originalPrice: 29000,
+        discountBadge: "Giảm 34%",
         period: "/ tháng",
         description: "Tận hưởng toàn bộ sức mạnh AI của TasteMuse",
         cta: "Nâng cấp ngay",
@@ -279,11 +283,23 @@ function PricingContent() {
                                         <span className="text-4xl font-bold text-foreground">Miễn phí</span>
                                     </div>
                                 ) : (
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-4xl font-bold text-foreground">
-                                            {plan.price.toLocaleString("vi-VN")}đ
-                                        </span>
-                                        <span className="text-muted-foreground">{plan.period}</span>
+                                    <div className="flex flex-col gap-1">
+                                        {plan.originalPrice && plan.discountBadge && (
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-semibold text-white bg-linear-to-r from-red-500 to-rose-600 px-2.5 py-0.5 rounded-full shadow-sm">
+                                                    {plan.discountBadge}
+                                                </span>
+                                                <span className="text-sm font-medium text-muted-foreground line-through decoration-red-500/50">
+                                                    {plan.originalPrice.toLocaleString("vi-VN")}đ
+                                                </span>
+                                            </div>
+                                        )}
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-4xl font-bold text-foreground">
+                                                {plan.price.toLocaleString("vi-VN")}đ
+                                            </span>
+                                            <span className="text-muted-foreground">{plan.period}</span>
+                                        </div>
                                     </div>
                                 )}
                             </div>
