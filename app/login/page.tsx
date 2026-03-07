@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,15 +37,18 @@ function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const error = searchParams.get('error');
+    // Hiển thị lỗi từ search params nếu có
+    useEffect(() => {
+        if (error && !isLoading) {
+            toast({
+                title: 'Lỗi Xác Thực',
+                description: error,
+                variant: 'destructive',
+            });
+        }
+    }, [error, isLoading, toast]);
 
-    // Hiển thị lỗi từ OAuth callback nếu có
-    if (error && !isLoading) {
-        toast({
-            title: 'Lỗi Xác Thực',
-            description: error,
-            variant: 'destructive',
-        });
-    }
+    const next = searchParams.get('next') || '/';
 
     const handleOAuthSignIn = async (provider: AuthProvider) => {
         setIsLoading(true);
@@ -80,7 +83,7 @@ function LoginContent() {
                     title: 'Chào mừng trở lại!',
                     description: 'Bạn đã đăng nhập thành công.',
                 });
-                router.push('/');
+                router.push(next);
             }
         } catch (error: any) {
             toast({

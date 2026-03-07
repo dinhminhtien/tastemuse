@@ -144,7 +144,11 @@ async function syncMissingDocuments() {
                     .single();
 
                 if (docErr) {
-                    console.error(`❌ [Backlog] Doc create failed for restaurant ${r.name}: ${docErr.message}`);
+                    if (docErr.code === '23505') {
+                        console.log(`⚠️ [Backlog] Document already created concurrently for restaurant: ${r.name}`);
+                    } else {
+                        console.error(`❌ [Backlog] Doc create failed for restaurant ${r.name}: ${docErr.message}`);
+                    }
                     continue;
                 }
 
@@ -223,7 +227,11 @@ async function syncMissingDocuments() {
                     .single();
 
                 if (docErr) {
-                    console.error(`❌ [Backlog] Doc create failed for dish ${d.name}: ${docErr.message}`);
+                    if (docErr.code === '23505') {
+                        console.log(`⚠️ [Backlog] Document already created concurrently for dish: ${d.name}`);
+                    } else {
+                        console.error(`❌ [Backlog] Doc create failed for dish ${d.name}: ${docErr.message}`);
+                    }
                     continue;
                 }
 

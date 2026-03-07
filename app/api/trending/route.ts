@@ -57,7 +57,14 @@ export async function GET(req: NextRequest) {
             })
         );
 
-        return NextResponse.json({ success: true, data: enriched });
+        return NextResponse.json(
+            { success: true, data: enriched },
+            {
+                headers: {
+                    'Cache-Control': 's-maxage=60, stale-while-revalidate=300',
+                },
+            }
+        );
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

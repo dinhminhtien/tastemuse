@@ -79,6 +79,7 @@ function PricingContent() {
     const searchParams = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
     const [currentPlan, setCurrentPlan] = useState<string>("free")
+    const [hasUsedTrial, setHasUsedTrial] = useState(false)
     const [openFaq, setOpenFaq] = useState<number | null>(null)
     const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
@@ -137,6 +138,7 @@ function PricingContent() {
                 if (res.ok) {
                     const data = await res.json()
                     setCurrentPlan(data.plan?.name || "free")
+                    setHasUsedTrial(!!data.hasUsedTrial)
                 }
             } catch { }
         }
@@ -227,7 +229,7 @@ function PricingContent() {
             {/* Hero Section */}
             <section className="relative overflow-hidden pt-20 pb-16">
                 <div className="absolute inset-0 bg-linear-to-b from-amber-500/5 via-orange-500/5 to-transparent pointer-events-none" />
-                <div className="relative container mx-auto px-4 text-center">
+                <div className="relative container mx-auto pt-24 md:pt-24 pb-16 px-4 text-center">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
                         <Crown className="h-4 w-4 text-amber-500" />
                         <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
@@ -325,12 +327,12 @@ function PricingContent() {
                                             </Button>
                                             <Button
                                                 onClick={handleTrial}
-                                                disabled={isLoading}
+                                                disabled={isLoading || hasUsedTrial}
                                                 variant="outline"
                                                 className="w-full h-10 text-sm"
                                             >
                                                 <Zap className="h-4 w-4 mr-2" />
-                                                Dùng thử miễn phí 3 ngày
+                                                {hasUsedTrial ? "Đã dùng thử miễn phí" : "Dùng thử miễn phí 3 ngày"}
                                             </Button>
                                         </>
                                     )}

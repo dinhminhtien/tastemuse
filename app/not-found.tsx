@@ -6,7 +6,7 @@ import { Home, ArrowLeft, Search } from "lucide-react"
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-background">
+    <main className="min-h-screen pt-28 md:pt-32 flex items-center justify-center bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center space-y-8">
           <div className="space-y-4">

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { getCurrentUser, signOut, onAuthStateChange } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
+import { isAdmin } from '@/lib/admin-config';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,7 +14,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogOut, User as UserIcon, Heart, Calendar, CreditCard } from 'lucide-react';
+import { LogOut, User as UserIcon, Heart, Calendar, CreditCard, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -144,6 +145,17 @@ export function UserProfile() {
                         <span>Lịch Sử Đăng Ký</span>
                     </Link>
                 </DropdownMenuItem>
+                {isAdmin(user.email) && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/admin/dashboard" className="cursor-pointer text-blue-600 dark:text-blue-400 font-bold">
+                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                <span>Admin Dashboard</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                     className="cursor-pointer text-red-600 dark:text-red-400"

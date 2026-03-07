@@ -7,17 +7,32 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
-import { Search, Menu, MapPin, Phone, Clock, MailIcon } from "lucide-react"
+import { Search, Menu, MapPin, Phone, Clock, MailIcon, ShieldCheck } from "lucide-react"
 import { UserProfile } from "@/components/user-profile"
+import { getCurrentUser, onAuthStateChange } from "@/lib/auth"
+import { isAdmin } from "@/lib/admin-config"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
   const pathname = usePathname()
 
   useEffect(() => {
     setMounted(true)
+
+    // Initial fetch
+    getCurrentUser().then(user => setUserEmail(user?.email || null))
+
+    // Listen to auth changes
+    const subscription = onAuthStateChange((user) => {
+      setUserEmail(user?.email || null)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   useEffect(() => {
@@ -35,6 +50,10 @@ export function Navigation() {
     { href: "/about", label: "Về chúng tôi" },
     { href: "/contact", label: "Liên hệ" }
   ]
+
+  // Add Admin link if user is admin
+  const adminLink = isAdmin(userEmail) ? [{ href: "/admin/dashboard", label: "Admin", isSpecial: true }] : []
+  const allNavLinks = [...adminLink, ...navLinks]
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
@@ -85,15 +104,18 @@ export function Navigation() {
 
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-0.5">
-              {navLinks.map((link) => (
+              {allNavLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative px-3 xl:px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap ${pathname === link.href
+                  className={`relative px-3 xl:px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 whitespace-nowrap flex items-center gap-2 ${pathname === link.href
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                    : (link as any).isSpecial
+                      ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
                     }`}
                 >
+                  {(link as any).isSpecial && <ShieldCheck className="w-4 h-4" />}
                   {link.label}
                 </Link>
               ))}
@@ -131,16 +153,19 @@ export function Navigation() {
                     <Input placeholder="Tìm kiếm món ăn..." className="pl-10 rounded-xl" />
                   </div> */}
                     <div className="flex flex-col gap-1 pt-4">
-                      {navLinks.map((link) => (
+                      {allNavLinks.map((link) => (
                         <Link
                           key={link.href}
                           href={link.href}
                           onClick={() => setIsOpen(false)}
-                          className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${pathname === link.href
+                          className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 ${pathname === link.href
                             ? "bg-primary text-primary-foreground shadow-md"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            : (link as any).isSpecial
+                              ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted"
                             }`}
                         >
+                          {(link as any).isSpecial && <ShieldCheck className="w-5 h-5 text-blue-500" />}
                           {link.label}
                         </Link>
                       ))}

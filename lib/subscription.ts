@@ -217,10 +217,9 @@ export async function getUsageStats(userId: string): Promise<{
 }
 
 /**
- * Start a free trial for a user
+ * Check if the user has ever used a free trial
  */
-export async function startFreeTrial(userId: string): Promise<Subscription | null> {
-    // Check if user already had a trial
+export async function hasUserUsedTrial(userId: string): Promise<boolean> {
     const { data: existingTrial } = await supabaseAdmin
         .from('subscriptions')
         .select('id')
@@ -229,7 +228,17 @@ export async function startFreeTrial(userId: string): Promise<Subscription | nul
         .limit(1)
         .maybeSingle();
 
-    if (existingTrial) {
+    return !!existingTrial;
+}
+
+/**
+ * Start a free trial for a user
+ */
+export async function startFreeTrial(userId: string): Promise<Subscription | null> {
+    // Check if user already had a trial
+    const usedTrial = await hasUserUsedTrial(userId);
+
+    if (usedTrial) {
         return null; // Already used trial
     }
 
