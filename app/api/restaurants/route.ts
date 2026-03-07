@@ -87,15 +87,19 @@ export async function GET(req: NextRequest) {
             throw new Error(`Failed to fetch restaurants: ${error.message}`);
         }
 
-        return NextResponse.json({
-            success: true,
-            data: restaurants,
-            count: restaurants?.length || 0,
-            pagination: {
-                limit,
-                offset,
+        return NextResponse.json(
+            {
+                success: true,
+                data: restaurants,
+                count: restaurants?.length || 0,
+                pagination: { limit, offset },
             },
-        });
+            {
+                headers: {
+                    'Cache-Control': 's-maxage=60, stale-while-revalidate=300',
+                },
+            }
+        );
 
     } catch (error: any) {
         console.error('Error fetching restaurants:', error);

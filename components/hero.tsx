@@ -99,8 +99,8 @@ export function Hero() {
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-foreground/5">
                   <video
                     className="w-full aspect-video rounded-2xl"
-                    src="https://res.cloudinary.com/dkqaygsqc/video/upload/v1768995815/intro_smeudq.mp4"
-                    poster="https://res.cloudinary.com/dkqaygsqc/video/upload/v1768995815/intro_smeudq.jpg"
+                    src="https://res.cloudinary.com/dwdaynkxy/video/upload/v1772872970/EXE101_CP4_Group3_G07_Video_k6vqxw.mp4"
+                    poster="https://res.cloudinary.com/dwdaynkxy/video/upload/v1772872970/EXE101_CP4_Group3_G07_Video_k6vqxw.jpg"
                     controls
                     autoPlay
                     loop

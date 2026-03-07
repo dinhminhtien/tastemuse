@@ -64,7 +64,7 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
     }
 
     return (
-        <main className="min-h-screen">
+        <main className="min-h-screen pt-28 md:pt-32">
             {/* Header with Back Button */}
             <section className="bg-background border-b border-border py-6">
                 <div className="container mx-auto px-4">
