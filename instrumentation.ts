@@ -16,12 +16,13 @@ export async function register() {
         console.log('========================================\n');
 
         try {
-            // Dynamic import to avoid bundling issues
-            const { startRealtimeSync } = await import('@/lib/realtime-sync');
-            await startRealtimeSync();
+            // NOTE: We have migrated away from startRealtimeSync() inside instrumentation.
+            // On Vercel (Serverless), background WebSockets listening for Supabase changes 
+            // will block the execution or simply get suspended.
+            // We now use Supabase Database Webhooks calling into /api/webhooks/embeddings
+            console.log('✅ Application bootstrapped successfully.');
         } catch (error) {
-            console.error('❌ Failed to start Realtime Sync:', error);
-            // Don't crash the server — sync is non-critical
+            console.error('❌ Failed to bootstrap application:', error);
         }
     }
 }
