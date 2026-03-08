@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       if (!guestLimit.allowed) {
         return NextResponse.json(
           {
-            error: '🔒 Bạn cần đăng nhập để tiếp tục sử dụng TasteMuse AI. Đăng nhập miễn phí để có 10 lượt hỏi AI mỗi ngày!',
+            error: '🔒 Bạn cần đăng nhập để tiếp tục sử dụng TasteMuse AI. Đăng nhập miễn phí để có 5 lượt hỏi AI mỗi ngày!',
             code: 'GUEST_LIMIT_EXCEEDED',
             requireLogin: true,
           },

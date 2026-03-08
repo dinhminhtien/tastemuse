@@ -10,48 +10,71 @@ import { supabase } from "@/lib/supabase"
 const PLANS = [
     {
         name: "free",
-        displayName: "Miễn phí",
+        displayName: "Khám phá (Free)",
         price: 0,
+        annualPrice: 0,
         originalPrice: undefined as number | undefined,
         discountBadge: undefined as string | undefined,
         period: "",
-        description: "Khám phá ẩm thực với các tính năng cơ bản",
+        promotion: undefined as string | undefined,
+        description: "Khám phá ẩm thực với các tính năng cơ bản.",
         cta: "Đang sử dụng",
         popular: false,
         features: [
-            { label: "Tìm kiếm món ăn & nhà hàng", included: true, icon: Zap },
-            { label: "Xem đánh giá & nhận xét", included: true, icon: Star },
-            { label: "AI Chatbot (10 câu/ngày)", included: true, icon: MessageSquare },
-            { label: "Gợi ý cơ bản", included: true, icon: Zap },
-            { label: "Lưu yêu thích", included: false, icon: Heart },
-            { label: "Gợi ý AI cá nhân hóa", included: false, icon: Crown },
-            { label: "Tóm tắt đánh giá bằng AI", included: false, icon: Star },
-            { label: "Bộ lọc nâng cao (giá, phổ biến)", included: false, icon: Filter },
-            { label: "Lập kế hoạch bữa ăn", included: false, icon: Calendar },
-            { label: "AI không giới hạn", included: false, icon: Shield },
+            { label: "Tìm kiếm & Xem đánh giá", included: true },
+            { label: "AI Chatbot (5 câu/ngày)", included: true },
+            { label: "Gợi ý ẩm thực cơ bản", included: true },
+            { label: "Bộ lọc nâng cao", included: false },
+            { label: "Lưu danh sách yêu thích", included: false },
+            { label: "Tóm tắt đánh giá bằng AI", included: false },
+            { label: "Lập kế hoạch bữa ăn", included: false },
+            { label: "Hỗ trợ ưu tiên 1-1", included: false },
         ],
     },
     {
         name: "premium",
-        displayName: "Premium",
+        displayName: "Tiêu chuẩn (Standard)",
         price: 19000,
-        originalPrice: 29000,
-        discountBadge: "Giảm 34%",
+        annualPrice: 190000,
+        originalPrice: undefined as number | undefined,
+        discountBadge: undefined as string | undefined,
         period: "/ tháng",
-        description: "Tận hưởng toàn bộ sức mạnh AI của TasteMuse",
+        promotion: "Tặng 3 ngày cho lần đầu đăng ký",
+        description: "Dành cho tín đồ ẩm thực muốn có trợ lý AI thông minh.",
         cta: "Nâng cấp ngay",
         popular: true,
         features: [
-            { label: "Tìm kiếm món ăn & nhà hàng", included: true, icon: Zap },
-            { label: "Xem đánh giá & nhận xét", included: true, icon: Star },
-            { label: "AI Chatbot không giới hạn", included: true, icon: MessageSquare },
-            { label: "Gợi ý AI cá nhân hóa", included: true, icon: Crown },
-            { label: "Lưu yêu thích", included: true, icon: Heart },
-            { label: "Tóm tắt đánh giá bằng AI", included: true, icon: Star },
-            { label: "Bộ lọc nâng cao (giá, phổ biến)", included: true, icon: Filter },
-            { label: "Lập kế hoạch bữa ăn", included: true, icon: Calendar },
-            { label: "AI không giới hạn mọi tính năng", included: true, icon: Shield },
-            { label: "Hỗ trợ ưu tiên", included: true, icon: Shield },
+            { label: "Tìm kiếm & Xem đánh giá", included: true },
+            { label: "AI Chatbot KHÔNG GIỚI HẠN", included: true },
+            { label: "Gợi ý AI CÁ NHÂN HÓA", included: true },
+            { label: "Bộ lọc nâng cao", included: true },
+            { label: "Lưu danh sách yêu thích", included: true },
+            { label: "Tóm tắt đánh giá bằng AI", included: false },
+            { label: "Lập kế hoạch bữa ăn", included: false },
+            { label: "Hỗ trợ ưu tiên 1-1", included: false },
+        ],
+    },
+    {
+        name: "promax",
+        displayName: "Toàn diện (Premium)",
+        price: 39000,
+        annualPrice: 390000,
+        originalPrice: undefined as number | undefined,
+        discountBadge: undefined as string | undefined,
+        period: "/ tháng",
+        promotion: "Tặng 3 ngày cho lần đầu đăng ký",
+        description: "Dành cho người dùng cần kế hoạch ăn uống chi tiết cùng AI.",
+        cta: "Nâng cấp ngay",
+        popular: false,
+        features: [
+            { label: "Tìm kiếm & Xem đánh giá", included: true },
+            { label: "AI Chatbot KHÔNG GIỚI HẠN", included: true },
+            { label: "Gợi ý AI CÁ NHÂN HÓA", included: true },
+            { label: "Bộ lọc nâng cao", included: true },
+            { label: "Lưu danh sách yêu thích", included: true },
+            { label: "Tóm tắt đánh giá bằng AI", included: true },
+            { label: "Lập kế hoạch bữa ăn", included: true },
+            { label: "Hỗ trợ ưu tiên 1-1", included: true },
         ],
     },
 ]
@@ -62,8 +85,8 @@ const FAQ = [
         a: "Có, bạn có thể hủy bất cứ lúc nào. Gói Premium sẽ vẫn hoạt động cho đến hết thời hạn đã thanh toán.",
     },
     {
-        q: "Dùng thử miễn phí hoạt động như thế nào?",
-        a: "Bạn được dùng thử Premium miễn phí 3 ngày. Sau 3 ngày, tài khoản sẽ tự động quay về gói Miễn phí nếu bạn không nâng cấp.",
+        q: "Có ưu đãi gì khi đăng ký gói tháng?",
+        a: "Hiện tại chúng tôi đang có chương trình khuyến mãi: Khi đăng ký gói Premium 1 tháng LẦN ĐẦU TIÊN, bạn sẽ được tặng kèm 3 ngày sử dụng miễn phí (tổng cộng 33 ngày).",
     },
     {
         q: "Thanh toán bằng phương thức nào?",
@@ -71,7 +94,7 @@ const FAQ = [
     },
     {
         q: "Gói miễn phí có những hạn chế gì?",
-        a: "Gói miễn phí giới hạn 10 câu hỏi AI/ngày, không có tính năng lưu yêu thích, bộ lọc nâng cao, và gợi ý cá nhân hóa.",
+        a: "Gói miễn phí giới hạn 5 câu hỏi AI/ngày, không có tính năng lưu yêu thích, bộ lọc nâng cao, và gợi ý cá nhân hóa.",
     },
 ]
 
@@ -79,7 +102,8 @@ function PricingContent() {
     const searchParams = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
     const [currentPlan, setCurrentPlan] = useState<string>("free")
-    const [hasUsedTrial, setHasUsedTrial] = useState(false)
+    const [isEligibleForPromo, setIsEligibleForPromo] = useState(true)
+    const [isAnnual, setIsAnnual] = useState(false)
     const [openFaq, setOpenFaq] = useState<number | null>(null)
     const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
@@ -92,6 +116,7 @@ function PricingContent() {
             handlePaymentReturn(orderCode)
         } else if (paymentStatus === "cancelled") {
             setNotification({ type: "error", message: "Thanh toán đã bị hủy." })
+            window.history.replaceState({}, "", "/pricing")
         }
     }, [searchParams])
 
@@ -120,9 +145,11 @@ function PricingContent() {
                 window.history.replaceState({}, "", "/pricing")
             } else {
                 setNotification({ type: "error", message: data.message || "Có lỗi xảy ra khi xác nhận thanh toán." })
+                window.history.replaceState({}, "", "/pricing")
             }
         } catch (e) {
             setNotification({ type: "error", message: "Có lỗi xảy ra. Vui lòng liên hệ hỗ trợ." })
+            window.history.replaceState({}, "", "/pricing")
         }
     }
 
@@ -138,14 +165,15 @@ function PricingContent() {
                 if (res.ok) {
                     const data = await res.json()
                     setCurrentPlan(data.plan?.name || "free")
-                    setHasUsedTrial(!!data.hasUsedTrial)
+                    // If they have any active or past subscription, they are no longer eligible for the promo
+                    setIsEligibleForPromo(!data.hasUsedTrial)
                 }
             } catch { }
         }
         checkPlan()
     }, [])
 
-    async function handleUpgrade() {
+    async function handleUpgrade(planName: string) {
         setIsLoading(true)
         try {
             const { data: { session } } = await supabase.auth.getSession()
@@ -160,7 +188,7 @@ function PricingContent() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${session.access_token}`,
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ planName }),
             })
 
             const data = await res.json()
@@ -174,34 +202,6 @@ function PricingContent() {
         }
     }
 
-    async function handleTrial() {
-        setIsLoading(true)
-        try {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                window.location.href = "/login"
-                return
-            }
-
-            const res = await fetch("/api/payment/create", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${session.access_token}`,
-                },
-                body: JSON.stringify({ trial: true }),
-            })
-
-            const data = await res.json()
-            if (data.success) {
-                setCurrentPlan("premium")
-            }
-        } catch (e) {
-            console.error("Trial error:", e)
-        } finally {
-            setIsLoading(false)
-        }
-    }
 
     return (
         <div className="min-h-screen bg-background">
@@ -239,141 +239,165 @@ function PricingContent() {
                     <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
                         Chọn gói phù hợp với bạn
                     </h1>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                         Bắt đầu miễn phí, nâng cấp khi bạn cần. Khám phá toàn bộ sức mạnh AI của TasteMuse.
                     </p>
-                    <Link
-                        href="/subscription/history"
-                        className="inline-flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400 hover:underline transition-colors"
-                    >
-                        <Clock className="w-3.5 h-3.5" />
-                        Xem lịch sử đăng ký
-                    </Link>
+
+                    <div className="flex flex-col items-center justify-center space-y-4 mb-4">
+                        <Link
+                            href="/subscription/history"
+                            className="inline-flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400 hover:underline transition-colors mt-2"
+                        >
+                            <Clock className="w-3.5 h-3.5" />
+                            Xem lịch sử đăng ký
+                        </Link>
+                        <div className="flex items-center justify-center p-1 bg-muted rounded-full">
+                            <button
+                                onClick={() => setIsAnnual(false)}
+                                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${!isAnnual ? "bg-background text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+                                    }`}
+                            >
+                                Hàng tháng
+                            </button>
+                            <button
+                                onClick={() => setIsAnnual(true)}
+                                className={`px-6 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${isAnnual ? "bg-background text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+                                    }`}
+                            >
+                                Hàng năm
+                                <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full">
+                                    Tiết kiệm ~17%
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             {/* Plans Grid */}
             <section className="container mx-auto px-4 pb-20">
-                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    {PLANS.map((plan) => (
-                        <div
-                            key={plan.name}
-                            className={`relative rounded-2xl border-2 p-8 transition-all duration-300 ${plan.popular
-                                ? "border-amber-500 shadow-xl shadow-amber-500/10 scale-[1.02]"
-                                : "border-border hover:border-muted-foreground/30"
-                                }`}
-                        >
-                            {/* Popular badge */}
-                            {plan.popular && (
-                                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                                    <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold shadow-lg">
-                                        <Crown className="h-3 w-3" />
-                                        Phổ biến nhất
-                                    </div>
-                                </div>
-                            )}
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
+                    {PLANS.map((plan) => {
+                        const promotionText = (plan.name === "premium" || plan.name === "promax") && isEligibleForPromo
+                            ? plan.promotion
+                            : undefined;
 
-                            <div className="mb-6">
-                                <h3 className="text-xl font-bold text-foreground mb-1">{plan.displayName}</h3>
-                                <p className="text-sm text-muted-foreground">{plan.description}</p>
-                            </div>
-
-                            {/* Price */}
-                            <div className="mb-8">
-                                {plan.price === 0 ? (
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-4xl font-bold text-foreground">Miễn phí</span>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col gap-1">
-                                        {plan.originalPrice && plan.discountBadge && (
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs font-semibold text-white bg-linear-to-r from-red-500 to-rose-600 px-2.5 py-0.5 rounded-full shadow-sm">
-                                                    {plan.discountBadge}
-                                                </span>
-                                                <span className="text-sm font-medium text-muted-foreground line-through decoration-red-500/50">
-                                                    {plan.originalPrice.toLocaleString("vi-VN")}đ
-                                                </span>
-                                            </div>
-                                        )}
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-4xl font-bold text-foreground">
-                                                {plan.price.toLocaleString("vi-VN")}đ
-                                            </span>
-                                            <span className="text-muted-foreground">{plan.period}</span>
+                        return (
+                            <div
+                                key={plan.name}
+                                className={`flex flex-col relative rounded-2xl border p-8 transition-all duration-300 ${plan.popular
+                                    ? "border-amber-500 shadow-xl shadow-amber-500/10 scale-[1.02]"
+                                    : "border-border/50 hover:border-muted-foreground/30"
+                                    }`}
+                            >
+                                {/* Popular badge */}
+                                {plan.popular && (
+                                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                                        <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold shadow-lg">
+                                            Phổ biến nhất
                                         </div>
                                     </div>
                                 )}
-                            </div>
 
-                            {/* CTA */}
-                            {plan.name === "premium" ? (
-                                <div className="space-y-2.5 mb-8">
-                                    {currentPlan === "premium" ? (
-                                        <Button disabled className="w-full h-12">
-                                            <Crown className="h-4 w-4 mr-2" />
-                                            Đang sử dụng Premium
-                                        </Button>
-                                    ) : (
-                                        <>
-                                            <Button
-                                                onClick={handleUpgrade}
-                                                disabled={isLoading}
-                                                className="w-full h-12 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg shadow-orange-500/25"
-                                            >
-                                                <Crown className="h-4 w-4 mr-2" />
-                                                {isLoading ? "Đang xử lý..." : "Nâng cấp ngay"}
-                                                <ArrowRight className="h-4 w-4 ml-2" />
-                                            </Button>
-                                            <Button
-                                                onClick={handleTrial}
-                                                disabled={isLoading || hasUsedTrial}
-                                                variant="outline"
-                                                className="w-full h-10 text-sm"
-                                            >
-                                                <Zap className="h-4 w-4 mr-2" />
-                                                {hasUsedTrial ? "Đã dùng thử miễn phí" : "Dùng thử miễn phí 3 ngày"}
-                                            </Button>
-                                        </>
-                                    )}
-                                </div>
-                            ) : (
                                 <div className="mb-8">
-                                    <Button variant="outline" disabled className="w-full h-12">
-                                        {currentPlan === "free" ? "Đang sử dụng" : "Gói cơ bản"}
-                                    </Button>
-                                </div>
-                            )}
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">{plan.displayName}</h3>
 
-                            {/* Feature List */}
-                            <div className="space-y-3">
-                                {plan.features.map((feature) => (
-                                    <div key={feature.label} className="flex items-center gap-3">
-                                        <div
-                                            className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${feature.included
-                                                ? "bg-emerald-100 dark:bg-emerald-900/30"
-                                                : "bg-muted"
-                                                }`}
-                                        >
-                                            {feature.included ? (
-                                                <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                    {/* Price */}
+                                    <div className="mb-4 min-h-[48px] flex flex-col justify-end">
+                                        {plan.price === 0 ? (
+                                            <div className="flex items-baseline gap-1 mb-1">
+                                                <span className="text-4xl md:text-5xl font-bold text-foreground">Miễn phí</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col gap-1">
+                                                {plan.originalPrice && plan.discountBadge && !isAnnual && (
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-xs font-semibold text-white bg-linear-to-r from-red-500 to-rose-600 px-2.5 py-0.5 rounded-full shadow-sm">
+                                                            {plan.discountBadge}
+                                                        </span>
+                                                        <span className="text-sm font-medium text-muted-foreground line-through decoration-red-500/50">
+                                                            {plan.originalPrice.toLocaleString("vi-VN")}đ
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                <div className="flex flex-col items-start gap-0.5">
+                                                    <div className="flex items-baseline gap-2">
+                                                        <span className="text-4xl md:text-5xl font-bold text-foreground">
+                                                            {((isAnnual ? plan.annualPrice : plan.price) / 1000)}K
+                                                        </span>
+                                                        <span className="text-muted-foreground text-lg">
+                                                            {isAnnual ? "/ năm" : plan.period}
+                                                        </span>
+                                                    </div>
+                                                    {promotionText && !isAnnual && (
+                                                        <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md mt-1">
+                                                            {promotionText}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                                </div>
+
+                                {/* Feature List */}
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {plan.features.map((feature, idx) => (
+                                        <div key={idx} className="flex items-center gap-3">
+                                            <div
+                                                className={`shrink-0 w-[22px] h-[22px] rounded-full flex items-center justify-center ${feature.included
+                                                    ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400"
+                                                    : "bg-muted text-muted-foreground/60"
+                                                    }`}
+                                            >
+                                                {feature.included ? (
+                                                    <Check className="h-3.5 w-3.5 stroke-3" />
+                                                ) : (
+                                                    <X className="h-3.5 w-3.5 stroke-3" />
+                                                )}
+                                            </div>
+                                            <span
+                                                className={`text-[15px] leading-tight ${feature.included
+                                                    ? "text-foreground font-medium"
+                                                    : "text-muted-foreground/70 line-through"
+                                                    }`}
+                                            >
+                                                {feature.label}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* CTA */}
+                                <div className="mt-auto">
+                                    {plan.name === "premium" || plan.name === "promax" ? (
+                                        <div className="w-full">
+                                            {currentPlan === "premium" && plan.name === "premium" && !isAnnual ? (
+                                                <Button disabled className="w-full h-12 bg-transparent border-2 border-amber-500/50">
+                                                    Đang sử dụng
+                                                </Button>
                                             ) : (
-                                                <X className="h-3.5 w-3.5 text-muted-foreground" />
+                                                <Button
+                                                    onClick={() => handleUpgrade(isAnnual ? `${plan.name}_annual` : plan.name)}
+                                                    disabled={isLoading}
+                                                    className={plan.popular ? "w-full h-12 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold flex items-center justify-center text-center shadow-lg shadow-orange-500/25 transition-all duration-300" : "w-full h-12 bg-transparent text-foreground border-2 border-amber-500/50 hover:bg-amber-500/10 font-semibold flex items-center justify-center text-center transition-all duration-300"}
+                                                >
+                                                    {isLoading ? "Đang xử lý..." : (
+                                                        isAnnual ? `${plan.cta} (-17% theo năm)` : plan.cta
+                                                    )}
+                                                </Button>
                                             )}
                                         </div>
-                                        <span
-                                            className={`text-sm ${feature.included
-                                                ? "text-foreground"
-                                                : "text-muted-foreground line-through"
-                                                }`}
-                                        >
-                                            {feature.label}
-                                        </span>
-                                    </div>
-                                ))}
+                                    ) : (
+                                        <Button variant="outline" disabled className="w-full h-12 bg-transparent border-2 border-border/50">
+                                            {currentPlan === "free" ? "Đang sử dụng" : "Bắt đầu miễn phí"}
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
             </section>
 

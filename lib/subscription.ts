@@ -32,10 +32,10 @@ async function getFreePlan(): Promise<Plan> {
             display_name: 'Miễn phí',
             price: 0,
             duration_days: 0,
-            ai_limit_per_day: 10,
+            ai_limit_per_day: 5,
             features_json: {
                 ai_chat: true,
-                ai_chat_limit: 10,
+                ai_chat_limit: 5,
                 basic_search: true,
                 view_reviews: true,
                 basic_recommendations: true,
@@ -217,29 +217,30 @@ export async function getUsageStats(userId: string): Promise<{
 }
 
 /**
- * Check if the user has ever used a free trial
+ * Check if the user has ever had a paid active subscription
  */
-export async function hasUserUsedTrial(userId: string): Promise<boolean> {
-    const { data: existingTrial } = await supabaseAdmin
+export async function hasUserPaidBefore(userId: string): Promise<boolean> {
+    const { data: pastPaidSub } = await supabaseAdmin
         .from('subscriptions')
         .select('id')
         .eq('user_id', userId)
-        .eq('is_trial', true)
+        .eq('is_trial', false) // Exclude trials
         .limit(1)
         .maybeSingle();
 
-    return !!existingTrial;
+    return !!pastPaidSub;
 }
 
 /**
  * Start a free trial for a user
  */
 export async function startFreeTrial(userId: string): Promise<Subscription | null> {
-    // Check if user already had a trial
-    const usedTrial = await hasUserUsedTrial(userId);
+    // Check if user has already paid before (for trial eligibility if trials were still a thing)
+    // NOTE: Free trials are currently disabled in UI flow but keeping the function intact
+    const paidBefore = await hasUserPaidBefore(userId);
 
-    if (usedTrial) {
-        return null; // Already used trial
+    if (paidBefore) {
+        return null; // Already used trial / or already a paid user
     }
 
     // Get premium plan

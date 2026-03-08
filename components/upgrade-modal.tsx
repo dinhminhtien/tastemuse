@@ -21,7 +21,7 @@ interface UpgradeModalProps {
 }
 
 const FREE_FEATURES = [
-    { icon: MessageSquare, label: "AI Chatbot (10 câu/ngày)", included: true },
+    { icon: MessageSquare, label: "AI Chatbot (5 câu/ngày)", included: true },
     { icon: Zap, label: "Tìm kiếm cơ bản", included: true },
     { icon: Star, label: "Xem đánh giá", included: true },
     { icon: Zap, label: "Gợi ý cơ bản", included: true },
@@ -72,7 +72,7 @@ export function UpgradeModal({
 
                     {/* Price badge */}
                     <div className="mt-4 inline-flex items-baseline gap-1 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                        <span className="text-2xl font-bold">29.000đ</span>
+                        <span className="text-2xl font-bold">19.000đ</span>
                         <span className="text-sm text-white/80">/ tháng</span>
                     </div>
                 </div>
@@ -101,7 +101,7 @@ export function UpgradeModal({
                             className="w-full h-11 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg shadow-orange-500/25 transition-all"
                         >
                             <Crown className="h-4 w-4 mr-2" />
-                            {isLoading ? "Đang xử lý..." : "Nâng cấp ngay — 29.000đ/tháng"}
+                            {isLoading ? "Đang xử lý..." : "Nâng cấp ngay — 19.000đ/tháng"}
                         </Button>
                         <Button
                             onClick={onStartTrial}

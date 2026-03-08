@@ -97,6 +97,7 @@ export async function createPayOSPayment(
     cancelUrl: string,
     buyerName?: string,
     buyerEmail?: string,
+    planName?: string
 ): Promise<{ checkoutUrl: string; orderCode: number; paymentId: string }> {
     const orderCode = generateOrderCode();
     // PayOS description limit: 9 chars for non-linked bank accounts
@@ -150,10 +151,15 @@ export async function createPayOSPayment(
     if (buyerName) requestBody.buyerName = buyerName;
     if (buyerEmail) requestBody.buyerEmail = buyerEmail;
 
+    let itemName = 'TasteMuse Premium - 1 Tháng';
+    if (planName === 'promax') itemName = 'TasteMuse Premium Plus - 1 Tháng';
+    if (planName === 'premium_annual') itemName = 'TasteMuse Premium - 1 Năm';
+    if (planName === 'promax_annual') itemName = 'TasteMuse Premium Plus - 1 Năm';
+
     // Add items array (PayOS requires at least describing the product)
     requestBody.items = [
         {
-            name: 'TasteMuse Premium - 30 ngày',
+            name: itemName,
             quantity: 1,
             price: amount,
         },

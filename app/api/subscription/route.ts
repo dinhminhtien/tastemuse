@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { getUserPlan, getUsageStats, hasUserUsedTrial } from '@/lib/subscription';
+import { getUserPlan, getUsageStats, hasUserPaidBefore } from '@/lib/subscription';
 
 /**
  * GET /api/subscription — Get current user's plan and subscription info
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
         const [planInfo, usageStats, usedTrial] = await Promise.all([
             getUserPlan(user.id),
             getUsageStats(user.id),
-            hasUserUsedTrial(user.id),
+            hasUserPaidBefore(user.id),
         ]);
 
         return NextResponse.json({

@@ -5,7 +5,7 @@ import { getUserPlan, startFreeTrial } from '@/lib/subscription';
 
 /**
  * POST /api/payment/create — Create a payment order for plan upgrade
- * Body: { plan_name?: string, trial?: boolean }
+ * Body: { planName?: string }
  */
 export async function POST(req: NextRequest) {
     try {
@@ -29,42 +29,25 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { trial } = body;
+        const planName = body.planName || 'premium';
 
-        // Check if user is already premium
+        // Check if user is already premium on this exact plan
         const currentPlan = await getUserPlan(user.id);
-        if (currentPlan.isPremium) {
+        if (currentPlan.isPremium && planName === 'premium') {
             return NextResponse.json(
                 { error: 'Bạn đã là thành viên Premium!', isPremium: true },
                 { status: 400 }
             );
         }
 
-        // Handle free trial request
-        if (trial) {
-            const subscription = await startFreeTrial(user.id);
-            if (!subscription) {
-                return NextResponse.json(
-                    { error: 'Bạn đã sử dụng dùng thử miễn phí trước đó rồi.' },
-                    { status: 400 }
-                );
-            }
-            return NextResponse.json({
-                success: true,
-                trial: true,
-                message: 'Đã kích hoạt dùng thử Premium 3 ngày!',
-                subscription,
-            });
-        }
-
-        // Get premium plan
-        const { data: premiumPlan, error: planError } = await supabaseAdmin
+        // Get requested plan
+        const { data: requestedPlan, error: planError } = await supabaseAdmin
             .from('plans')
             .select('*')
-            .eq('name', 'premium')
+            .eq('name', planName)
             .single();
 
-        if (planError || !premiumPlan) {
+        if (planError || !requestedPlan) {
             return NextResponse.json(
                 { error: 'Không tìm thấy gói Premium' },
                 { status: 500 }
@@ -75,12 +58,13 @@ export async function POST(req: NextRequest) {
         const origin = req.headers.get('origin') || 'http://localhost:3000';
         const result = await createPayOSPayment(
             user.id,
-            premiumPlan.id,
-            premiumPlan.price,
+            requestedPlan.id,
+            requestedPlan.price,
             `${origin}/pricing?payment=success`,
             `${origin}/pricing?payment=cancelled`,
             user.user_metadata?.full_name,
-            user.email,
+            user.user_metadata?.email,
+            requestedPlan.name
         );
 
         return NextResponse.json({

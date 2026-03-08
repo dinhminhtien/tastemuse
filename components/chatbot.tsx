@@ -52,7 +52,7 @@ export function Chatbot() {
   })
 
   // Freemium state
-  const [usage, setUsage] = useState<UsageInfo>({ used: 0, limit: 10, remaining: 10, isPremium: false })
+  const [usage, setUsage] = useState<UsageInfo>({ used: 0, limit: 5, remaining: 5, isPremium: false })
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [guestQueryCount, setGuestQueryCount] = useState<number>(() => {
@@ -162,8 +162,8 @@ export function Chatbot() {
         const data = await res.json()
         setUsage({
           used: data.ai_chat?.used || 0,
-          limit: data.ai_chat?.limit || 10,
-          remaining: data.ai_chat?.remaining || 10,
+          limit: data.ai_chat?.limit || 5,
+          remaining: data.ai_chat?.remaining || 5,
           isPremium: data.isPremium || false,
         })
       }
@@ -361,7 +361,7 @@ export function Chatbot() {
             ...prev,
             {
               role: "assistant",
-              content: "🔒 Bạn cần đăng nhập để tiếp tục sử dụng TasteMuse AI. Đăng nhập miễn phí để có 10 lượt hỏi AI mỗi ngày!",
+              content: "🔒 Bạn cần đăng nhập để tiếp tục sử dụng TasteMuse AI. Đăng nhập miễn phí để có 5 lượt hỏi AI mỗi ngày!",
               timestamp: Date.now(),
             },
           ])
@@ -914,7 +914,7 @@ export function Chatbot() {
                         <div className="flex justify-center">
                           <div className="bg-linear-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg p-4 text-center space-y-3">
                             <p className="text-sm font-medium">🔐 Đăng nhập để tiếp tục</p>
-                            <p className="text-xs text-muted-foreground">Đăng nhập miễn phí để nhận 10 lượt hỏi AI mỗi ngày</p>
+                            <p className="text-xs text-muted-foreground">Đăng nhập miễn phí để nhận 5 lượt hỏi AI mỗi ngày</p>
                             <Button
                               onClick={() => window.location.href = "/login"}
                               size="sm"
