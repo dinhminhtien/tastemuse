@@ -168,8 +168,14 @@ export async function POST(req: NextRequest) {
     if (Object.keys(filters).length > 0) {
       const filterInfo: string[] = [];
       if (filters.mood) filterInfo.push(`Tâm trạng: ${filters.mood}`);
-      if (filters.budget?.min || filters.budget?.max) {
-        filterInfo.push(`Ngân sách: ${filters.budget.min ? filters.budget.min.toLocaleString() + 'đ' : '?'} - ${filters.budget.max ? filters.budget.max.toLocaleString() + 'đ' : '?'}`);
+      if (filters.budget && (filters.budget.min !== undefined || filters.budget.max !== undefined)) {
+        const minStr = filters.budget.min !== undefined && filters.budget.min !== null
+          ? filters.budget.min.toLocaleString() + 'đ'
+          : '0đ';
+        const maxStr = filters.budget.max !== undefined && filters.budget.max !== null
+          ? filters.budget.max.toLocaleString() + 'đ'
+          : '?';
+        filterInfo.push(`Ngân sách: ${minStr} - ${maxStr}`);
       }
       if (filters.maxDistance) filterInfo.push(`Khoảng cách tối đa: ${filters.maxDistance}km`);
       if (filters.cuisineType) filterInfo.push(`Loại ẩm thực: ${filters.cuisineType}`);

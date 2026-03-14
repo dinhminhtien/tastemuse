@@ -49,7 +49,6 @@ Chú ý:
 - "từ 100-200k" → budget.min = 100000, budget.max = 200000
 - "gần đây" / "gần" → maxDistance = 3
 - "đặc sản" / "nổi tiếng" → isSignature = true
-- "đặc sản" / "nổi tiếng" → isSignature = true
 - "ăn trưa" → time = "12:00"
 - "ăn tối" → time = "19:00"
 - "ăn sáng" → time = "08:00"
@@ -73,7 +72,12 @@ Chú ý:
         // Clean up null values
         const cleaned: ChatFilters = {};
         if (filters.mood) cleaned.mood = filters.mood;
-        if (filters.budget?.min || filters.budget?.max) cleaned.budget = filters.budget;
+        if (filters.budget && (filters.budget.min !== null || filters.budget.max !== null)) {
+            cleaned.budget = {
+                min: filters.budget.min ?? 0,
+                max: filters.budget.max ?? undefined,
+            };
+        }
         if (filters.maxDistance) cleaned.maxDistance = filters.maxDistance;
         if (filters.cuisineType) cleaned.cuisineType = filters.cuisineType;
         if (filters.tags && filters.tags.length > 0) cleaned.tags = filters.tags;

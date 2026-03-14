@@ -45,13 +45,13 @@ export async function GET(req: NextRequest) {
         // Let's get plans first to be sure.
 
         const { data: plans } = await supabaseAdmin.from('plans').select('*')
-        const premiumPlan = plans?.find(p => p.name === 'premium')
+        const nonFreePlanIds = plans?.filter(p => p.name !== 'free').map(p => p.id) || []
 
         const { count: premiumCount } = await supabaseAdmin
             .from('subscriptions')
             .select('*', { count: 'exact', head: true })
             .eq('status', 'active')
-            .eq('plan_id', premiumPlan?.id)
+            .in('plan_id', nonFreePlanIds)
 
         // 3. Revenue
         const { data: payments, error: paymentsError } = await supabaseAdmin
