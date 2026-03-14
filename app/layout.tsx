@@ -8,6 +8,7 @@ import { Footer } from "@/components/footer"
 import { ChatbotLazy } from "@/components/chatbot-lazy"
 import { PageTransition } from "@/components/page-transition"
 import { BackToTop } from "@/components/back-to-top"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 const beVietnamPro = Be_Vietnam_Pro({
@@ -48,12 +49,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="vi" className={`${beVietnamPro.variable} ${jetbrainsMono.variable}`}>
+    <html lang="vi" className={`${beVietnamPro.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
       </head>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <Navigation />
         <PageTransition>
           {children}
@@ -63,6 +64,7 @@ export default function RootLayout({
         <ChatbotLazy />
         <Analytics />
         <SpeedInsights />
+        <Toaster />
       </body>
     </html>
   )

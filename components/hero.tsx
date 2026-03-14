@@ -99,14 +99,18 @@ export function Hero() {
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-foreground/5">
                   <video
                     className="w-full aspect-video rounded-2xl"
-                    src="https://res.cloudinary.com/dwdaynkxy/video/upload/v1772872970/EXE101_CP4_Group3_G07_Video_k6vqxw.mp4"
                     poster="https://res.cloudinary.com/dwdaynkxy/video/upload/v1772872970/EXE101_CP4_Group3_G07_Video_k6vqxw.jpg"
                     controls
                     autoPlay
                     loop
                     muted
                     playsInline
+                    preload="auto"
                   >
+                    <source 
+                      src="https://res.cloudinary.com/dwdaynkxy/video/upload/v1772872970/EXE101_CP4_Group3_G07_Video_k6vqxw.mp4" 
+                      type="video/mp4" 
+                    />
                     Trình duyệt của bạn không hỗ trợ video.
                   </video>
                   {/* Play overlay hint */}
