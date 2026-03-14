@@ -31,11 +31,14 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const planName = body.planName || 'premium';
 
-        // Check if user is already premium on this exact plan
+        // Check if user is already premium
         const currentPlan = await getUserPlan(user.id);
-        if (currentPlan.isPremium && planName === 'premium') {
+        if (currentPlan.isPremium) {
             return NextResponse.json(
-                { error: 'Bạn đã là thành viên Premium!', isPremium: true },
+                { 
+                    error: `Bạn đang sử dụng gói ${currentPlan.plan.display_name}. Vui lòng chờ hết hạn để đăng ký gói mới!`, 
+                    isPremium: true 
+                },
                 { status: 400 }
             );
         }

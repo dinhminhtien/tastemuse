@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
         // Check if PayOS credentials are configured — if so, verify via API
         const PAYOS_CLIENT_ID = process.env.PAYOS_CLIENT_ID || '';
         const PAYOS_API_KEY = process.env.PAYOS_API_KEY || '';
+        const isStubEnabled = process.env.ENABLE_PAYMENT_STUB === 'true';
 
         if (PAYOS_CLIENT_ID && PAYOS_API_KEY) {
             // Verify payment status via PayOS Get Payment Link Info API
@@ -67,13 +68,23 @@ export async function POST(req: NextRequest) {
             const verifyResult = await verifyResponse.json();
 
             if (verifyResult.code !== '00' || verifyResult.data?.status !== 'PAID') {
-                console.log(`⏳ Payment not yet confirmed for order: ${orderCode}, status: ${verifyResult.data?.status}`);
+                const payosStatus = verifyResult.data?.status || 'UNKNOWN';
+                console.log(`⏳ Payment not yet confirmed for order: ${orderCode}, status: ${payosStatus}`);
                 return NextResponse.json({
                     success: false,
-                    status: verifyResult.data?.status || 'UNKNOWN',
-                    message: 'Thanh toán chưa được xác nhận. Vui lòng chờ...',
+                    status: payosStatus,
+                    message: `Thanh toán chưa được xác nhận (Trạng thái: ${payosStatus}). Vui lòng hoàn tất thanh toán hoặc thử lại sau.`,
                 });
             }
+        } else if (!isStubEnabled) {
+            // No credentials and No stub mode = Security Error
+            console.error('❌ Payment verification failed: Missing PayOS credentials and stub mode is disabled');
+            return NextResponse.json({
+                success: false,
+                message: 'Không thể xác thực thanh toán. Vui lòng liên hệ hỗ trợ.',
+            }, { status: 500 });
+        } else {
+            console.warn(`⚠️ Skipping PayOS verification for order ${orderCode} (STUB MODE ENABLED)`);
         }
 
         // Activate the subscription (handles both stub and real payments)

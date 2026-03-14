@@ -122,11 +122,19 @@ export async function createPayOSPayment(
         throw new Error(`Failed to create payment record: ${dbError?.message}`);
     }
 
-    // If PayOS credentials aren't configured, return a stub
-    if (!PAYOS_CLIENT_ID || !PAYOS_API_KEY || !PAYOS_CHECKSUM_KEY) {
-        console.warn('⚠️ PayOS credentials not configured – returning stub checkout URL');
+    // Check configuration
+    const isStubEnabled = process.env.ENABLE_PAYMENT_STUB === 'true';
+    const hasConfig = PAYOS_CLIENT_ID && PAYOS_API_KEY && PAYOS_CHECKSUM_KEY;
+
+    if (!hasConfig && !isStubEnabled) {
+        throw new Error('Cấu hình thanh toán PayOS chưa hoàn thiện. Vui lòng liên hệ quản trị viên.');
+    }
+
+    // If PayOS credentials aren't configured but stub is enabled, return a stub
+    if (!hasConfig && isStubEnabled) {
+        console.warn('⚠️ PayOS credentials not configured – returning stub checkout URL (STUB MODE ENABLED)');
         return {
-            checkoutUrl: `${returnUrl}?orderCode=${orderCode}&status=PAID&stub=true`,
+            checkoutUrl: `${returnUrl}&orderCode=${orderCode}&status=PAID&stub=true`,
             orderCode,
             paymentId: payment.id,
         };

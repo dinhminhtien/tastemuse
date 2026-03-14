@@ -88,11 +88,12 @@ export async function getUserPlan(userId: string): Promise<UserPlanInfo> {
                 ? Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
                 : null;
 
+            const isFree = plan.name === 'free';
             return {
                 plan,
                 subscription: subscription as unknown as Subscription,
-                isFreePlan: plan.name === 'free',
-                isPremium: plan.name === 'premium',
+                isFreePlan: isFree,
+                isPremium: !isFree,
                 isTrial: subscription.is_trial || false,
                 daysRemaining,
             };

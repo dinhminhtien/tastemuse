@@ -139,7 +139,8 @@ function PricingContent() {
             const data = await res.json()
 
             if (data.success) {
-                setCurrentPlan("premium")
+                // Refresh plan info from server
+                await checkPlan()
                 setNotification({ type: "success", message: "🎉 Nâng cấp Premium thành công! Tận hưởng AI không giới hạn nhé!" })
                 // Clean up URL params
                 window.history.replaceState({}, "", "/pricing")
@@ -154,24 +155,25 @@ function PricingContent() {
     }
 
     useEffect(() => {
-        async function checkPlan() {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) return
-
-            try {
-                const res = await fetch("/api/subscription", {
-                    headers: { Authorization: `Bearer ${session.access_token}` },
-                })
-                if (res.ok) {
-                    const data = await res.json()
-                    setCurrentPlan(data.plan?.name || "free")
-                    // If they have any active or past subscription, they are no longer eligible for the promo
-                    setIsEligibleForPromo(!data.hasUsedTrial)
-                }
-            } catch { }
-        }
         checkPlan()
     }, [])
+
+    async function checkPlan() {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return
+
+        try {
+            const res = await fetch("/api/subscription", {
+                headers: { Authorization: `Bearer ${session.access_token}` },
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setCurrentPlan(data.plan?.name || "free")
+                // If they have any active or past subscription, they are no longer eligible for the promo
+                setIsEligibleForPromo(!data.hasUsedTrial)
+            }
+        } catch { }
+    }
 
     async function handleUpgrade(planName: string) {
         setIsLoading(true)
@@ -278,6 +280,7 @@ function PricingContent() {
             <section className="container mx-auto px-4 pb-20">
                 <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
                     {PLANS.map((plan) => {
+                        const isCurrentPlan = currentPlan === plan.name || currentPlan === `${plan.name}_annual`;
                         const promotionText = (plan.name === "premium" || plan.name === "promax") && isEligibleForPromo
                             ? plan.promotion
                             : undefined;
@@ -285,13 +288,24 @@ function PricingContent() {
                         return (
                             <div
                                 key={plan.name}
-                                className={`flex flex-col relative rounded-2xl border p-8 transition-all duration-300 ${plan.popular
-                                    ? "border-amber-500 shadow-xl shadow-amber-500/10 scale-[1.02]"
-                                    : "border-border/50 hover:border-muted-foreground/30"
+                                className={`flex flex-col relative rounded-2xl border p-8 transition-all duration-300 ${isCurrentPlan
+                                    ? "border-emerald-500 shadow-xl shadow-emerald-500/10 scale-[1.03] bg-emerald-50/10 dark:bg-emerald-500/5 ring-2 ring-emerald-500/50"
+                                    : plan.popular
+                                        ? "border-amber-500 shadow-xl shadow-amber-500/10 scale-[1.02]"
+                                        : "border-border/50 hover:border-muted-foreground/30"
                                     }`}
                             >
+                                {/* Current Plan Badge */}
+                                {isCurrentPlan && (
+                                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+                                        <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold shadow-lg uppercase tracking-wider">
+                                            <CheckCircle2 className="w-3 h-3" /> Gói của bạn
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Popular badge */}
-                                {plan.popular && (
+                                {plan.popular && !isCurrentPlan && (
                                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                                         <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold shadow-lg">
                                             Phổ biến nhất
@@ -300,7 +314,12 @@ function PricingContent() {
                                 )}
 
                                 <div className="mb-8">
-                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">{plan.displayName}</h3>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{plan.displayName}</h3>
+                                        {isCurrentPlan && (
+                                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full uppercase">Active</span>
+                                        )}
+                                    </div>
 
                                     {/* Price */}
                                     <div className="mb-4 min-h-[48px] flex flex-col justify-end">
@@ -373,21 +392,41 @@ function PricingContent() {
                                 <div className="mt-auto">
                                     {plan.name === "premium" || plan.name === "promax" ? (
                                         <div className="w-full">
-                                            {currentPlan === "premium" && plan.name === "premium" && !isAnnual ? (
-                                                <Button disabled className="w-full h-12 bg-transparent border-2 border-amber-500/50">
-                                                    Đang sử dụng
-                                                </Button>
-                                            ) : (
-                                                <Button
-                                                    onClick={() => handleUpgrade(isAnnual ? `${plan.name}_annual` : plan.name)}
-                                                    disabled={isLoading}
-                                                    className={plan.popular ? "w-full h-12 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold flex items-center justify-center text-center shadow-lg shadow-orange-500/25 transition-all duration-300" : "w-full h-12 bg-transparent text-foreground border-2 border-amber-500/50 hover:bg-amber-500/10 font-semibold flex items-center justify-center text-center transition-all duration-300"}
-                                                >
-                                                    {isLoading ? "Đang xử lý..." : (
-                                                        isAnnual ? `${plan.cta} (-17% theo năm)` : plan.cta
-                                                    )}
-                                                </Button>
-                                            )}
+                                            {(() => {
+                                                const isCurrent = currentPlan === plan.name || currentPlan === `${plan.name}_annual`;
+                                                const hasOtherPaid = currentPlan !== 'free' && !isCurrent;
+
+                                                if (isCurrent) {
+                                                    return (
+                                                        <Button disabled className="w-full h-12 border-2 border-amber-500 text-amber-600 bg-amber-500/5 dark:bg-amber-500/10">
+                                                            Đang sử dụng
+                                                        </Button>
+                                                    );
+                                                }
+
+                                                if (hasOtherPaid) {
+                                                    return (
+                                                        <Button disabled className="w-full h-12 border-2 border-border bg-muted text-muted-foreground">
+                                                            Đã có gói hoạt động
+                                                        </Button>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <Button
+                                                        onClick={() => handleUpgrade(isAnnual ? `${plan.name}_annual` : plan.name)}
+                                                        disabled={isLoading}
+                                                        className={plan.popular
+                                                            ? "w-full h-12 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold flex items-center justify-center text-center shadow-lg shadow-orange-500/25 transition-all duration-300"
+                                                            : "w-full h-12 bg-transparent text-foreground border-2 border-amber-500/50 hover:bg-amber-500/10 font-semibold flex items-center justify-center text-center transition-all duration-300"
+                                                        }
+                                                    >
+                                                        {isLoading ? "Đang xử lý..." : (
+                                                            isAnnual ? `${plan.cta} (-17% theo năm)` : plan.cta
+                                                        )}
+                                                    </Button>
+                                                );
+                                            })()}
                                         </div>
                                     ) : (
                                         <Button variant="outline" disabled className="w-full h-12 bg-transparent border-2 border-border/50">

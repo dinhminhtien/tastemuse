@@ -284,11 +284,11 @@ export default function SubscriptionHistoryPage() {
                                             <Card key={sub.id} className="p-5 border shadow-sm hover:shadow-md transition-shadow">
                                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                     <div className="flex items-start gap-3">
-                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${sub.plans?.name === 'premium'
+                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${sub.plans?.name !== 'free'
                                                             ? 'bg-amber-500/10'
                                                             : 'bg-muted'
                                                             }`}>
-                                                            {sub.plans?.name === 'premium' ? (
+                                                            {sub.plans?.name !== 'free' ? (
                                                                 <Crown className="w-5 h-5 text-amber-500" />
                                                             ) : (
                                                                 <Zap className="w-5 h-5 text-muted-foreground" />
