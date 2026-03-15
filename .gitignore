@@ -40,3 +40,6 @@ next-env.d.ts
 # sql
 /sql
 *.sql
+
+# script
+/scripts

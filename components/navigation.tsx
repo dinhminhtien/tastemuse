@@ -145,53 +145,42 @@ export function Navigation() {
                     <Menu className="w-5 h-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] sm:w-[380px]">
+                <SheetContent side="right" className="w-[65%] sm:max-w-sm p-0 flex flex-col border-l-0 shadow-2xl bg-background/98 backdrop-blur-xl">
                   <SheetTitle className="sr-only">Menu điều hướng</SheetTitle>
-                  <nav className="flex flex-col gap-4 mt-8">
-                    {/* <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <Input placeholder="Tìm kiếm món ăn..." className="pl-10 rounded-xl" />
-                  </div> */}
-                    <div className="flex flex-col gap-1 pt-4">
-                      {allNavLinks.map((link) => (
-                        <Link
-                          key={link.href}
-                          href={link.href}
-                          onClick={() => setIsOpen(false)}
-                          className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 ${pathname === link.href
-                            ? "bg-primary text-primary-foreground shadow-md"
-                            : (link as any).isSpecial
-                              ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                            }`}
-                        >
-                          {(link as any).isSpecial && <ShieldCheck className="w-5 h-5 text-blue-500" />}
-                          {link.label}
-                        </Link>
-                      ))}
-                    </div>
-                    <div className="border-t border-border pt-4 mt-4">
-                      <div className="flex flex-col gap-2">
-                        <div className="px-4 py-2">
-                          <UserProfile />
-                        </div>
-                        <Button variant="ghost" className="justify-start rounded-xl">
-                          <MapPin className="w-5 h-5 mr-2" />
-                          Cần Thơ
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="border-t border-border pt-4 mt-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Phone className="w-4 h-4" />
-                        <span>0896723226</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>8:00 AM - 10:00 PM</span>
-                      </div>
+
+                  {/* Top spacing for close button */}
+                  <div className="h-20 shrink-0" />
+
+                  <nav className="flex-1 px-8 py-4 flex flex-col">
+                    <div className="flex flex-col gap-6">
+                      {allNavLinks.map((link) => {
+                        const isActive = pathname === link.href;
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setIsOpen(false)}
+                            className={`group relative py-1 text-[15px] font-bold tracking-wider transition-all duration-300 w-fit ${isActive
+                              ? "text-primary"
+                              : "text-foreground/80 hover:text-primary"
+                              }`}
+                          >
+                            {link.label}
+                            {/* Underline for active state, using TasteMuse's primary reddish-orange */}
+                            <div className={`absolute -bottom-1 left-0 h-[3px] bg-primary transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+                          </Link>
+                        );
+                      })}
                     </div>
                   </nav>
+
+                  {/* Actions (Login/Register) */}
+                  <div className="px-8 py-6 border-t border-dashed border-border/60">
+                    <div className="flex flex-col gap-4">
+                      <div className="text-xs font-bold tracking-widest text-muted-foreground mb-1">Tài khoản</div>
+                      <UserProfile />
+                    </div>
+                  </div>
                 </SheetContent>
               </Sheet>
             ) : (

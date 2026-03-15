@@ -96,7 +96,7 @@ export function Footer() {
               </ul>
             </div>
 
-            {/* Contact info (GreenShield-inspired with accent border) */}
+            {/* Contact info */}
             <div className="lg:col-span-4 space-y-5">
               <h4 className="font-bold text-foreground flex items-center gap-2">
                 <Phone className="w-4 h-4 text-primary" />
@@ -114,20 +114,20 @@ export function Footer() {
                 </div>
                 <div className="flex items-start gap-3 text-sm">
                   <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                    <Mail className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground text-sm">Email</div>
-                    <div className="text-muted-foreground">tastemusehihi@gmail.com</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 text-sm">
-                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                     <Phone className="w-4 h-4 text-primary" />
                   </div>
                   <div>
                     <div className="font-semibold text-foreground text-sm">Điện thoại</div>
                     <div className="text-muted-foreground">0896.723.226</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 text-sm">
+                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                    <Mail className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground text-sm">Email</div>
+                    <div className="text-muted-foreground">tastemusehihi@gmail.com</div>
                   </div>
                 </div>
               </div>
@@ -138,13 +138,8 @@ export function Footer() {
           <div className="mt-12 pt-8 border-t border-border/50">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-muted-foreground text-sm">
-                &copy; {new Date().getFullYear()} TasteMuse. Bản quyền thuộc về chúng tôi.
+                &copy; {new Date().getFullYear()} TasteMuse.
               </p>
-              <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                <span>Được xây dựng với</span>
-                <Heart className="w-3.5 h-3.5 text-primary fill-primary" />
-                <span>tại Cần Thơ</span>
-              </div>
             </div>
           </div>
         </div>
