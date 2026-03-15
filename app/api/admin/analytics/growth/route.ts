@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
         const { data: recentLogs, error: logsError } = await supabaseAdmin
             .from('usage_logs')
-            .select('user_id, created_at, action_type')
+            .select('user_id, created_at, action_type, metadata')
             .gte('created_at', isoThirtyDaysAgo)
 
         if (logsError) throw logsError;
@@ -65,14 +65,69 @@ export async function GET(req: NextRequest) {
             { name: 'Actions', value: funnelStats.high_value_actions }
         ];
 
-        // 3. Real Cohort Retention (Empty arrays if no complex tracking)
-        // Since we don't have historical weekly user creation joined with usage easily here without raw SQL,
-        // we'll return an empty array format that the UI can handle or just zeroed.
+        // 3. Real Cohort Retention
+        // We need user registration dates
+        const { data: { users: allAuthUsers } } = await supabaseAdmin.auth.admin.listUsers();
+        const userJoinDates: Record<string, Date> = {};
+        allAuthUsers.forEach(u => {
+            userJoinDates[u.id] = new Date(u.created_at);
+        });
+
         const cohortData: any[] = [];
+        const now = new Date();
+        
+        // Let's look at the last 4 weeks as cohorts
+        for (let i = 3; i >= 0; i--) {
+            const cohortStart = new Date();
+            cohortStart.setDate(now.getDate() - (i + 1) * 7);
+            const cohortEnd = new Date();
+            cohortEnd.setDate(now.getDate() - i * 7);
+            
+            const cohortUsers = allAuthUsers.filter(u => {
+                const joinDate = new Date(u.created_at);
+                return joinDate >= cohortStart && joinDate < cohortEnd;
+            });
+
+            if (cohortUsers.length > 0) {
+                const cohortLabel = `Week of ${cohortStart.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}`;
+                const row: any = { cohort: cohortLabel, W1: 100, W2: 0, W3: 0, W4: 0 };
+                
+                const userIds = cohortUsers.map(u => u.id);
+                
+                // For each subsequent week, check activity
+                for (let week = 1; week <= 3; week++) {
+                    const weekStart = new Date(cohortStart);
+                    weekStart.setDate(weekStart.getDate() + week * 7);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 7);
+                    
+                    const activeInWeek = new Set(
+                        recentLogs?.filter(log => {
+                            const logDate = new Date(log.created_at);
+                            return userIds.includes(log.user_id) && logDate >= weekStart && logDate < weekEnd;
+                        }).map(log => log.user_id)
+                    );
+                    
+                    row[`W${week + 1}`] = Math.round((activeInWeek.size / userIds.length) * 100);
+                }
+                cohortData.push(row);
+            }
+        }
 
         // 4. User Acquisition Pipeline 
-        // No device data is tracked currently in usage_logs schema without metadata parsing.
-        const deviceData: any[] = [];
+        const deviceData = [
+          { name: 'Mobile', value: 0 },
+          { name: 'Desktop', value: 0 },
+          { name: 'Tablet', value: 0 }
+        ];
+
+        recentLogs?.forEach(log => {
+          const meta = log.metadata || {};
+          const ua = (meta.userAgent || meta.device || 'desktop').toLowerCase();
+          if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) deviceData[0].value++;
+          else if (ua.includes('tablet') || ua.includes('ipad')) deviceData[2].value++;
+          else deviceData[1].value++;
+        });
 
         return NextResponse.json({
             success: true,
@@ -85,7 +140,7 @@ export async function GET(req: NextRequest) {
                 },
                 funnelData,
                 cohortData,
-                deviceData
+                deviceData: deviceData.filter(d => d.value > 0)
             }
         })
 

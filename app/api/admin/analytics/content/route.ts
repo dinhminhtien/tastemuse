@@ -17,15 +17,30 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 })
         }
 
-        // 1. Trending Dishes (Top 5 dishes by Ratings)
-        const { data: allRatings } = await supabaseAdmin.from('ratings').select('target_type, target_id');
+        // 1. Trending Dishes (Top 5 dishes by Ratings in last 60 days)
+        const sixtyDaysAgo = new Date();
+        sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        const ratingAgg: Record<string, number> = {};
+        const { data: allRatings } = await supabaseAdmin
+            .from('ratings')
+            .select('target_type, target_id, created_at')
+            .gte('created_at', sixtyDaysAgo.toISOString());
+
+        const currentPeriodAgg: Record<string, number> = {};
+        const previousPeriodAgg: Record<string, number> = {};
+
         allRatings?.filter(r => r.target_type === 'dish').forEach(r => {
-            ratingAgg[r.target_id] = (ratingAgg[r.target_id] || 0) + 1;
+            const createdAt = new Date(r.created_at);
+            if (createdAt >= thirtyDaysAgo) {
+                currentPeriodAgg[r.target_id] = (currentPeriodAgg[r.target_id] || 0) + 1;
+            } else {
+                previousPeriodAgg[r.target_id] = (previousPeriodAgg[r.target_id] || 0) + 1;
+            }
         });
 
-        const topDishIds = Object.entries(ratingAgg)
+        const topDishIds = Object.entries(currentPeriodAgg)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 5)
             .map(e => e[0]);
@@ -35,11 +50,21 @@ export async function GET(req: NextRequest) {
             const { data: dData } = await supabaseAdmin.from('dishes').select('id, name').in('id', topDishIds);
             trendingDishes = topDishIds.map((id, index) => {
                 const d = dData?.find(x => x.id === id);
+                const currentCount = currentPeriodAgg[id] || 0;
+                const previousCount = previousPeriodAgg[id] || 0;
+                
+                let growthPercent = 0;
+                if (previousCount === 0) {
+                    growthPercent = currentCount > 0 ? 100 : 0;
+                } else {
+                    growthPercent = Math.round(((currentCount - previousCount) / previousCount) * 100);
+                }
+
                 return {
                     id,
                     name: d?.name || 'Unknown Dish',
-                    searches: ratingAgg[id], // Using rating counts as proxy for 'searches' / popularity
-                    growth: `+${Math.floor(Math.random() * 20)}%` // Kept small random for UI variance if no historical data 
+                    searches: currentCount,
+                    growth: `${growthPercent >= 0 ? '+' : ''}${growthPercent}%`
                 };
             }).filter(d => d.name !== 'Unknown Dish');
         }
@@ -71,11 +96,16 @@ export async function GET(req: NextRequest) {
             const d = r.district || 'Khác';
             districtCounts[d] = (districtCounts[d] || 0) + 1;
         });
-        const geoData = Object.entries(districtCounts).map(([district, value]) => ({ district, value })).sort((a, b) => b.value - a.value);
+
+        const totalRestaurants = restaurants?.length || 1;
+        const geoData = Object.entries(districtCounts)
+            .map(([district, count]) => ({ 
+                district, 
+                value: Math.round((count / totalRestaurants) * 100) 
+            }))
+            .sort((a, b) => b.value - a.value);
 
         // 4. Review Volume Trend
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const { data: recentReviews } = await supabaseAdmin
             .from('reviews')
             .select('created_at, sentiment_score')

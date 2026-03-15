@@ -48,10 +48,11 @@ export async function GET(req: NextRequest) {
             });
         }
 
+        const totalConversations = aiLogs?.length || 0;
         const botSuccessRate = {
-            success: successCount,
-            fallback: fallbackCount,
-            totalConversations: aiLogs?.length || 0
+            success: totalConversations > 0 ? Math.round((successCount / totalConversations) * 100) : 0,
+            fallback: totalConversations > 0 ? Math.round((fallbackCount / totalConversations) * 100) : 0,
+            totalConversations
         }
 
         // 2. Chatbot Intents Distribution

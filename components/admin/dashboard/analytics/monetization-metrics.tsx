@@ -6,7 +6,7 @@ import { formatCurrency } from "@/lib/utils"
 export function MonetizationMetrics({ stats }: { stats: any }) {
     if (!stats || !stats.conversionData || !stats.mrrData) return null;
 
-    const { activeSubsCount, mrrVND, arpuVND, conversionData, paywallHits, mrrData } = stats;
+    const { activeSubsCount, mrrVND, arpuVND, conversionData, paywallHits, mrrData, revenueByPlan } = stats;
 
     const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'];
 
@@ -53,6 +53,36 @@ export function MonetizationMetrics({ stats }: { stats: any }) {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Revenue by Plan Breakdown */}
+            {revenueByPlan && revenueByPlan.length > 0 && (
+              <Card className="border-2 shadow-sm rounded-2xl overflow-hidden bg-white">
+                <CardHeader className="py-3 px-6 bg-slate-50/50 border-b">
+                   <CardTitle className="text-xs font-black uppercase text-slate-500">Doanh thu theo gói (Revenue by Plan)</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="flex flex-wrap gap-8">
+                    {revenueByPlan.map((plan: any, idx: number) => (
+                      <div key={idx} className="flex-1 min-w-[150px] space-y-2">
+                         <div className="flex justify-between items-end">
+                            <span className="text-sm font-bold text-slate-600 capitalize">{plan.name}</span>
+                            <span className="text-xs font-black text-slate-400">{formatCurrency(plan.value)}</span>
+                         </div>
+                         <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div 
+                              className="h-full rounded-full transition-all duration-500" 
+                              style={{ 
+                                width: `${Math.max(5, (plan.value / (revenueByPlan.reduce((a:number, b:any) => a + b.value, 0) || 1)) * 100)}%`,
+                                backgroundColor: plan.color 
+                              }}
+                            />
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* MRR Chart */}

@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
         const totalRevenueVND = completedPayments.reduce((acc, p) => acc + p.amount, 0);
         const totalOrders = completedPayments.length;
 
-        // 2. SaaS Metrics (Always based on ALL active subs regardless of filter for MRR)
+        // 2. SaaS Metrics: MRR based on actual payments
         const { data: plans } = await supabaseAdmin.from('plans').select('*');
         const planMap = new Map(plans?.map(p => [p.id, p]));
 
@@ -92,10 +92,30 @@ export async function GET(req: NextRequest) {
 
         const activeSubs = subscriptions?.filter(sub => sub.status === 'active') || [];
 
+        // Get latest completed payment for each user to determine actual paid amount
+        const { data: payments } = await supabaseAdmin
+            .from('payments')
+            .select('user_id, amount, status, created_at')
+            .eq('status', 'completed')
+            .order('created_at', { ascending: false });
+
+        const latestPaymentPerUser = new Map();
+        payments?.forEach(p => {
+            if (!latestPaymentPerUser.has(p.user_id)) {
+                latestPaymentPerUser.set(p.user_id, p.amount);
+            }
+        });
+
         let currentMRRVND = 0;
         activeSubs.forEach(sub => {
             const plan = planMap.get(sub.plan_id);
-            if (plan && plan.price > 0 && plan.duration_days > 0) {
+            const actualPaidAmount = latestPaymentPerUser.get(sub.user_id);
+            
+            if (plan && plan.duration_days > 0 && actualPaidAmount !== undefined) {
+                // Normalize to 30 days based on plan duration
+                currentMRRVND += (actualPaidAmount / plan.duration_days) * 30;
+            } else if (plan && plan.price > 0 && plan.duration_days > 0) {
+                // Fallback to plan price if no payment found (highly unlikely for active sub)
                 currentMRRVND += (plan.price / plan.duration_days) * 30;
             }
         });
@@ -166,6 +186,20 @@ export async function GET(req: NextRequest) {
 
         const arpuVND = activeSubs.length > 0 ? Math.round(currentMRRVND / activeSubs.length) : 0;
 
+        // 4. Revenue by Plan breakdown based on ACTUAL completed payments in period
+        const planRevenueMap: Record<string, number> = {};
+        completedPayments.forEach(p => {
+            const plan = planMap.get(p.plan_id);
+            const planName = plan?.name || 'Unknown';
+            planRevenueMap[planName] = (planRevenueMap[planName] || 0) + p.amount;
+        });
+
+        const revenueByPlan = Object.entries(planRevenueMap).map(([name, value]) => ({
+            name: name === 'premium' ? 'Premium' : (name === 'promax' ? 'ProMax' : (name === 'free' ? 'Free (Trial)' : name)),
+            value,
+            color: name === 'free' ? '#cbd5e1' : (name.includes('premium') ? '#3b82f6' : '#8b5cf6')
+        })).sort((a, b) => b.value - a.value);
+
         return NextResponse.json({
             success: true,
             stats: {
@@ -175,13 +209,14 @@ export async function GET(req: NextRequest) {
                 conversionData,
                 paywallHits: paywallHitsData,
                 mrrData: chartData, 
+                revenueByPlan,
                 paymentStats: {
                     totalRevenueVND,
                     totalOrders,
                     statusBreakdown: [
-                        { name: 'Đã thanh toán', value: allPayments?.filter(p => p.status === 'completed').length || 0, color: '#00a86b' },
+                        { name: 'Đã thanh toán', value: completedPayments.length, color: '#00a86b' },
                         { name: 'Chờ thanh toán', value: allPayments?.filter(p => p.status === 'pending').length || 0, color: '#e7f5ef' },
-                        { name: 'Hủy', value: allPayments?.filter(p => p.status === 'failed' || p.status === 'cancelled').length || 0, color: '#76c893' }
+                        { name: 'Hủy/Lỗi', value: allPayments?.filter(p => ['failed', 'cancelled', 'expired'].includes(p.status)).length || 0, color: '#76c893' }
                     ],
                     providerRevenue: [
                         { name: 'TasteMuse', value: totalRevenueVND }

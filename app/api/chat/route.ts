@@ -119,6 +119,17 @@ export async function POST(req: NextRequest) {
     const inputValidation = await validateUserInput(message);
     if (!inputValidation.passed) {
       console.warn('⚠️ Input guardrail triggered:', inputValidation.reason);
+      
+      // Log as fallback for analytics
+      if (userId) {
+        logUsage(userId, 'ai_chat', { 
+          message, 
+          fallback: true, 
+          reason: inputValidation.reason,
+          category: inputValidation.category 
+        }).catch(err => console.error('Usage log error:', err));
+      }
+
       return NextResponse.json({
         message: inputValidation.safeResponse || 'Yêu cầu không phù hợp.',
         guardrailTriggered: true,
@@ -212,7 +223,12 @@ export async function POST(req: NextRequest) {
 
     // Step 5: Log usage & update user taste (async, non-blocking)
     if (userId) {
-      logUsage(userId, 'ai_chat', { message }).catch(err =>
+      logUsage(userId, 'ai_chat', { 
+        message,
+        guardrailTriggered,
+        fallback: guardrailTriggered,
+        category: guardrailTriggered ? outputValidation.category : undefined
+      }).catch(err =>
         console.error('Usage log error:', err)
       );
       if (isSearchQuery(message)) {
