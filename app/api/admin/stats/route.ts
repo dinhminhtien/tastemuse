@@ -17,23 +17,14 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 })
         }
 
-        // 1. Get total users (unique user_ids across logs and subscriptions)
-        const { data: usageUsers, error: usageError } = await supabaseAdmin
-            .from('usage_logs')
-            .select('user_id')
-
-        const { data: subUsers, error: subError } = await supabaseAdmin
-            .from('subscriptions')
-            .select('user_id')
-
-        if (usageError || subError) {
-            console.error("Error fetching user counts:", usageError || subError)
+        // 1. Get total users from Auth
+        const { data: { users: allAuthUsers }, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
+        
+        if (usersError) {
+            console.error("Error fetching auth users:", usersError)
         }
 
-        const uniqueUsers = new Set([
-            ...(usageUsers?.map(u => u.user_id) || []),
-            ...(subUsers?.map(u => u.user_id) || [])
-        ])
+        const totalUsersCount = allAuthUsers?.length || 0;
 
         // 2. Premium stats
         const { data: premiumSubs, error: premiumError } = await supabaseAdmin
@@ -61,14 +52,9 @@ export async function GET(req: NextRequest) {
 
         const totalRevenue = payments?.reduce((sum, p) => sum + p.amount, 0) || 0
 
-        // 4. Activity Logs (Last 30 days)
-        const thirtyDaysAgo = new Date()
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
         const { data: recentLogs, error: logsError } = await supabaseAdmin
             .from('usage_logs')
             .select('action_type, created_at')
-            .gte('created_at', thirtyDaysAgo.toISOString())
 
         // Process logs for chart
         const activityByDay: Record<string, number> = {}
@@ -86,7 +72,7 @@ export async function GET(req: NextRequest) {
 
         // Process revenue by day
         const revenueByDay: Record<string, number> = {}
-        payments?.filter(p => new Date(p.created_at) >= thirtyDaysAgo).forEach(p => {
+        payments?.forEach(p => {
             const date = new Date(p.created_at).toLocaleDateString('en-CA')
             revenueByDay[date] = (revenueByDay[date] || 0) + p.amount
         })
@@ -164,7 +150,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             success: true,
             stats: {
-                totalUsers: uniqueUsers.size,
+                totalUsers: totalUsersCount,
                 premiumUsers: premiumCount || 0,
                 totalRevenue,
                 totalActions: recentLogs?.length || 0,

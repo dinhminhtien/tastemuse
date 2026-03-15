@@ -70,6 +70,23 @@ export async function POST(req: NextRequest) {
             if (verifyResult.code !== '00' || verifyResult.data?.status !== 'PAID') {
                 const payosStatus = verifyResult.data?.status || 'UNKNOWN';
                 console.log(`⏳ Payment not yet confirmed for order: ${orderCode}, status: ${payosStatus}`);
+
+                // If explicitly cancelled, update DB status
+                if (payosStatus === 'CANCELLED') {
+                    const { supabaseAdmin } = await import('@/lib/supabase');
+                    await supabaseAdmin
+                        .from('payments')
+                        .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+                        .eq('order_code', Number(orderCode))
+                        .eq('status', 'pending');
+                    
+                    return NextResponse.json({
+                        success: false,
+                        status: 'CANCELLED',
+                        message: 'Thanh toán đã bị hủy.',
+                    });
+                }
+
                 return NextResponse.json({
                     success: false,
                     status: payosStatus,

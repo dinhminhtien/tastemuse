@@ -11,6 +11,7 @@ import { UserGrowthMatrix } from "@/components/admin/dashboard/analytics/user-gr
 import { UserRetentionCohorts } from "@/components/admin/dashboard/analytics/user-retention-cohorts"
 import { EngagementFunnel } from "@/components/admin/dashboard/analytics/engagement-funnel"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Users } from "lucide-react"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts"
 
 export default function GrowthDashboard() {

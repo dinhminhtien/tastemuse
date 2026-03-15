@@ -4,6 +4,9 @@ import { isAdmin } from "@/lib/admin-config"
 
 export async function GET(req: NextRequest) {
     try {
+        const { searchParams } = new URL(req.url);
+        const period = searchParams.get('period') || 'month'; // today, yesterday, week, month, lastMonth, year, lastYear
+
         const authHeader = req.headers.get('authorization');
         if (!authHeader) {
             return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 })
@@ -17,7 +20,69 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 })
         }
 
-        // 1. Premium Metrics (Based on real subscriptions table)
+        // 1. Base query for payments
+        let query = supabaseAdmin
+            .from('payments')
+            .select('*')
+            .order('created_at', { ascending: true });
+
+        // Calculate Date Range
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        let startDate: Date | null = null;
+        let endDate: Date | null = null;
+        let chartPoints = 30; // default to 30 days
+
+        switch (period) {
+            case 'today':
+                startDate = startOfToday;
+                chartPoints = 24; // Hours
+                break;
+            case 'yesterday':
+                startDate = new Date(startOfToday);
+                startDate.setDate(startDate.getDate() - 1);
+                endDate = startOfToday;
+                chartPoints = 24;
+                break;
+            case 'week':
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
+                chartPoints = 7;
+                break;
+            case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                chartPoints = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                break;
+            case 'lastMonth':
+                startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+                chartPoints = endDate.getDate();
+                break;
+            case 'year':
+                startDate = new Date(now.getFullYear(), 0, 1);
+                chartPoints = 12; // Months
+                break;
+            case 'lastYear':
+                startDate = new Date(now.getFullYear() - 1, 0, 1);
+                endDate = new Date(now.getFullYear(), 0, 0);
+                chartPoints = 12;
+                break;
+        }
+
+        if (startDate) {
+            query = query.gte('created_at', startDate.toISOString());
+        }
+        if (endDate) {
+            query = query.lte('created_at', endDate.toISOString());
+        }
+
+        const { data: allPayments } = await query;
+        const completedPayments = allPayments?.filter(p => p.status === 'completed') || [];
+        const totalRevenueVND = completedPayments.reduce((acc, p) => acc + p.amount, 0);
+        const totalOrders = completedPayments.length;
+
+        // 2. SaaS Metrics (Always based on ALL active subs regardless of filter for MRR)
         const { data: plans } = await supabaseAdmin.from('plans').select('*');
         const planMap = new Map(plans?.map(p => [p.id, p]));
 
@@ -27,21 +92,50 @@ export async function GET(req: NextRequest) {
 
         const activeSubs = subscriptions?.filter(sub => sub.status === 'active') || [];
 
-        let mrrVND = 0;
+        let currentMRRVND = 0;
         activeSubs.forEach(sub => {
             const plan = planMap.get(sub.plan_id);
             if (plan && plan.price > 0 && plan.duration_days > 0) {
-                // Calculate monthly equivalent (Assuming duration_days is approx)
-                const monthlyPrice = (plan.price / plan.duration_days) * 30;
-                mrrVND += monthlyPrice;
+                currentMRRVND += (plan.price / plan.duration_days) * 30;
             }
         });
 
-        // Convert to USD roughly if UI is expecting USD, but UI says $ so let's stick to real number but maybe scale it or change UI to VND?
-        // Wait, UI uses $ prefix. The DB stores VND (e.g. 19000). I'll return the raw VND and we can adjust UI later or divide by 25000.
-        const mrrUSD = Math.round(mrrVND / 25000) || 0;
+        // 3. Chart Data Generation
+        const dailyRevenue: Record<string, number> = {};
+        completedPayments.forEach(p => {
+            const d = new Date(p.created_at);
+            let key = "";
+            if (period === 'today' || period === 'yesterday') {
+                key = `${d.getHours()}h`;
+            } else if (period === 'year' || period === 'lastYear') {
+                key = `T${d.getMonth() + 1}`;
+            } else {
+                key = `Th${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+            }
+            dailyRevenue[key] = (dailyRevenue[key] || 0) + p.amount;
+        });
 
-        // 2. Conversion Pipeline 
+        const chartData = [];
+        if (period === 'today' || period === 'yesterday') {
+            for (let i = 0; i < 24; i++) {
+                chartData.push({ date: `${i}h`, amount: dailyRevenue[`${i}h`] || 0 });
+            }
+        } else if (period === 'year' || period === 'lastYear') {
+            for (let i = 1; i <= 12; i++) {
+                chartData.push({ date: `T${i}`, amount: dailyRevenue[`T${i}`] || 0 });
+            }
+        } else {
+            // Daily points for the week/month
+            const current = new Date(startDate || now);
+            const stop = endDate || now;
+            while (current <= stop || chartData.length < chartPoints) {
+                const key = `Th${(current.getMonth() + 1).toString().padStart(2, '0')}-${current.getDate().toString().padStart(2, '0')}`;
+                chartData.push({ date: key, amount: dailyRevenue[key] || 0 });
+                current.setDate(current.getDate() + 1);
+                if (chartData.length >= 60) break; // Safety
+            }
+        }
+
         const { data: { users: allUsers } } = await supabaseAdmin.auth.admin.listUsers();
         const totalUsers = allUsers?.length || 0;
 
@@ -58,51 +152,43 @@ export async function GET(req: NextRequest) {
             { stage: 'Converted to Premium', count: activeSubs.length }
         ]
 
-        // 3. Paywall Hit Distribution
         const hitCounts: Record<string, number> = {};
         paywallLogs?.forEach(log => {
             const feature = log.metadata?.feature || 'Unknown';
             hitCounts[feature] = (hitCounts[feature] || 0) + 1;
         });
 
-        const totalHits = paywallLogs?.length || 1;
-        const paywallHits = Object.entries(hitCounts).map(([feature, count]) => ({
+        const totalHitsTotal = paywallLogs?.length || 1;
+        const paywallHitsData = Object.entries(hitCounts).map(([feature, count]) => ({
             feature,
-            percentage: Math.round((count / totalHits) * 100)
+            percentage: Math.round((count / totalHitsTotal) * 100)
         }));
 
-        // 4. MRR Chart (Historical)
-        // Group active subscriptions by month to see cumulative growth
-        const mrrByMonth: Record<string, number> = {};
-        activeSubs.forEach(sub => {
-            const d = new Date(sub.created_at);
-            const month = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-            if (!mrrByMonth[month]) mrrByMonth[month] = 0;
-
-            const plan = planMap.get(sub.plan_id);
-            if (plan && plan.price > 0 && plan.duration_days > 0) {
-                mrrByMonth[month] += (plan.price / plan.duration_days) * 30 / 25000;
-            }
-        });
-
-        const mrrData = Object.entries(mrrByMonth)
-            .sort((a, b) => a[0].localeCompare(b[0]))
-            .map(([month, mrr]) => ({
-                month,
-                mrr: Math.round(mrr)
-            }));
-
-        const arpu = activeSubs.length > 0 ? (mrrUSD / activeSubs.length).toFixed(2) : 0;
+        const arpuVND = activeSubs.length > 0 ? Math.round(currentMRRVND / activeSubs.length) : 0;
 
         return NextResponse.json({
             success: true,
             stats: {
                 activeSubsCount: activeSubs.length,
-                mrr: mrrUSD,
-                arpu,
+                mrrVND: currentMRRVND,
+                arpuVND,
                 conversionData,
-                paywallHits,
-                mrrData
+                paywallHits: paywallHitsData,
+                mrrData: chartData, 
+                paymentStats: {
+                    totalRevenueVND,
+                    totalOrders,
+                    statusBreakdown: [
+                        { name: 'Đã thanh toán', value: allPayments?.filter(p => p.status === 'completed').length || 0, color: '#00a86b' },
+                        { name: 'Chờ thanh toán', value: allPayments?.filter(p => p.status === 'pending').length || 0, color: '#e7f5ef' },
+                        { name: 'Hủy', value: allPayments?.filter(p => p.status === 'failed' || p.status === 'cancelled').length || 0, color: '#76c893' }
+                    ],
+                    providerRevenue: [
+                        { name: 'TasteMuse', value: totalRevenueVND }
+                    ],
+                    dailyRevenue: chartData,
+                    rawPayments: allPayments?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) || []
+                }
             }
         })
 
@@ -110,3 +196,5 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 }
+
+

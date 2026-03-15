@@ -78,7 +78,7 @@ export default function AdminDashboard() {
                             <LayoutDashboard className="w-10 h-10 text-primary" />
                             Dashboard Tổng Quan
                         </h1>
-                        <p className="text-slate-500 font-medium text-lg italic">Theo dõi hiệu suất và hành vi người dùng trong 30 ngày qua.</p>
+                        <p className="text-slate-500 font-medium text-lg italic">Theo dõi hiệu suất và hành vi người dùng toàn thời gian.</p>
                     </div>
 
                     <div className="flex items-center gap-3">
