@@ -99,7 +99,7 @@ export function TransactionList({ payments, loading }: TransactionListProps) {
             p.amount,
             p.status === 'completed' ? p.amount : 0,
             format(new Date(p.created_at), "dd/MM/yyyy HH:mm:ss"),
-            `TM${p.order_code || p.transaction_id?.substring(0, 8) || p.id.substring(0, 8)}`,
+            p.metadata?.description || `TM${p.order_code || p.id.substring(0, 7)}`.slice(0, 9),
             p.order_code ? `\t${p.order_code}` : (p.transaction_id ? `\t${p.transaction_id}` : 'N/A'),
             p.status === 'completed' ? 'Đã thanh toán' : (p.status === 'pending' ? 'Chờ thanh toán' : 'Hủy')
         ]);
@@ -231,7 +231,7 @@ export function TransactionList({ payments, loading }: TransactionListProps) {
                                     </TableCell>
                                     <TableCell>
                                         <code className="bg-slate-100 px-2 py-1 rounded-md text-xs font-bold text-slate-600">
-                                            TM{p.order_code || p.transaction_id?.substring(0, 8) || p.id.substring(0, 8)}
+                                            {p.metadata?.description || `TM${p.order_code || p.id.substring(0, 7)}`.slice(0, 9)}
                                         </code>
                                     </TableCell>
                                     <TableCell className="text-slate-500 font-bold font-mono text-xs">
