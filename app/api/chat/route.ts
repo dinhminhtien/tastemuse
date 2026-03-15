@@ -10,19 +10,20 @@ import { checkUsageLimit, logUsage } from '@/lib/subscription';
 import type { ChatFilters } from '@/types/database';
 import { getCachedResponse, setCachedResponse } from '@/lib/redis';
 import { addMessage, createConversation } from '@/lib/chat-history';
+import { validateUserInput, validateOutput } from '@/lib/guardrails';
 
 /**
  * Enhanced RAG Chat API Route
  *
  * Flow:
  * 1. Rate limit check
- * 2. Extract structured filters from user message (mood, budget, distance, cuisine)
- * 3. Generate embedding for user query
- * 4. Perform hybrid search (semantic + rating + distance)
- * 5. Build enriched context from ranked results
- * 6. Generate LLM response with filters and context
- * 7. Update user taste embedding (async)
- * 8. Return response with metadata
+ * 2. Usage limit check
+ * 3. Cache check
+ * 4. Input Guardrails (Topic & Safety)
+ * 5. Extract filters & Vector search
+ * 6. Generate LLM response
+ * 7. Output Guardrails (Grounding & Brand)
+ * 8. Return response & Update history/taste
  */
 export async function POST(req: NextRequest) {
   try {
@@ -51,7 +52,6 @@ export async function POST(req: NextRequest) {
     console.log('📩 Received message:', message);
 
     // Step 0.5: Authenticate user & check subscription limits
-    // Usage checks MUST happen BEFORE cache to prevent free users bypassing limits
     let userId: string | null = null;
     const authHeader = req.headers.get('authorization');
     if (authHeader) {
@@ -115,6 +115,17 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Step 0.7: Input Guardrails
+    const inputValidation = await validateUserInput(message);
+    if (!inputValidation.passed) {
+      console.warn('⚠️ Input guardrail triggered:', inputValidation.reason);
+      return NextResponse.json({
+        message: inputValidation.safeResponse || 'Yêu cầu không phù hợp.',
+        guardrailTriggered: true,
+        category: inputValidation.category,
+      });
+    }
+
     // Step 1: Extract filters from natural language (parallel with embedding)
     const [filters, queryEmbedding] = await Promise.all([
       isSearchQuery(message) ? extractFilters(message) : Promise.resolve({} as ChatFilters),
@@ -142,7 +153,6 @@ export async function POST(req: NextRequest) {
       context = formatHybridContext(results);
       console.log(`✅ Hybrid search: ${results.length} results`);
     } catch (hybridError) {
-      // Fallback to basic match_documents if hybrid_search isn't set up yet
       console.warn('⚠️ Hybrid search failed, falling back to basic search:', hybridError);
 
       const { data: matches, error: searchError } = await supabase.rpc('match_documents', {
@@ -188,8 +198,17 @@ export async function POST(req: NextRequest) {
 
     // Step 4: Generate LLM response
     console.log('🤖 Generating RAG response...');
-    const response = await generateRAGResponse(message, enhancedContext, history);
+    let response = await generateRAGResponse(message, enhancedContext, history);
     console.log('✅ Response generated successfully');
+
+    // Step 4.5: Output Guardrails
+    let guardrailTriggered = false;
+    const outputValidation = await validateOutput(message, response, enhancedContext);
+    if (!outputValidation.passed) {
+      console.warn('⚠️ Output guardrail triggered:', outputValidation.reason);
+      response = outputValidation.safeResponse || response;
+      guardrailTriggered = true;
+    }
 
     // Step 5: Log usage & update user taste (async, non-blocking)
     if (userId) {
@@ -215,6 +234,7 @@ export async function POST(req: NextRequest) {
     const responsePayload = {
       message: response,
       filters: Object.keys(filters).length > 0 ? filters : undefined,
+      guardrailTriggered,
       metadata: {
         matchCount: results?.length || 0,
         topScore: results?.[0]?.hybrid_score || results?.[0]?.similarity || 0,
@@ -231,8 +251,6 @@ export async function POST(req: NextRequest) {
     };
 
     if (cacheKey) {
-      // Lưu kết quả vào Redis cache (thời hạn 24 tiếng = 86400 giây)
-      // Các lần hỏi sau cho cùng câu hỏi này sẽ trả về cực nhanh, tiết kiệm tiền Gemini API
       console.log(`💾 Caching RAG response to Redis for key: ${cacheKey}`);
       await setCachedResponse(cacheKey, responsePayload, 86400).catch(e => console.error('Cache set Error:', e));
     }
@@ -282,12 +300,14 @@ export async function GET() {
 
     return NextResponse.json({
       status: 'ok',
-      message: 'TasteMuse RAG Chat API v2 – Hybrid Ranking',
+      message: 'TasteMuse RAG Chat API v2 – Guardrails Enabled',
       features: [
         'vector-search',
         'hybrid-ranking',
         'filter-extraction',
         'rate-limiting',
+        'input-guardrails',
+        'output-guardrails',
         'user-taste-tracking',
         hybridAvailable ? 'hybrid-search-sql' : 'fallback-semantic',
       ],
