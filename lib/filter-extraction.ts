@@ -51,7 +51,7 @@ Chú ý:
 - "đặc sản" / "nổi tiếng" → isSignature = true
 - "ăn trưa" → time = "12:00"
 - "ăn tối" → time = "19:00"
-- "ăn sáng" → time = "08:00"
+- "ăn sáng" → time = "08:00"    
 - "mở cửa lúc 10h" → time = "10:00"
 - Nếu không rõ, trả null cho field đó`;
 

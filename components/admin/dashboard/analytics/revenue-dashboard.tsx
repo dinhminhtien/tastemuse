@@ -36,9 +36,7 @@ export function RevenueDashboard({ stats, period, onPeriodChange, loading }: Rev
         { label: "Tháng này", value: "month" },
         { label: "Tháng trước", value: "lastMonth" },
         { label: "Năm nay", value: "year" },
-        { label: "Năm trước", value: "lastYear" },
-        { label: "Tùy chỉnh", value: "custom" }
-    ];
+        { label: "Năm trước", value: "lastYear" }];
 
     return (
         <div className="space-y-6 relative">
@@ -55,14 +53,12 @@ export function RevenueDashboard({ stats, period, onPeriodChange, loading }: Rev
                         key={opt.value}
                         variant={period === opt.value ? "default" : "outline"}
                         onClick={() => onPeriodChange(opt.value)}
-                        className={`rounded-full px-6 h-10 font-bold transition-all ${
-                            period === opt.value
-                                ? "bg-[#00a86b] hover:bg-[#008f5d] text-white border-transparent shadow-md"
-                                : "bg-white text-slate-600 hover:bg-slate-50 border-slate-200"
-                        }`}
+                        className={`rounded-full px-6 h-10 font-bold transition-all ${period === opt.value
+                            ? "bg-[#00a86b] hover:bg-[#008f5d] text-white border-transparent shadow-md"
+                            : "bg-white text-slate-600 hover:bg-slate-50 border-slate-200"
+                            }`}
                     >
                         {opt.label}
-                        {opt.value === "custom" && <ChevronDown className="ml-2 h-4 w-4" />}
                     </Button>
                 ))}
             </div>
@@ -150,7 +146,7 @@ export function RevenueDashboard({ stats, period, onPeriodChange, loading }: Rev
                                 />
                             </PieChart>
                         </ResponsiveContainer>
-                        
+
                         {/* Center Text */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center mt-[-10px]">
                             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Tổng đơn hàng</p>
@@ -161,7 +157,7 @@ export function RevenueDashboard({ stats, period, onPeriodChange, loading }: Rev
 
                         {/* Legend */}
                         <div className="flex flex-wrap justify-center gap-4 mt-2">
-                            {statusBreakdown.filter((s:any) => s.value > 0).map((entry: any) => (
+                            {statusBreakdown.filter((s: any) => s.value > 0).map((entry: any) => (
                                 <div key={entry.name} className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
                                     <span className="text-xs font-bold text-slate-500">{entry.name}</span>
@@ -195,16 +191,16 @@ export function RevenueDashboard({ stats, period, onPeriodChange, loading }: Rev
                                     axisLine={false}
                                     tickLine={false}
                                     tick={{ fill: '#64748B', fontSize: 11, fontWeight: 700 }}
-                                    tickFormatter={(value) => `${value >= 1000000 ? (value/1000000).toFixed(1) + 'M' : value.toLocaleString()}`}
+                                    tickFormatter={(value) => `${value >= 1000000 ? (value / 1000000).toFixed(1) + 'M' : value.toLocaleString()}`}
                                 />
                                 <Tooltip
                                     cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                                     contentStyle={{ backgroundColor: 'white', borderRadius: '1rem', border: '1px solid #e2e8f0' }}
                                     formatter={(value: number) => [formatCurrency(value), "Doanh thu"]}
                                 />
-                                <Bar 
-                                    dataKey="amount" 
-                                    fill="#00a86b" 
+                                <Bar
+                                    dataKey="amount"
+                                    fill="#00a86b"
                                     radius={[4, 4, 0, 0]}
                                     maxBarSize={40}
                                 />

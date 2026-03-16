@@ -55,10 +55,15 @@ export async function POST(req: NextRequest) {
     let userId: string | null = null;
     const authHeader = req.headers.get('authorization');
     if (authHeader) {
-      const { data: { user } } = await supabase.auth.getUser(
-        authHeader.replace('Bearer ', '')
-      );
-      userId = user?.id || null;
+      try {
+        const { data: { user } } = await supabase.auth.getUser(
+          authHeader.replace('Bearer ', '')
+        );
+        userId = user?.id || null;
+      } catch (authError) {
+        console.warn('⚠️ Auth check failed (timeout or network), falling back to guest mode:', authError);
+        userId = null;
+      }
     }
 
     // Server-side guest limit: 1 query per IP per day
@@ -117,10 +122,11 @@ export async function POST(req: NextRequest) {
 
     // Step 0.7: Input Guardrails
     const inputValidation = await validateUserInput(message);
+    
+    // Hard block only for unsafe content (passed is false)
     if (!inputValidation.passed) {
-      console.warn('⚠️ Input guardrail triggered:', inputValidation.reason);
+      console.warn('⚠️ Input guardrail hard-triggered:', inputValidation.reason);
       
-      // Log as fallback for analytics
       if (userId) {
         logUsage(userId, 'ai_chat', { 
           message, 
@@ -205,6 +211,12 @@ export async function POST(req: NextRequest) {
       if (filters.time) filterInfo.push(`Thời gian yêu cầu: ${filters.time}`);
 
       enhancedContext = `[Bộ lọc người dùng]\n${filterInfo.join('\n')}\n\n[Kết quả tìm kiếm]\n${context}`;
+    }
+
+    // Add soft off-topic hint
+    // Use any because inputValidation is dynamic from guardrail result
+    if ((inputValidation as any).isOffTopic) {
+      enhancedContext = `[LƯU Ý HỆ THỐNG]: Người dùng đang hỏi một câu hỏi có thể không liên quan trực tiếp đến ẩm thực Cần Thơ. Hãy trả lời một cách lịch sự, ngắn gọn và khéo léo lái họ quay lại chủ đề ẩm thực hoặc du lịch Cần Thơ. Đừng tỏ ra quá máy móc.\n\n${enhancedContext}`;
     }
 
     // Step 4: Generate LLM response
