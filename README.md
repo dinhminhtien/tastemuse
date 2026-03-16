@@ -79,8 +79,8 @@ graph TD
 - **Styling**: Tailwind CSS 4, Radix UI, Framer Motion
 - **Database**: Supabase (PostgreSQL), pgvector, HNSW Indexing
 - **AI Models**: 
-  - LLM: `gemini-2.0-flash`, `gemini-2.5-flash`
-  - Embeddings: `text-embedding-004`
+  - LLM: `gemini-2.5-flash`
+  - Embeddings: `gemini-embedding-001 (3072 dimensions)`
 - **Caching**: Upstash Redis
 - **Infrastructure**: Vercel Hosting, Cloudinary (Media storage)
 
@@ -138,6 +138,6 @@ pnpm run test:rag
 
 ---
 <div align="center">
-  Developed by <b>Group 3 - EXE201</b><br/>
+  Developed by <b>Dinh Minh Tien</b><br/>
   Made with ❤️ for the Can Tho Food Community
 </div>
