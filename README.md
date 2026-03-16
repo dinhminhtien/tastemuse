@@ -1,202 +1,143 @@
-# 🍜 TasteMuse - AI Food Recommendation System
+# 🍜 TasteMuse - The Ultimate AI Food Discovery Platform for Can Tho
 
-> Intelligent food and restaurant recommendation chatbot for Cần Thơ, Vietnam, powered by RAG (Retrieval-Augmented Generation)
+<div align="center">
+  <img src="./public/tastemuse.png" alt="TasteMuse Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;" />
 
-## ✨ Features
+  [![Next.js](https://img.shields.io/badge/Next.js-16.1.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+  [![React](https://img.shields.io/badge/React-19.0.0-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+  [![Supabase](https://img.shields.io/badge/Supabase-Database-3EC78D?style=for-the-badge&logo=supabase)](https://supabase.com/)
+  [![Gemini](https://img.shields.io/badge/Google_Gemini-AI-4285F4?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
 
-- 🤖 **AI-Powered Chatbot** - Natural Vietnamese language understanding
-- 🔍 **Semantic Search** - Vector similarity search using pgvector
-- 📊 **Accurate Recommendations** - Based on real database data, not hallucinations
-- ⚡ **Fast Performance** - Sub-second vector search with HNSW indexing
-- 🌐 **Vietnamese Support** - Full Vietnamese language support
-- 🎯 **Context-Aware** - Uses RAG to provide relevant, accurate responses
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+ 
-- npm or pnpm
-- Supabase account (free tier works)
-- Gemini API key
-
-### Installation
-
-1. **Clone and install dependencies**
-   ```bash
-   git clone <your-repo-url>
-   cd tastemuse
-   npm install
-   ```
-
-2. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your credentials
-   ```
-
-3. **Set up Supabase database**
-   - Go to Supabase SQL Editor
-   - Run `scripts/setup-database.sql`
-
-4. **Generate embeddings**
-   ```bash
-   npm run embeddings
-   ```
-
-5. **Test the system**
-   ```bash
-   npm run test:rag
-   ```
-
-6. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-📖 **For detailed setup instructions, see [QUICKSTART.md](./QUICKSTART.md)**
-
-## 🏗️ Architecture
-
-```
-User Query → Embedding → Vector Search → Context Retrieval → LLM Response
-```
-
-- **Frontend**: Next.js 16 + React 19 + TypeScript
-- **Database**: Supabase (PostgreSQL + pgvector)
-- **AI**: Vertex AI (via Gemini)
-  - Embeddings: text-embedding-004 (768 dimensions)
-  - LLM: gemini-2.0-flash-exp
-- **Vector Search**: pgvector with HNSW indexing
-
-📖 **For architecture details, see [ARCHITECTURE.md](./ARCHITECTURE.md)**
-
-## 📁 Project Structure
-
-```
-tastemuse/
-├── app/
-│   └── api/
-│       └── chat/
-│           └── route.ts          # RAG-enabled chat API
-├── lib/
-│   ├── supabase.ts               # Database client
-│   ├── vertex-ai.ts              # AI functions
-│   ├── rag-config.ts             # Configuration
-│   └── utils.ts                  # Utilities
-├── scripts/
-│   ├── setup-database.sql        # Database schema
-│   ├── generate-embeddings.ts    # Embedding generator
-│   └── test-rag.ts               # Test suite
-├── components/                   # React components
-├── QUICKSTART.md                 # Quick start guide
-├── RAG_SETUP.md                  # Full documentation
-├── RAG_SUMMARY.md                # Implementation summary
-└── ARCHITECTURE.md               # Technical details
-```
-
-## 🛠️ Available Scripts
-
-```bash
-# Development
-npm run dev              # Start dev server
-npm run build            # Build for production
-npm run start            # Start production server
-
-# RAG Operations
-npm run embeddings       # Generate embeddings
-npm run test:rag         # Test RAG system
-npm run test:api         # Test API health
-
-# Code Quality
-npm run lint             # Run ESLint
-```
-
-## 📚 Documentation
-
-- **[QUICKSTART.md](./QUICKSTART.md)** - Get started in 5 minutes
-- **[RAG_SUMMARY.md](./RAG_SUMMARY.md)** - Implementation overview
-- **[RAG_SETUP.md](./RAG_SETUP.md)** - Comprehensive setup guide
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture
-
-## 🧪 Testing
-
-Run the comprehensive test suite:
-
-```bash
-npm run test:rag
-```
-
-This tests:
-- ✅ Environment variables
-- ✅ Database connection
-- ✅ pgvector extension
-- ✅ Embedding generation
-- ✅ Vector search
-- ✅ Full RAG flow
-
-## 🌟 Key Technologies
-
-- **Next.js 16** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Supabase** - PostgreSQL database with pgvector
-- **Vertex AI** - Embeddings and LLM (via Gemini)
-- **Radix UI** - Accessible component library
-- **Tailwind CSS** - Utility-first styling
-
-## 📊 Performance
-
-- **Vector Search**: < 100ms for 1000+ items
-- **Embedding Generation**: ~500ms per text
-- **LLM Response**: 1-3 seconds
-- **Scalability**: Handles 100+ concurrent users
-
-## 🔒 Security
-
-- Environment variables for sensitive data
-- Server-side API routes only
-- Supabase Row Level Security (RLS) ready
-- No client-side API key exposure
-
-## 🚀 Deployment
-
-Deploy to Vercel (recommended):
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-```
-
-Set environment variables in Vercel dashboard:
-- `GEMINI_API_KEY`
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Supabase](https://supabase.com) - Database and vector search
-- [Google Gemini](https://ai.google.dev) - AI embeddings and LLM
-- [Vercel](https://vercel.com) - Hosting platform
-- [pgvector](https://github.com/pgvector/pgvector) - Vector similarity search
-
-## 📞 Support
-
-For issues or questions:
-1. Check the [QUICKSTART.md](./QUICKSTART.md) guide
-2. Review [RAG_SETUP.md](./RAG_SETUP.md) documentation
-3. Run `npm run test:rag` to diagnose issues
-4. Open an issue on GitHub
+  **"Don't know what to eat? Let TasteMuse suggest!"**
+  *TasteMuse is an intelligent, AI-driven recommendation platform designed specifically for the culinary landscape of Can Tho, Vietnam.*
+</div>
 
 ---
 
-**Made with ❤️ for EXE201 Project**
+## 🚀 Key Innovation: Advanced AI Engine
+
+TasteMuse isn't just a chatbot; it's a sophisticated discovery engine powered by multiple AI layers:
+
+### 1. Hybrid Ranking System
+Our custom ranking algorithm combines three distinct signals to find your perfect meal:
+- 🧠 **Semantic Similarity (60%)**: Context-aware understanding of your cravings.
+- ⭐ **Crowd Wisdom (20%)**: Integration of real user ratings and reviews.
+- 📍 **Proximity (20%)**: Real-time distance calculations for maximum convenience.
+`Score = (Semantic * 0.6) + (Rating * 0.2) + (Distance * 0.2)`
+
+### 2. User Taste Profiles (Dynamic Personalization)
+The system learns your preferences in real-time. Every favorite, rating, and even chat query updates your **Taste Vector**, creating a moving average of your culinary identity.
+`New_Vector = (Old_Vector * 0.7) + (Interaction_Vector * 0.3)`
+
+### 3. Industrial-Grade Guardrails
+Powered by **Gemini 2.5 Flash**, our safety system provides:
+- **Input Guardrails**: Prevents unsafe content and politely handles off-topic queries.
+- **Output Guardrails**: Fact-checkers verify AI responses against our database to prevent hallucinations and prompt leakage.
+
+---
+
+## ✨ Core Features
+
+- 🤖 **Intelligent Chatbot**: Natural Vietnamese conversation focused on Can Tho's food and tourism.
+- 📅 **Smart Meal Planning**: Generate personalized weekly or daily meal plans based on your profile.
+- 🔍 **Unified Search**: Seamlessly find dishes and restaurants with vector similarity search.
+- 💎 **Freemium Experience**: 
+  - **Free**: 5 AI queries/day + basic discovery features.
+  - **Premium**: Unlimited AI queries, Personalized recommendations, and advanced meal planning.
+- 💳 **Seamless Payments**: Integrated with **PayOS** for instant subscription activation via QR code.
+
+---
+
+## 🏗️ Technical Architecture
+
+```mermaid
+graph TD
+    User((User)) --> NextJS[Next.js App Router]
+    NextJS --> API[Edge API Routes]
+    
+    subgraph AI_Layer [AI & Search Layer]
+        API --> Guardrail[Gemini 2.5 Guardrails]
+        Guardrail --> VectorSearch[pgvector Hybrid Search]
+        VectorSearch --> Gemini[Gemini 2.0/2.5 Flash RAG]
+    end
+    
+    subgraph Data_Layer [Data & Cache Layer]
+        Gemini --> Supabase[(Supabase DB)]
+        API --> Redis[(Redis Cache)]
+    end
+    
+    subgraph Business_Layer [Business Layer]
+        NextJS --> PayOS[PayOS Payment Gateway]
+        PayOS --> Webhook[Payment Webhook]
+        Webhook --> Subscribed{Activate Premium}
+    end
+```
+
+### Technical Stack
+- **Framework**: Next.js 16.1 (App Router), React 19, TypeScript
+- **Styling**: Tailwind CSS 4, Radix UI, Framer Motion
+- **Database**: Supabase (PostgreSQL), pgvector, HNSW Indexing
+- **AI Models**: 
+  - LLM: `gemini-2.0-flash`, `gemini-2.5-flash`
+  - Embeddings: `text-embedding-004`
+- **Caching**: Upstash Redis
+- **Infrastructure**: Vercel Hosting, Cloudinary (Media storage)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- Node.js 18+
+- pnpm (highly recommended)
+
+### 2. Installation
+```bash
+git clone <your-repo-url>
+cd tastemuse
+pnpm install
+```
+
+### 3. Setup
+1. Copy `.env.example` to `.env.local` and add your keys:
+   - `NEXT_PUBLIC_SUPABASE_URL` & `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `GEMINI_API_KEY` (Google AI Studio)
+   - `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY` (PayOS)
+   - `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN` (Redis)
+
+2. **Initialize Data**:
+```bash
+# Generate vector embeddings for restaurants and dishes
+pnpm run embeddings
+```
+
+### 4. Development
+```bash
+pnpm run dev
+```
+
+---
+
+## 📁 System Modules
+
+- `app/api/chat/`: The high-performance RAG endpoint with 8 processing steps.
+- `lib/hybrid-ranking.ts`: The core scoring engine.
+- `lib/user-taste.ts`: Vector-based personalization logic.
+- `lib/guardrails.ts`: Safety and grounding verification.
+- `lib/document-sync.ts`: Automated RAG pipeline for new data.
+
+---
+
+## 🤝 Developing with Quality
+The project includes a robust testing suite for the entire AI pipeline:
+```bash
+# Verify the health of the RAG system
+pnpm run test:rag
+```
+
+---
+<div align="center">
+  Developed by <b>Group 3 - EXE201</b><br/>
+  Made with ❤️ for the Can Tho Food Community
+</div>
