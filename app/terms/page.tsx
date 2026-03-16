@@ -462,7 +462,7 @@ export default function TermsPage() {
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="text-lg px-8 py-6 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
+                                    className="text-lg px-8 py-6 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/10 bg-transparent"
                                 >
                                     Xem chính sách bảo mật
                                 </Button>
