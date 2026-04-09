@@ -3,7 +3,14 @@
 <div align="center">
   <img src="./public/tastemuse.png" alt="TasteMuse Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;" />
 
-  TasteMuse is an intelligent, automated recommendation platform designed for the culinary landscape of Can Tho, Vietnam.
+  [![Next.js](https://img.shields.io/badge/Next.js-16.1.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+  [![React](https://img.shields.io/badge/React-19.0.0-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+  [![Supabase](https://img.shields.io/badge/Supabase-Database-3EC78D?style=for-the-badge&logo=supabase)](https://supabase.com/)
+  [![Gemini](https://img.shields.io/badge/Google_Gemini-AI-4285F4?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
+
+  **"Don't know what to eat? Let TasteMuse suggest!"**
+  *TasteMuse is an intelligent, AI-driven recommendation platform designed specifically for the culinary landscape of Can Tho, Vietnam.*
 </div>
 
 ---
@@ -72,13 +79,8 @@ graph TD
 - **Styling**: Tailwind CSS 4, Radix UI, Framer Motion
 - **Database**: Supabase (PostgreSQL), pgvector, HNSW Indexing
 - **AI Models**: 
-<<<<<<< HEAD
   - LLM: gemini-2.5-flash
   - Embeddings: gemini-embedding-001
-=======
-  - LLM: `gemini-2.5-flash`
-  - Embeddings: `gemini-embedding-001 (3072 dimensions)`
->>>>>>> 132e7d4bf91858c4d0e5abe067e42478bfaa4e73
 - **Caching**: Upstash Redis
 - **Infrastructure**: Vercel Hosting, Cloudinary
 
@@ -136,9 +138,4 @@ pnpm run test:rag
 ---
 <div align="center">
   Developed by <b>Dinh Minh Tien</b><br/>
-<<<<<<< HEAD
 </div>
-=======
-  Made with ❤️ for the Can Tho Food Community
-</div>
->>>>>>> 132e7d4bf91858c4d0e5abe067e42478bfaa4e73
