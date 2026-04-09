@@ -3,12 +3,12 @@ import { notFound } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Star, MapPin, Phone, Clock, ArrowLeft, Share2, Utensils, Map } from "lucide-react"
-import { supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/db/supabase"
 import type { Restaurant, Dish } from "@/types/database"
-import { RatingStars } from "@/components/rating-stars"
-import { FavoriteButton } from "@/components/favorite-button"
-import { ReviewForm } from "@/components/review-form"
-import { ReviewList } from "@/components/review-list"
+import { RatingStars } from "@/components/shared/rating-stars"
+import { FavoriteButton } from "@/components/shared/favorite-button"
+import { ReviewForm } from "@/components/features/restaurant/review-form"
+import { ReviewList } from "@/components/features/restaurant/review-list"
 
 interface RestaurantWithDishes extends Restaurant {
     dishes?: Dish[]

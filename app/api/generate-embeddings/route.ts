@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { generateEmbedding } from '@/lib/gemini-ai';
-import { RAG_CONFIG } from '@/lib/rag-config';
+import { supabase } from '@/lib/db/supabase';
+import { generateEmbedding } from '@/lib/ai/gemini-ai';
+import { RAG_CONFIG } from '@/lib/ai/rag-config';
 
 /**
  * API route to generate embeddings for documents

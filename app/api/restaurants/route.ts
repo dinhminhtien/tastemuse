@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, Restaurant } from '@/lib/supabase';
-import { syncRestaurantToRAG } from '@/lib/document-sync';
-import { canUseFeature } from '@/lib/subscription';
+import { supabase, Restaurant } from '@/lib/db/supabase';
+import { syncRestaurantToRAG } from '@/lib/db/document-sync';
+import { canUseFeature } from '@/lib/services/subscription';
 
 /**
  * GET /api/restaurants

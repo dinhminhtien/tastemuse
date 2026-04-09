@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { getUserPlan, getUsageStats, hasUserPaidBefore } from '@/lib/subscription';
+import { supabase } from '@/lib/db/supabase';
+import { getUserPlan, getUsageStats, hasUserPaidBefore } from '@/lib/services/subscription';
 
 /**
  * GET /api/subscription — Get current user's plan and subscription info

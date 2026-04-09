@@ -1,55 +1,48 @@
-# 🍜 TasteMuse - The Ultimate AI Food Discovery Platform for Can Tho
+# TasteMuse - AI Food Discovery Platform for Can Tho
 
 <div align="center">
   <img src="./public/tastemuse.png" alt="TasteMuse Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;" />
 
-  [![Next.js](https://img.shields.io/badge/Next.js-16.1.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-  [![React](https://img.shields.io/badge/React-19.0.0-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-  [![Supabase](https://img.shields.io/badge/Supabase-Database-3EC78D?style=for-the-badge&logo=supabase)](https://supabase.com/)
-  [![Gemini](https://img.shields.io/badge/Google_Gemini-AI-4285F4?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
-
-  **"Don't know what to eat? Let TasteMuse suggest!"**
-  *TasteMuse is an intelligent, AI-driven recommendation platform designed specifically for the culinary landscape of Can Tho, Vietnam.*
+  TasteMuse is an intelligent, automated recommendation platform designed for the culinary landscape of Can Tho, Vietnam.
 </div>
 
 ---
 
-## 🚀 Key Innovation: Advanced AI Engine
+## Technical Innovation: Advanced AI Engine
 
-TasteMuse isn't just a chatbot; it's a sophisticated discovery engine powered by multiple AI layers:
+TasteMuse functions as a sophisticated discovery engine utilizing multiple AI layers.
 
 ### 1. Hybrid Ranking System
-Our custom ranking algorithm combines three distinct signals to find your perfect meal:
-- 🧠 **Semantic Similarity (60%)**: Context-aware understanding of your cravings.
-- ⭐ **Crowd Wisdom (20%)**: Integration of real user ratings and reviews.
-- 📍 **Proximity (20%)**: Real-time distance calculations for maximum convenience.
+The custom ranking algorithm combines three distinct signals to determine meal recommendations:
+- **Semantic Similarity (60%)**: Context-aware understanding of user queries.
+- **Crowd Wisdom (20%)**: Integration of historical user ratings and reviews.
+- **Proximity (20%)**: Real-time distance calculations for geographic relevance.
 `Score = (Semantic * 0.6) + (Rating * 0.2) + (Distance * 0.2)`
 
 ### 2. User Taste Profiles (Dynamic Personalization)
-The system learns your preferences in real-time. Every favorite, rating, and even chat query updates your **Taste Vector**, creating a moving average of your culinary identity.
+The system learns preferences dynamically in real-time. Interactions such as favorites, ratings, and chat queries update the user's Taste Vector, maintaining a moving average of culinary preferences.
 `New_Vector = (Old_Vector * 0.7) + (Interaction_Vector * 0.3)`
 
 ### 3. Industrial-Grade Guardrails
-Powered by **Gemini 2.5 Flash**, our safety system provides:
-- **Input Guardrails**: Prevents unsafe content and politely handles off-topic queries.
-- **Output Guardrails**: Fact-checkers verify AI responses against our database to prevent hallucinations and prompt leakage.
+Powered by Gemini 2.5 Flash, the internal system architecture utilizes:
+- **Input Guardrails**: Prevents processing of unsafe content and handles off-topic queries appropriately.
+- **Output Guardrails**: Fact-checks AI responses against the proprietary database to prevent hallucinations and avoid prompt injection leaks.
 
 ---
 
-## ✨ Core Features
+## Core System Capabilities
 
-- 🤖 **Intelligent Chatbot**: Natural Vietnamese conversation focused on Can Tho's food and tourism.
-- 📅 **Smart Meal Planning**: Generate personalized weekly or daily meal plans based on your profile.
-- 🔍 **Unified Search**: Seamlessly find dishes and restaurants with vector similarity search.
-- 💎 **Freemium Experience**: 
-  - **Free**: 5 AI queries/day + basic discovery features.
-  - **Premium**: Unlimited AI queries, Personalized recommendations, and advanced meal planning.
-- 💳 **Seamless Payments**: Integrated with **PayOS** for instant subscription activation via QR code.
+- **Intelligent Chatbot**: Context-aware conversational agent focused exclusively on Can Tho's food and tourism.
+- **Smart Meal Planning**: Automatic generation of weekly or daily meal plans based on individual user profiles.
+- **Unified Search**: Centralized search mechanism for dishes and restaurants leveraging vector similarity.
+- **Tiered Access Model**:
+  - **Standard**: Five processing queries per day with access to basic discovery features.
+  - **Premium**: Unlimited processing queries, advanced personalization, and comprehensive meal planning.
+- **Integrated Payments**: Real-time processing via PayOS for instant subscription handling.
 
 ---
 
-## 🏗️ Technical Architecture
+## Architecture Overview
 
 ```mermaid
 graph TD
@@ -79,65 +72,63 @@ graph TD
 - **Styling**: Tailwind CSS 4, Radix UI, Framer Motion
 - **Database**: Supabase (PostgreSQL), pgvector, HNSW Indexing
 - **AI Models**: 
-  - LLM: `gemini-2.0-flash`, `gemini-2.5-flash`
-  - Embeddings: `text-embedding-004`
+  - LLM: gemini-2.5-flash
+  - Embeddings: gemini-embedding-001
 - **Caching**: Upstash Redis
-- **Infrastructure**: Vercel Hosting, Cloudinary (Media storage)
+- **Infrastructure**: Vercel Hosting, Cloudinary
 
 ---
 
-## 🚀 Getting Started
+## Setup and Development Configuration
 
 ### 1. Prerequisites
 - Node.js 18+
-- pnpm (highly recommended)
+- pnpm
 
-### 2. Installation
+### 2. Initial Setup
 ```bash
 git clone <your-repo-url>
 cd tastemuse
 pnpm install
 ```
 
-### 3. Setup
-1. Copy `.env.example` to `.env.local` and add your keys:
-   - `NEXT_PUBLIC_SUPABASE_URL` & `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `GEMINI_API_KEY` (Google AI Studio)
-   - `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY` (PayOS)
-   - `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN` (Redis)
+### 3. Environment Variables
+Copy `.env.example` to `.env.local` and define the required parameters:
+- `NEXT_PUBLIC_SUPABASE_URL` & `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `GEMINI_API_KEY`
+- `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY`
+- `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN`
 
-2. **Initialize Data**:
+### 4. Database Initialization
 ```bash
-# Generate vector embeddings for restaurants and dishes
+# Generate corresponding vector embeddings for the preliminary dataset
 pnpm run embeddings
 ```
 
-### 4. Development
+### 5. Local Server
 ```bash
 pnpm run dev
 ```
 
 ---
 
-## 📁 System Modules
+## Core System Modules
 
-- `app/api/chat/`: The high-performance RAG endpoint with 8 processing steps.
-- `lib/hybrid-ranking.ts`: The core scoring engine.
-- `lib/user-taste.ts`: Vector-based personalization logic.
-- `lib/guardrails.ts`: Safety and grounding verification.
-- `lib/document-sync.ts`: Automated RAG pipeline for new data.
+- `app/api/chat/`: High-performance RAG endpoint executing 8 processing steps.
+- `lib/domain/hybrid-ranking.ts`: Core ranking formula implementation.
+- `lib/domain/user-taste.ts`: Vector-based calculation handler for user profiles.
+- `lib/ai/guardrails.ts`: Systemic safety constraint policies.
+- `lib/db/document-sync.ts`: Automated pipeline handler for syncing new database entries into vector forms.
 
 ---
 
-## 🤝 Developing with Quality
-The project includes a robust testing suite for the entire AI pipeline:
+## Testing Verification
+Execute the automated test suite to ensure RAG integrity:
 ```bash
-# Verify the health of the RAG system
 pnpm run test:rag
 ```
 
 ---
 <div align="center">
-  Developed by <b>Group 3 - EXE201</b><br/>
-  Made with ❤️ for the Can Tho Food Community
+  Developed by <b>Dinh Minh Tien</b><br/>
 </div>

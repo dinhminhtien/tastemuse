@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { activateSubscription } from '@/lib/payment';
+import { supabase } from '@/lib/db/supabase';
+import { activateSubscription } from '@/lib/services/payment';
 
 /**
  * POST /api/payment/callback — Verify and activate subscription after PayOS redirect
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
                 // If explicitly cancelled, update DB status
                 if (payosStatus === 'CANCELLED') {
-                    const { supabaseAdmin } = await import('@/lib/supabase');
+                    const { supabaseAdmin } = await import('@/lib/db/supabase');
                     await supabaseAdmin
                         .from('payments')
                         .update({ status: 'cancelled', updated_at: new Date().toISOString() })
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
 
         // Activate the subscription (handles both stub and real payments)
         // First verify the payment belongs to this user
-        const { supabaseAdmin } = await import('@/lib/supabase');
+        const { supabaseAdmin } = await import('@/lib/db/supabase');
         const { data: paymentRecord } = await supabaseAdmin
             .from('payments')
             .select('user_id')

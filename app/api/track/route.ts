@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { updateUserTaste } from '@/lib/user-taste';
+import { supabase, supabaseAdmin } from '@/lib/db/supabase';
+import { updateUserTaste } from '@/lib/domain/user-taste';
 
 /**
  * POST /api/track – Track user interaction

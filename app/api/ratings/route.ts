@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit';
-import { updateUserTaste } from '@/lib/user-taste';
+import { supabase, supabaseAdmin } from '@/lib/db/supabase';
+import { checkRateLimit, getRateLimitKey } from '@/lib/utils/rate-limit';
+import { updateUserTaste } from '@/lib/domain/user-taste';
 
 /**
  * POST /api/ratings – Create or update a rating

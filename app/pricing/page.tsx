@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Crown, Check, X, Zap, ArrowRight, MessageSquare, Heart, Filter, Calendar, Star, Shield, ChevronDown, CheckCircle2, XCircle, Clock } from "lucide-react"
 import Link from "next/link"
-import { supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/db/supabase"
 
 const PLANS = [
     {

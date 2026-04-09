@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/utils/auth';
 import { User } from '@supabase/supabase-js';
 import Link from 'next/link';
 import {
@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/db/supabase';
 import type { MealPlan, MealPlanItem, MealType } from '@/types/database';
 
 const MEAL_TYPE_CONFIG: Record<MealType, { label: string; icon: typeof Coffee; color: string }> = {

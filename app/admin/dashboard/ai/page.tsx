@@ -4,11 +4,11 @@ import { useState, useEffect } from "react"
 import { Loader2, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { supabase } from "@/lib/supabase"
-import { AdminGuard } from "@/components/admin-guard"
-import { DashboardNav } from "@/components/admin/dashboard/dashboard-nav"
-import { BotIntelligence } from "@/components/admin/dashboard/analytics/bot-intelligence"
-import { RecommendationPerformance } from "@/components/admin/dashboard/analytics/recommendation-performance"
+import { supabase } from "@/lib/db/supabase"
+import { AdminGuard } from "@/components/features/admin/admin-guard"
+import { DashboardNav } from "@/components/features/admin/dashboard/dashboard-nav"
+import { BotIntelligence } from "@/components/features/admin/dashboard/analytics/bot-intelligence"
+import { RecommendationPerformance } from "@/components/features/admin/dashboard/analytics/recommendation-performance"
 
 
 export default function AIDashboard() {

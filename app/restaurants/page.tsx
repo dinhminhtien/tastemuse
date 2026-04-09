@@ -3,11 +3,11 @@ import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Star, MapPin, Phone, Clock, Utensils } from "lucide-react"
-import { supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/db/supabase"
 import type { Restaurant } from "@/types/database"
 import type { Metadata } from "next"
-import { RestaurantSearch } from "@/components/restaurant-search"
-import { Pagination } from "@/components/pagination"
+import { RestaurantSearch } from "@/components/features/restaurant/restaurant-search"
+import { Pagination } from "@/components/shared/pagination"
 
 export const revalidate = 60
 

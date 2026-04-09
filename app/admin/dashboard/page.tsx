@@ -10,15 +10,15 @@ import {
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import Link from "next/link"
-import { AdminGuard } from "@/components/admin-guard"
-import { supabase } from "@/lib/supabase"
+import { AdminGuard } from "@/components/features/admin/admin-guard"
+import { supabase } from "@/lib/db/supabase"
 
-import { QuickStats } from "@/components/admin/dashboard/quick-stats"
-import { ActivityCharts } from "@/components/admin/dashboard/activity-charts"
-import { SentimentAndLogs } from "@/components/admin/dashboard/sentiment-and-logs"
-import { RevenueChart } from "@/components/admin/dashboard/revenue-chart"
-import { TopRatedInsights } from "@/components/admin/dashboard/top-rated-insights"
-import { DashboardNav } from "@/components/admin/dashboard/dashboard-nav"
+import { QuickStats } from "@/components/features/admin/dashboard/quick-stats"
+import { ActivityCharts } from "@/components/features/admin/dashboard/activity-charts"
+import { SentimentAndLogs } from "@/components/features/admin/dashboard/sentiment-and-logs"
+import { RevenueChart } from "@/components/features/admin/dashboard/revenue-chart"
+import { TopRatedInsights } from "@/components/features/admin/dashboard/top-rated-insights"
+import { DashboardNav } from "@/components/features/admin/dashboard/dashboard-nav"
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState<any>(null)

@@ -1,11 +1,11 @@
-import { Hero } from "@/components/hero"
-import { FoodPreferences } from "@/components/food-preferences"
-import { FeaturedDishes } from "@/components/featured-dishes"
-import { PersonalizedRecommendations } from "@/components/personalized-recommendations"
-import { Features } from "@/components/features"
-import { HowItWorks } from "@/components/how-it-works"
-import { CTA } from "@/components/cta"
-import { MarqueeSection } from "@/components/marquee-section"
+import { Hero } from "@/components/marketing/hero"
+import { FoodPreferences } from "@/components/features/dish/food-preferences"
+import { FeaturedDishes } from "@/components/features/dish/featured-dishes"
+import { PersonalizedRecommendations } from "@/components/features/dish/personalized-recommendations"
+import { Features } from "@/components/marketing/features"
+import { HowItWorks } from "@/components/marketing/how-it-works"
+import { CTA } from "@/components/marketing/cta"
+import { MarqueeSection } from "@/components/marketing/marquee-section"
 
 const marqueeItems = [
   "Cần Thơ",

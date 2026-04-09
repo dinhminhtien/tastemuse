@@ -4,11 +4,11 @@ import { useState, useEffect } from "react"
 import { Loader2, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { supabase } from "@/lib/supabase"
-import { AdminGuard } from "@/components/admin-guard"
-import { DashboardNav } from "@/components/admin/dashboard/dashboard-nav"
-import { CulinaryTrends } from "@/components/admin/dashboard/analytics/culinary-trends"
-import { CommunityHealth } from "@/components/admin/dashboard/analytics/community-health"
+import { supabase } from "@/lib/db/supabase"
+import { AdminGuard } from "@/components/features/admin/admin-guard"
+import { DashboardNav } from "@/components/features/admin/dashboard/dashboard-nav"
+import { CulinaryTrends } from "@/components/features/admin/dashboard/analytics/culinary-trends"
+import { CommunityHealth } from "@/components/features/admin/dashboard/analytics/community-health"
 
 export default function CommunityDashboard() {
     const [stats, setStats] = useState<any>(null)

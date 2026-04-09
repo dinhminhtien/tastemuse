@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, Dish } from '@/lib/supabase';
-import { syncDishToRAG } from '@/lib/document-sync';
-import { canUseFeature } from '@/lib/subscription';
+import { supabase, Dish } from '@/lib/db/supabase';
+import { syncDishToRAG } from '@/lib/db/document-sync';
+import { canUseFeature } from '@/lib/services/subscription';
 
 /**
  * GET /api/dishes

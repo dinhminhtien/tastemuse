@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { canUseFeature } from '@/lib/subscription';
+import { supabase, supabaseAdmin } from '@/lib/db/supabase';
+import { canUseFeature } from '@/lib/services/subscription';
 
 /**
  * GET /api/meal-plans — List user's meal plans

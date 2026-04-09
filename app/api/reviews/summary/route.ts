@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { canUseFeature } from '@/lib/subscription';
+import { supabase, supabaseAdmin } from '@/lib/db/supabase';
+import { canUseFeature } from '@/lib/services/subscription';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');

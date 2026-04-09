@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server"
-import { supabaseAdmin, supabase } from "@/lib/supabase"
-import { isAdmin } from "@/lib/admin-config"
+import { supabaseAdmin, supabase } from "@/lib/db/supabase"
+import { isAdmin } from "@/lib/utils/admin-config"
 
 export async function GET(req: NextRequest) {
     try {

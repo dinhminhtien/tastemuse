@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
-import { generateEmbedding } from '@/lib/gemini-ai';
-import { RAG_CONFIG } from '@/lib/rag-config';
+import { supabaseAdmin } from '@/lib/db/supabase';
+import { generateEmbedding } from '@/lib/ai/gemini-ai';
+import { RAG_CONFIG } from '@/lib/ai/rag-config';
 
 // Define the payload structure expected from Supabase
 interface WebhookPayload {

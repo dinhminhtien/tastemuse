@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { updateUserTaste } from '@/lib/user-taste';
-import { canUseFeature } from '@/lib/subscription';
+import { supabase, supabaseAdmin } from '@/lib/db/supabase';
+import { updateUserTaste } from '@/lib/domain/user-taste';
+import { canUseFeature } from '@/lib/services/subscription';
 
 /**
  * POST /api/favorites – Toggle favorite (add/remove)

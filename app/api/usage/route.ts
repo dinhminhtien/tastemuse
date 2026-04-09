@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { getUsageStats } from '@/lib/subscription';
+import { supabase } from '@/lib/db/supabase';
+import { getUsageStats } from '@/lib/services/subscription';
 
 /**
  * GET /api/usage — Get current user's daily usage stats

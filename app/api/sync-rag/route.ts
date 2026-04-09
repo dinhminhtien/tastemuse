@@ -4,13 +4,13 @@ import {
     syncAllDishes,
     syncRestaurantToRAG,
     syncDishToRAG,
-} from '@/lib/document-sync';
-import { supabase, Restaurant, Dish } from '@/lib/supabase';
+} from '@/lib/db/document-sync';
+import { supabase, Restaurant, Dish } from '@/lib/db/supabase';
 import {
     startRealtimeSync,
     stopRealtimeSync,
     isRealtimeSyncRunning,
-} from '@/lib/realtime-sync';
+} from '@/lib/db/realtime-sync';
 
 /**
  * POST /api/sync-rag

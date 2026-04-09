@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { createPayOSPayment } from '@/lib/payment';
-import { getUserPlan, startFreeTrial } from '@/lib/subscription';
+import { supabase, supabaseAdmin } from '@/lib/db/supabase';
+import { createPayOSPayment } from '@/lib/services/payment';
+import { getUserPlan, startFreeTrial } from '@/lib/services/subscription';
 
 /**
  * POST /api/payment/create — Create a payment order for plan upgrade

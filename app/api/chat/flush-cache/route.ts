@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { flushRagCache } from '@/lib/redis';
+import { flushRagCache } from '@/lib/db/redis';
 
 /**
  * POST /api/chat/flush-cache

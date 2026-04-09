@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { ImagePlus, Store as RestaurantIcon, UtensilsCrossed, CheckCircle2, Loader2, Sparkles } from "lucide-react"
-import { AdminGuard } from "@/components/admin-guard"
+import { AdminGuard } from "@/components/features/admin/admin-guard"
 
 interface Entity {
     id: string

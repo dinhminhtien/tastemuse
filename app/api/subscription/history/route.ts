@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabase } from '@/lib/db/supabase';
+import { supabaseAdmin } from '@/lib/db/supabase';
 
 /**
  * GET /api/subscription/history — Get user's subscription & payment history

@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { generateEmbedding, generateRAGResponse } from '@/lib/gemini-ai';
-import { RAG_CONFIG, ERROR_MESSAGES } from '@/lib/rag-config';
-import { extractFilters, isSearchQuery } from '@/lib/filter-extraction';
-import { hybridSearch, formatHybridContext } from '@/lib/hybrid-ranking';
-import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit';
-import { updateUserTaste } from '@/lib/user-taste';
-import { checkUsageLimit, logUsage } from '@/lib/subscription';
+import { supabase } from '@/lib/db/supabase';
+import { generateEmbedding, generateRAGResponse } from '@/lib/ai/gemini-ai';
+import { RAG_CONFIG, ERROR_MESSAGES } from '@/lib/ai/rag-config';
+import { extractFilters, isSearchQuery } from '@/lib/ai/filter-extraction';
+import { hybridSearch, formatHybridContext } from '@/lib/domain/hybrid-ranking';
+import { checkRateLimit, getRateLimitKey } from '@/lib/utils/rate-limit';
+import { updateUserTaste } from '@/lib/domain/user-taste';
+import { checkUsageLimit, logUsage } from '@/lib/services/subscription';
 import type { ChatFilters } from '@/types/database';
-import { getCachedResponse, setCachedResponse } from '@/lib/redis';
-import { addMessage, createConversation } from '@/lib/chat-history';
-import { validateUserInput, validateOutput } from '@/lib/guardrails';
+import { getCachedResponse, setCachedResponse } from '@/lib/db/redis';
+import { addMessage, createConversation } from '@/lib/domain/chat-history';
+import { validateUserInput, validateOutput } from '@/lib/ai/guardrails';
 
 /**
  * Enhanced RAG Chat API Route

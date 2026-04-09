@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { getPersonalizedRecommendations } from '@/lib/user-taste';
-import { canUseFeature } from '@/lib/subscription';
+import { supabase } from '@/lib/db/supabase';
+import { getPersonalizedRecommendations } from '@/lib/domain/user-taste';
+import { canUseFeature } from '@/lib/services/subscription';
 
 /**
  * GET /api/recommendations — Get personalized recommendations for Premium users

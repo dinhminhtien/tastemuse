@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ProtectedRoute } from '@/components/protected-route';
-import { getCurrentUser } from '@/lib/auth';
+import { ProtectedRoute } from '@/components/features/auth/protected-route';
+import { getCurrentUser } from '@/lib/utils/auth';
 import { User } from '@supabase/supabase-js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

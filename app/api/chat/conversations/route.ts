@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/db/supabase';
 import {
     getUserConversations,
     createConversation,
     getConversationWithMessages,
     updateConversationTitle,
     deleteConversation,
-} from '@/lib/chat-history';
+} from '@/lib/domain/chat-history';
 
 /**
  * Authenticate user from request

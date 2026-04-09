@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyPayOSWebhook, activateSubscription } from '@/lib/payment';
+import { verifyPayOSWebhook, activateSubscription } from '@/lib/services/payment';
 
 /**
  * POST /api/payment/webhook — Handle PayOS payment webhooks

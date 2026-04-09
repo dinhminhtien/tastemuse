@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit';
+import { supabase, supabaseAdmin } from '@/lib/db/supabase';
+import { checkRateLimit, getRateLimitKey } from '@/lib/utils/rate-limit';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');

@@ -56,8 +56,8 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
-import { AdminGuard } from "@/components/admin-guard"
-import type { Restaurant, Dish } from "@/lib/supabase"
+import { AdminGuard } from "@/components/features/admin/admin-guard"
+import type { Restaurant, Dish } from "@/lib/db/supabase"
 
 type EntityType = "restaurant" | "dish"
 

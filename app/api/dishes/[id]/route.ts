@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin, Dish } from '@/lib/supabase';
-import { syncDishToRAG } from '@/lib/document-sync';
+import { supabase, supabaseAdmin, Dish } from '@/lib/db/supabase';
+import { syncDishToRAG } from '@/lib/db/document-sync';
 
 /**
  * GET /api/dishes/[id]
